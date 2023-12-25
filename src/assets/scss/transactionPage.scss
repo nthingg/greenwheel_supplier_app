@@ -1,0 +1,69 @@
+.transaction {
+    background-color: #f3fdf3;
+    height: 100vh;
+    padding-top: 20px;
+
+    p {
+        padding-left: 30px;
+    }
+
+    .transactionContainer {
+        padding: 40px 40px 40px 40px;
+        background-color: white;
+        /* Optional: Add a max-width to limit the width of the container */
+        max-width: fit-content; /* Adjust as needed */
+        margin: 0 auto;
+        box-shadow:
+            0 4px 8px 0 rgba(0, 0, 0, 0.2),
+            0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 8px;
+
+        .tableHeader {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 20px;
+
+            .left {
+                input {
+                    width: 300px;
+                }
+            }
+
+            .right {
+                display: flex;
+
+                button {
+                    margin: 0 0 0 10px;
+                    span {
+                        margin-left: 10px;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .link {
+            text-decoration: none;
+            color: white;
+            background-color: #2ecc71;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            border: none;
+            justify-content: center;
+            p {
+                margin: 0;
+            }
+        }
+
+        .link:hover {
+            background-color: #27ae60;
+
+            p {
+                color: white;
+            }
+        }
+    }
+}

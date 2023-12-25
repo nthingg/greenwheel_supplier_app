@@ -1,0 +1,22 @@
+.login {
+    min-height: 100vh;
+}
+
+.bg-image {
+    background-image: url("https://th.bing.com/th/id/R.dbdcb8b98b0e316f6b36458c7ef744b4?rik=p0HqNSVJPfFqoA&pid=ImgRaw&r=0");
+    background-size: cover;
+    background-position: center;
+}
+
+.login-heading {
+    font-weight: 300;
+}
+
+.btn-login {
+    font-size: 0.9rem;
+    letter-spacing: 0.05rem;
+    padding: 0.75rem 1rem;
+}
+.invalid {
+    border-color: red !important;
+}
