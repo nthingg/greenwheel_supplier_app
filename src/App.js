@@ -19,6 +19,7 @@ import DestinationPage from "./pages/DestinationPage";
 import DestinationDetailPage from "./pages/DestinationDetailPage";
 import ProductCreatePage from "./pages/ProductCreatePage";
 import SupplierCreatePage from "./pages/SupplierCreatePage";
+import Test from "./pages/TestPage";
 
 function App() {
   return (
@@ -81,6 +82,10 @@ function App() {
             <Route
               path="emulator"
               element={TOKEN ? <EmulatorPage /> : <Navigate to="/login" />}
+            ></Route>
+            <Route
+              path="test"
+              element={TOKEN ? <Test /> : <Navigate to="/login" />}
             ></Route>
           </Routes>
         </main>

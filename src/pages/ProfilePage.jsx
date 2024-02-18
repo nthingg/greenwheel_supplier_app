@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, MarkerF } from "@react-google-maps/api";
 import SaveIcon from "@mui/icons-material/Save";
 import { Link } from "react-router-dom";
 import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
@@ -92,18 +92,6 @@ function ProfileUpdate() {
                     <EditLocationAltIcon />
                     {showMap ? "Ẩn bản đồ" : "Chỉnh sửa"}
                   </button>
-                  {/* {showMap && (
-                    <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
-                      <GoogleMap
-                        mapContainerStyle={containerStyle}
-                        center={position}
-                        zoom={15}
-                        onClick={handleMapClick}
-                      >
-                        <Marker position={position} />
-                      </GoogleMap>
-                    </LoadScript>
-                  )} */}
                   <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
                     <GoogleMap
                       mapContainerStyle={containerStyle}
@@ -111,7 +99,7 @@ function ProfileUpdate() {
                       zoom={15}
                       onClick={handleMapClick}
                     >
-                      <Marker position={position} />
+                      <MarkerF position={position} />
                     </GoogleMap>
                   </LoadScript>
                 </div>
