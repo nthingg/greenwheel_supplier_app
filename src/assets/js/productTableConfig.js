@@ -1,34 +1,30 @@
-import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
-import SellIcon from "@mui/icons-material/Sell";
 import { Switch } from "@mui/material";
 
 export const productsColumns = [
+  {
+    field: "index",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      return <div>{params.row.index}</div>;
+    },
+    renderHeader: () => <span>STT</span>,
+  },
   // {
   //   field: "id",
-  //   headerName: "ID",
+  //   headerClassName: "prodHeader",
   //   width: 70,
   //   align: "center",
   //   headerAlign: "center",
+  //   // renderCell: (params) => params.rowIndex + 1,
+  //   renderHeader: () => <span>STT</span>,
   // },
-  {
-    field: "id",
-    headerClassName: "prodHeader",
-    width: 70,
-    align: "center",
-    headerAlign: "center",
-    // renderCell: (params) => params.rowIndex + 1,
-    renderHeader: () => <span>STT</span>,
-  },
   {
     field: "name",
     width: 400,
     renderCell: (params) => {
-      return (
-        <div className="cellWithImg">
-          <img className="cellImg" src={params.row.thumbnailUrl} alt="avatar" />
-          {params.row.name}
-        </div>
-      );
+      return <div>{params.row.name}</div>;
     },
     renderHeader: () => <span>Tên dịch vụ</span>,
   },
@@ -43,30 +39,20 @@ export const productsColumns = [
     },
     renderHeader: () => <span>Đơn giá</span>,
   },
-
   {
-    field: "type",
-    width: 140,
+    field: "paymentType",
+    width: 200,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
       let typeText = "";
 
-      switch (params.row.type) {
-        case "BEVERAGE":
-          typeText = "Đồ uống";
+      switch (params.row.paymentType) {
+        case "PER_DAY":
+          typeText = "Theo ngày";
           break;
-        case "FOOD":
-          typeText = "Thức ăn";
-          break;
-        case "OTHER":
-          typeText = "Khác";
-          break;
-        case "ROOM":
-          typeText = "Phòng xá";
-          break;
-        case "TENT":
-          typeText = "Lều trại";
+        case "PER_UNIT":
+          typeText = "Theo sản phẩm";
           break;
         default:
           // Handle default case or unknown status
@@ -74,29 +60,28 @@ export const productsColumns = [
       }
       return <div>{typeText}</div>;
     },
-    renderHeader: () => <span>Loại sản phẩm</span>,
+    renderHeader: () => <span>Cách thức thanh toán</span>,
   },
   {
-    field: "isHidden",
+    field: "partySize",
+    width: 200,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      return <div>{params.row.partySize}</div>;
+    },
+    renderHeader: () => <span>Số người phù hợp</span>,
+  },
+  {
+    field: "status",
     headerName: "Trạng thái",
     width: 140,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
       return (
-        // <div className={`cellWithStatus ${params.row.isHidden}`}>
-        //   {params.row.isHidden == false ? (
-        //     <div className="viewButton">
-        //       <SellIcon />
-        //     </div>
-        //   ) : (
-        //     <div className="viewButton">
-        //       <DoDisturbOnIcon />
-        //     </div>
-        //   )}
-        // </div>
         <Switch
-          checked={!params.row.isHidden}
+          checked={params.row.isAvailable}
           onChange={() => {}}
           inputProps={{ "aria-label": "controlled" }}
           color="success"

@@ -6,7 +6,9 @@ import StoreIcon from "@mui/icons-material/Store";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import TerminalIcon from "@mui/icons-material/Terminal";
+import MapIcon from "@mui/icons-material/Map";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import FastfoodIcon from "@mui/icons-material/Fastfood";
 
 const SideBar = () => {
   const navigate = useNavigate();
@@ -31,15 +33,27 @@ const SideBar = () => {
               <span>Trang chủ</span>
             </li>
           </NavLink>
-          <NavLink to="/profile" style={{ textDecoration: "none" }}>
+          {/* <NavLink to="/profile" style={{ textDecoration: "none" }}>
             <li>
               <PersonIcon className="icon" />
               <span>Hồ sơ</span>
             </li>
+          </NavLink> */}
+          <NavLink to="/destinations" style={{ textDecoration: "none" }}>
+            <li>
+              <MapIcon className="icon" />
+              <span>Quản lý địa điểm</span>
+            </li>
+          </NavLink>
+          <NavLink to="/suppliers" style={{ textDecoration: "none" }}>
+            <li>
+              <StoreIcon className="icon" />
+              <span>Quản lý nhà cung cấp</span>
+            </li>
           </NavLink>
           <NavLink to="/products" style={{ textDecoration: "none" }}>
             <li>
-              <StoreIcon className="icon" />
+              <FastfoodIcon className="icon" />
               <span>Quản lý dịch vụ</span>
             </li>
           </NavLink>
@@ -67,8 +81,8 @@ const SideBar = () => {
             ></img>
 
             <div className="user_info">
-              <span className="name">Trần Quốc Bảo</span>
-              <span className="role">Quản lý</span>
+              <span className="name">Administrator</span>
+              <span className="role">Admin</span>
             </div>
           </div>
           <div>

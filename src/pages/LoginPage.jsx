@@ -61,7 +61,7 @@ const LoginPage = () => {
                         />
                         <label htmlFor="floatingInput">Địa chỉ email</label>
                       </div>
-                      <div className="form-floating">
+                      <div className="form-floating mb-3">
                         <input
                           type="password"
                           className={"form-control "}
@@ -73,21 +73,6 @@ const LoginPage = () => {
                           }}
                         />
                         <label htmlFor="floatingPassword">Mật khẩu</label>
-                      </div>
-
-                      <div className="form-check mb-3">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="rememberPasswordCheck"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="rememberPasswordCheck"
-                        >
-                          Remember password
-                        </label>
                       </div>
 
                       <div className="d-grid">

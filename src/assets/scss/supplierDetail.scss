@@ -1,39 +1,16 @@
-.detail {
+.supplierDetailContainer {
     width: 100%;
+    height: fit-content;
     background-color: #f3fdf3;
-    height: 100vh;
-    padding: 20px 30px 0 30px;
+    padding: 20px 30px 40px 30px;
 
-    .period-container {
-        display: flex;
-        gap: 8;
-        overflow: hidden;
-        border-radius: 5px;
+    .tableProducts {
+        margin: 20px 0 0 40px;
+        width: 1402px;
     }
-    .period-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 80px;
-        padding: 0 12px;
-    }
-    .morning {
-        background-color: #f1c40f;
-        margin-right: 4px;
-    }
-    .noon {
-        background-color: #cb4335;
-        margin-right: 4px;
-    }
-    .afternoon {
-        background-color: orange;
-        margin-right: 4px;
-    }
-    .evening {
-        background-color: purple;
-    }
-    .period-text {
-        color: white;
+
+    .productTable {
+        height: 360px !important;
     }
 
     .detailContainer {
@@ -42,12 +19,12 @@
             0 4px 8px 0 rgba(0, 0, 0, 0.2),
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 8px;
-        padding: 10px 10px 30px 10px;
+        padding: 10px 10px 80px 10px;
 
         .prodTitle {
             padding: 20px 20px 0 40px;
             width: 100%;
-            font-size: 22px;
+            font-size: 30px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -56,6 +33,44 @@
             p {
                 margin-bottom: 10px;
             }
+
+            .link {
+                text-decoration: none;
+                color: white;
+                background-color: #2ecc71;
+                font-size: 16px;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+
+                svg {
+                    margin-right: 6px;
+                }
+
+                p {
+                    margin: 0;
+                }
+            }
+
+            .link:hover {
+                background-color: #27ae60;
+
+                p {
+                    color: white;
+                }
+            }
+        }
+
+        .rowTitle {
+            padding: 40px 20px 0 40px;
+            width: 100%;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
             .link {
                 text-decoration: none;
@@ -97,7 +112,7 @@
             }
         }
 
-        .productDetail {
+        .supplierDetail {
             margin-top: 20px;
             display: flex;
             justify-content: start;

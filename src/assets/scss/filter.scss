@@ -1,0 +1,25 @@
+.icon-row {
+    margin-bottom: 20px;
+    display: flex;
+    // justify-content: space-between;
+}
+
+.icon-item {
+    width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+
+    span {
+        margin-right: 8px;
+    }
+}
+
+.icon-item.selected {
+    border-bottom-color: #2ecc71; /* Change to your desired color */
+    border-width: 4px;
+    background-color: #f7f7fb;
+}

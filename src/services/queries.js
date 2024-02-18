@@ -2,12 +2,12 @@ import { gql } from "@apollo/client";
 
 export const LOAD_PRODUCTS = gql`
   {
-    products(first: 100) {
+    products(first: 100, order: { id: ASC }) {
       nodes {
         id
         name
-        status
-        thumbnailUrl
+        isAvailable
+        imageUrl
         price
         type
       }
@@ -15,17 +15,85 @@ export const LOAD_PRODUCTS = gql`
   }
 `;
 
-export const LOAD_TRANSACTIONS = gql`
+export const LOAD_PRODUCTS_FILTER = gql`
+  query LoadProducts($type: [ProductType!]) {
+    products(first: 100, order: { id: ASC }, where: { type: { in: $type } }) {
+      nodes {
+        id
+        name
+        isAvailable
+        imageUrl
+        price
+        type
+        paymentType
+        partySize
+      }
+    }
+  }
+`;
+
+export const LOAD_ORDERS = gql`
   {
-    orders(first: 100, order: { id: DESC }) {
+    orders(first: 100, order: { id: ASC }) {
       nodes {
         id
         total
-        statusLog {
-          modifiedAt
-          status
+        currentStatus
+        createdAt
+        account {
+          name
+          avatarUrl
         }
-        traveler {
+      }
+    }
+  }
+`;
+
+export const LOAD_SUPPLIERS = gql`
+  {
+    suppliers(first: 100, order: { id: ASC }) {
+      nodes {
+        id
+        name
+        phone
+        address
+        imageUrl
+        balance
+        isActive
+        account {
+          isMale
+          isActive
+          createdAt
+        }
+      }
+    }
+  }
+`;
+
+export const LOAD_DESTINATIONS = gql`
+  {
+    destinations(first: 100, order: { id: ASC }) {
+      nodes {
+        id
+        name
+        description
+        imageUrls
+        isVisible
+        address
+        emergencyContacts {
+          name
+          phone
+          type
+        }
+        seasons
+        topographic
+        activities
+        province {
+          name
+        }
+        comments {
+          comment
+          createdAt
           account {
             name
             avatarUrl
@@ -65,35 +133,32 @@ export const LOAD_PROFILE = gql`
 `;
 
 export const LOAD_DETAIL_ORDER = gql`
-  query GetOrderById($id: Int!) {
+  query GetOrderById($id: UUID!) {
     orders(where: { id: { eq: $id } }) {
       nodes {
         id
         total
         deposit
         period
-        servingDates
-        statusLog {
-          modifiedAt
-          status
-          description
-        }
-        traveler {
+        currentStatus
+        createdAt
+        account {
           phone
-          account {
-            name
-          }
+          name
         }
+        plan {
+          startDate
+        }
+        serveDateIndexes
         details {
           product {
             supplier {
               name
-              type
               address
             }
             id
             name
-            thumbnailUrl
+            imageUrl
             price
           }
           quantity
@@ -110,13 +175,90 @@ export const LOAD_DETAIL_PRODUCT = gql`
       nodes {
         id
         name
-        status
+        isAvailable
         price
-        thumbnailUrl
+        imageUrl
         type
         partySize
         periods
         paymentType
+      }
+    }
+  }
+`;
+
+export const LOAD_DETAIL_SUPPLIER = gql`
+  query GetSupplierById($id: Int!) {
+    suppliers(where: { id: { eq: $id } }) {
+      nodes {
+        id
+        name
+        phone
+        address
+        imageUrl
+        balance
+        isActive
+        account {
+          isMale
+          isActive
+          createdAt
+        }
+        coordinate {
+          coordinates
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PRODUCT_BY_SUPPLIER = gql`
+  query GetProductBySupplierId($id: Int!) {
+    products(where: { supplier: { id: { eq: $id } } }) {
+      nodes {
+        id
+        name
+        isAvailable
+        price
+        imageUrl
+        type
+        partySize
+        periods
+        paymentType
+        supplierId
+      }
+    }
+  }
+`;
+
+export const LOAD_DETAIL_DESTINATION = gql`
+  query GetDestinationById($id: Int!) {
+    destinations(where: { id: { eq: $id } }) {
+      nodes {
+        id
+        name
+        description
+        imageUrls
+        isVisible
+        address
+        emergencyContacts {
+          name
+          phone
+          type
+        }
+        seasons
+        topographic
+        activities
+        province {
+          name
+        }
+        comments {
+          comment
+          createdAt
+          account {
+            name
+            avatarUrl
+          }
+        }
       }
     }
   }

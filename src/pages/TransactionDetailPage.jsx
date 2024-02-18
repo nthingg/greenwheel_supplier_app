@@ -42,6 +42,7 @@ const TransactionDetailPage = () => {
   const [mainReason, setMainReason] = useState("Hết hàng");
   const [reasonCancelled, setReasonCancelled] = useState(null);
   const [highlightedDays, setHighlitedDays] = useState([]);
+  const [cancellable, setCancellable] = useState(false);
 
   const [
     cancel,
@@ -50,7 +51,7 @@ const TransactionDetailPage = () => {
 
   const { error, loading, data, refetch } = useQuery(LOAD_DETAIL_ORDER, {
     variables: {
-      id: parseInt(orderId),
+      id: orderId,
     },
   });
 
@@ -77,18 +78,21 @@ const TransactionDetailPage = () => {
     ) {
       setOrder(data["orders"]["nodes"][0]);
       setDetails(data["orders"]["nodes"][0]["details"]);
-      const date = new Date(
-        data["orders"]["nodes"][0]["statusLog"][0]["modifiedAt"]
-      );
+      const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
       setDate(date.toLocaleString("en-GB"));
-      setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
-      const foundStatus = data["orders"]["nodes"][0]["statusLog"].find(
-        (entry) =>
-          entry?.description !== null && entry?.description !== undefined
-      );
-      setReasonCancelled(
-        foundStatus?.description.replace(/^Cancel Reason: /, "")
-      );
+      const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
+      const today = new Date();
+
+      setCancellable(threeDaysLater > today);
+      // setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
+
+      // const foundStatus = data["orders"]["nodes"][0]["statusLog"].find(
+      //   (entry) =>
+      //     entry?.description !== null && entry?.description !== undefined
+      // );
+      // setReasonCancelled(
+      //   foundStatus?.description.replace(/^Cancel Reason: /, "")
+      // );
     }
   }, [data, loading, error]);
 
@@ -159,16 +163,21 @@ const TransactionDetailPage = () => {
           <div className="sharedTitle">
             <div className="order-header">
               <p>Mã đơn #{order?.id}</p>
-              {order?.statusLog[order?.statusLog.length - 1].status ===
-                "CANCELLED" && <p className="status cancelled">Đã hủy</p>}
+              {order?.currentStatus === "CANCELLED" && (
+                <p className="status cancelled">Đã hủy</p>
+              )}
+              {order?.currentStatus === "RESERVED" && (
+                <p className="status confirmed">Đã hoàn thành</p>
+              )}
             </div>
-            {order?.statusLog[order?.statusLog.length - 1].status ===
-              "RESERVED" && (
+            {order?.currentStatus === "TEMPORARY" && (
               <div className="groupBtn">
-                <button className="remove" onClick={handleClickOpen}>
-                  <CancelIcon />
-                  <p>Huỷ đơn</p>
-                </button>
+                {cancellable === true && (
+                  <button className="remove" onClick={handleClickOpen}>
+                    <CancelIcon />
+                    <p>Huỷ đơn</p>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -180,13 +189,11 @@ const TransactionDetailPage = () => {
               <div className="left">
                 <div className="detailItem">
                   <span className="itemKey">Tài khoản đặt:</span>
-                  <span className="itemValue">
-                    {order?.traveler.account.name}
-                  </span>
+                  <span className="itemValue">{order?.account.name}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Số điện thoại:</span>
-                  <span className="itemValue">{order?.traveler.phone}</span>
+                  <span className="itemValue">{order?.account.phone}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Thời gian tạo:</span>
@@ -244,12 +251,6 @@ const TransactionDetailPage = () => {
                     {order?.details[0]?.product?.supplier?.address}
                   </span>
                 </div>
-                <div className="detailItem">
-                  <span className="itemKey">Đã đặt cọc:</span>
-                  <span className="itemValue">
-                    {order?.deposit.toLocaleString("vi-VN") + "đ"}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
@@ -259,7 +260,7 @@ const TransactionDetailPage = () => {
               <DetailTable details={details} />
             </div>
             <div className="item">
-              <h1 className="itemTitle">Các ngày phục vụ</h1>
+              {/* <h1 className="itemTitle">Các ngày phục vụ</h1>
               <div className="calendar">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <p>
@@ -295,7 +296,7 @@ const TransactionDetailPage = () => {
                     }}
                   />
                 </LocalizationProvider>
-              </div>
+              </div> */}
             </div>
           </div>
           {reasonCancelled && (

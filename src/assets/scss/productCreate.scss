@@ -1,40 +1,8 @@
-.detail {
+.edit {
     width: 100%;
     background-color: #f3fdf3;
     height: 100vh;
-    padding: 20px 30px 0 30px;
-
-    .period-container {
-        display: flex;
-        gap: 8;
-        overflow: hidden;
-        border-radius: 5px;
-    }
-    .period-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 80px;
-        padding: 0 12px;
-    }
-    .morning {
-        background-color: #f1c40f;
-        margin-right: 4px;
-    }
-    .noon {
-        background-color: #cb4335;
-        margin-right: 4px;
-    }
-    .afternoon {
-        background-color: orange;
-        margin-right: 4px;
-    }
-    .evening {
-        background-color: purple;
-    }
-    .period-text {
-        color: white;
-    }
+    padding: 20px 30px 0px 30px;
 
     .detailContainer {
         background-color: white;
@@ -42,7 +10,27 @@
             0 4px 8px 0 rgba(0, 0, 0, 0.2),
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 8px;
-        padding: 10px 10px 30px 10px;
+        padding: 40px 10px 40px 10px;
+
+        .productCreate {
+            display: flex;
+
+            .right {
+                margin-left: 6%;
+            }
+        }
+
+        .image_container {
+            margin: 10px 0 0 40px;
+            position: relative;
+
+            img {
+                width: 450px;
+                height: 300px;
+                border-radius: 10px;
+                object-fit: cover;
+            }
+        }
 
         .prodTitle {
             padding: 20px 20px 0 40px;
@@ -51,7 +39,7 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
 
             p {
                 margin-bottom: 10px;
@@ -64,6 +52,7 @@
                 font-size: 16px;
                 padding: 10px;
                 border-radius: 5px;
+                border: none;
                 cursor: pointer;
                 display: flex;
                 justify-content: center;
@@ -86,46 +75,44 @@
             }
         }
 
-        .image_container {
-            margin: 10px 0 0 40px;
-
-            img {
-                width: 450px;
-                height: 300px;
-                border-radius: 10px;
-                object-fit: cover;
-            }
+        .imageAdd {
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
         }
 
-        .productDetail {
-            margin-top: 20px;
-            display: flex;
-            justify-content: start;
-
-            .right {
-                margin-left: 8%;
-            }
+        .imageAdd:hover {
+            background: rgb(231, 231, 231);
         }
 
         .details {
             .detailItem {
+                margin-bottom: 20px;
                 font-size: 16px;
                 display: flex;
-                padding: 10px 0 10px 10px;
-                margin: 10px 20px 20px 20px;
+                padding: 0px 0 10px 10px;
+                margin: 0px 20px 20px 20px;
+                align-items: center;
 
                 .itemKey {
-                    width: 200px;
+                    width: 180px;
                     font-weight: bold;
                     margin-right: 5px;
                 }
 
+                .basic-single {
+                    width: 320px;
+                }
+
                 .itemValue {
                     font-weight: 300;
-
-                    .paymentType {
-                        font-weight: bold;
-                    }
                 }
             }
         }

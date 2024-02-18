@@ -14,16 +14,7 @@ export const detailsColumns = [
     headerName: "TÊN DỊCH VỤ",
     width: 400,
     renderCell: (params) => {
-      return (
-        <div className="cellWithImg">
-          <img
-            className="cellImg"
-            src={params.row.product.thumbnailUrl}
-            alt="avatar"
-          />
-          {params.row.product.name}
-        </div>
-      );
+      return <div>{params.row.product.name}</div>;
     },
     renderHeader: () => <span>Tên dịch vụ</span>,
   },

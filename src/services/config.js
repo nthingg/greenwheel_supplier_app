@@ -19,7 +19,7 @@ const errorLink = onError(({ graphqlErrors, networkError }) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: "https://greenwheelsv2.azurewebsites.net/graphql",
+    uri: "https://btssapp.azurewebsites.net/graphql",
   }),
 ]);
 

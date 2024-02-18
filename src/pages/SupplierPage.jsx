@@ -1,32 +1,30 @@
-import "../assets/scss/transactionPage.scss";
-import TransacionTable from "../components/TransactionTable";
+import { Link } from "react-router-dom";
+import "../assets/scss/supplierDetail.scss";
+import "../assets/scss/shared.scss";
+import AddIcon from "@mui/icons-material/Add";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { LOAD_ORDERS } from "../services/queries";
+import { LOAD_SUPPLIERS } from "../services/queries";
+import SupplierTable from "../components/SupplierTable";
 
-const TransactionPage = () => {
-  const { error, loading, data, refetch } = useQuery(LOAD_ORDERS);
-  const [orders, setOrders] = useState([]);
+const SupplierPage = () => {
+  const { error, loading, data, refetch } = useQuery(LOAD_SUPPLIERS);
+  const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
-    if (!loading && !error && data.orders && data.orders.nodes) {
-      let res = data.orders.nodes.map((node, index) => {
-        const { __typename, ...rest } = node;
-        return { ...rest, index: index + 1 }; // Add the index to the object
-      });
-      console.log(res);
-      setOrders(res);
+    if (!loading && !error && data && data["suppliers"]["nodes"]) {
+      let res = data.suppliers.nodes.map(({ __typename, ...rest }) => rest);
+      setSuppliers(res);
     }
   }, [data, loading, error]);
 
   return (
-    <div className="transaction">
+    <div className="product">
       <div className="sharedTitle">
-        <p>Danh sách hóa đơn</p>
+        <p>Danh sách nhà cung cấp</p>
       </div>
-      <div className="transactionContainer">
+      <div className="productContainer">
         <div className="tableHeader">
           <div className="left">
             <input
@@ -38,11 +36,12 @@ const TransactionPage = () => {
             />
           </div>
           <div className="right">
+            <Link to="/products/new" className="link">
+              <AddIcon />
+              <span>Thêm nhà cung cấp</span>
+            </Link>
             <button className="link">
               <FilterAltIcon />
-            </button>
-            <button className="link">
-              <CloudDownloadIcon /> <span>Xuất file Excel</span>
             </button>
             <button
               className="link"
@@ -54,10 +53,10 @@ const TransactionPage = () => {
             </button>
           </div>
         </div>
-        <TransacionTable orders={orders} />
+        <SupplierTable suppliers={suppliers} />
       </div>
     </div>
   );
 };
 
-export default TransactionPage;
+export default SupplierPage;

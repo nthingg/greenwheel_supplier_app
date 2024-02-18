@@ -1,33 +1,32 @@
-import { transactionsColumns } from "../assets/js/transactionTableConfig";
-import "../assets/scss/shared.scss";
-import "../assets/scss/transactionTable.scss";
+import "../assets/scss/productTable.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Menu, MenuItem } from "@mui/material";
+import { suppliersColumns } from "../assets/js/supplierTableConfig";
 
-const TransacionTable = ({ orders }) => {
+const SupplierTable = ({ suppliers }) => {
   const navigate = useNavigate();
   const [anchorId, setAnchorId] = useState(null);
-  const [anchorStatus, setAnchorStatus] = useState("");
   const [anchor, setAnchor] = useState(null);
-  const options = ["Xem", "Hủy bỏ"];
-  const viewOption = ["Xem"];
+
+  const options = ["Xem", "Chỉnh sửa"];
   const ITEM_HEIGHT = 48;
 
   const handleDetailClick = () => {
-    navigate(`/transactions/${anchorId}`);
+    navigate(`/suppliers/${anchorId}`);
   };
 
-  const handleCancelClick = () => {
-    console.log("Hủy bỏ clicked");
+  const handleEditClick = () => {
+    // Logic for "Xác nhận" option
+    console.log("Xác nhận clicked");
+    // Add your specific code here
   };
 
   const actionColumn = [
     {
       field: "action",
-      headerName: "Chi tiết",
       width: 140,
       align: "center",
       headerAlign: "center",
@@ -35,7 +34,6 @@ const TransacionTable = ({ orders }) => {
         const isSelected = anchorId === params.row.id; // Check if the current row is selected
         const handleClick = (event) => {
           setAnchorId(isSelected ? null : params.row.id); // Toggle the selected row
-          setAnchorStatus(params.row.currentStatus);
           setAnchor(event.currentTarget);
         };
         const handleClose = () => {
@@ -69,10 +67,7 @@ const TransacionTable = ({ orders }) => {
                 },
               }}
             >
-              {(params.row.currentStatus === "RESERVED"
-                ? viewOption
-                : options
-              ).map((option) => (
+              {options.map((option) => (
                 <MenuItem
                   key={option}
                   selected={false}
@@ -82,8 +77,8 @@ const TransacionTable = ({ orders }) => {
                       case "Xem":
                         handleDetailClick();
                         break;
-                      case "Hủy bỏ":
-                        handleCancelClick();
+                      case "Chỉnh sửa":
+                        handleEditClick();
                         break;
                       default:
                         break;
@@ -102,10 +97,10 @@ const TransacionTable = ({ orders }) => {
     },
   ];
   return (
-    <div className="transactionTable">
+    <div className="productTable">
       <DataGrid
-        rows={orders}
-        columns={transactionsColumns.concat(actionColumn)}
+        rows={suppliers}
+        columns={suppliersColumns.concat(actionColumn)}
         rowSelection={false}
         pagination
         autoPageSize
@@ -126,4 +121,4 @@ const TransacionTable = ({ orders }) => {
   );
 };
 
-export default TransacionTable;
+export default SupplierTable;

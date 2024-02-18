@@ -10,6 +10,7 @@ import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
+  console.log(productId);
   const [product, setProduct] = useState(null);
   const { error, loading, data } = useQuery(LOAD_DETAIL_PRODUCT, {
     variables: {
@@ -44,61 +45,98 @@ const ProductDetailPage = () => {
       <div className="detailContainer">
         <div className="prodTitle">
           <p>{product?.name}</p>
-          <Link to="/products/update/" className="link">
+          <Link to={`/products/edit/${product?.id}`} className="link">
             <EditIcon />
             <p>Chỉnh sửa</p>
           </Link>
         </div>
-        <div className="image_container">
-          <img src={product?.thumbnailUrl} alt="" />
-        </div>
-        <div className="details">
+        <div className="productDetail">
           <div className="left">
-            <div className="detailItem">
-              <span className="itemKey">Loại dịch vụ:</span>
-              <span className="itemValue">
-                {(() => {
-                  switch (product?.type) {
-                    case "FOOD":
-                      return "Thức ăn";
-                    case "BEVERAGE":
-                      return "Đồ uống";
-                    case "ROOM":
-                      return "Phòng nghỉ";
-                    case "TENT":
-                      return "Lều trại";
-                    case "VEHICLE":
-                      return "Phương tiện";
-                    default:
-                      return "Khác";
-                  }
-                })()}
-              </span>
-            </div>
-            <div className="detailItem">
-              <span className="itemKey">Đơn giá:</span>
-              <span className="itemValue">
-                {product?.price.toLocaleString("vi-VN") + "đ"} /{" "}
-                {product?.paymentType === "PER_DAY" ? "ngày" : "sản phẩm"}
-              </span>
-            </div>
-            <div className="detailItem">
-              <span className="itemKey">Trạng thái:</span>
-              <span className="itemValue">
-                {product?.isHidden === false
-                  ? "Đang hoạt động"
-                  : "Tạm ngưng kinh doanh"}
-              </span>
+            <div className="image_container">
+              <img src={product?.imageUrl} alt="" />
             </div>
           </div>
           <div className="right">
-            <div className="detailItem">
-              <span className="itemKey">Thời gian khả dụng:</span>
-              <span className="itemValue"></span>
-            </div>
-            <div className="detailItem">
-              <span className="itemKey">Phù hợp với:</span>
-              <span className="itemValue">{product?.partySize} người</span>
+            <div className="details">
+              <div className="detailItem">
+                <span className="itemKey">Loại dịch vụ:</span>
+                <span className="itemValue">
+                  {(() => {
+                    switch (product?.type) {
+                      case "FOOD":
+                        return "Thức ăn";
+                      case "BEVERAGE":
+                        return "Đồ uống";
+                      case "ROOM":
+                        return "Phòng nghỉ";
+                      case "TENT":
+                        return "Lều trại";
+                      case "VEHICLE":
+                        return "Phương tiện";
+                      default:
+                        return "Khác";
+                    }
+                  })()}
+                </span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Đơn giá:</span>
+                <span className="itemValue">
+                  {product?.price.toLocaleString("vi-VN") + "đ"} /{" "}
+                  <span className="paymentType">
+                    {product?.paymentType === "PER_DAY" ? "ngày" : "sản phẩm"}
+                  </span>
+                </span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Trạng thái:</span>
+                <span className="itemValue">
+                  {(() => {
+                    switch (product?.isAvailable) {
+                      case true:
+                        return "Đang hoạt động";
+                      case false:
+                        return "Ngưng hoạt động";
+                      default:
+                        return "Khác";
+                    }
+                  })()}
+                </span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Thời gian phục vụ:</span>
+                <span className="itemValue">
+                  <div className="period-container">
+                    {product?.periods.map((period) => (
+                      <div
+                        key={period}
+                        className={`period-item ${period.toLowerCase()}`}
+                      >
+                        <span className="period-text">
+                          {(() => {
+                            switch (period) {
+                              case "MORNING":
+                                return "Sáng";
+                              case "NOON":
+                                return "Trưa";
+                              case "AFTERNOON":
+                                return "Chiều";
+                              case "EVENING":
+                                return "Tối";
+                              default:
+                                return "Khác";
+                            }
+                          })()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Phù hợp với:</span>
+                <span className="itemValue">{product?.partySize} người</span>
+              </div>
             </div>
           </div>
         </div>

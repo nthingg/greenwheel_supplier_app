@@ -1,44 +1,52 @@
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import HourglassTopIcon from "@mui/icons-material/HourglassTop";
-
 export const transactionsColumns = [
   {
-    field: "id",
+    field: "index",
     width: 100,
     align: "center",
     headerAlign: "center",
+    renderCell: (params) => {
+      return <div>{params.row.index}</div>;
+    },
+    renderHeader: () => <span>STT</span>,
+  },
+  {
+    field: "id",
+    width: 360,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      return <div>{params.row.id}</div>;
+    },
     renderHeader: () => <span>Mã HĐ</span>,
   },
   {
     field: "name",
-    width: 400,
+    width: 240,
     renderCell: (params) => {
       return (
         <div className="cellWithImg">
           <img
             className="cellImg"
             src={
-              params.row.traveler.account.avatarUrl === null
+              params.row.account.avatarUrl === null
                 ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                : params.row.traveler.account.avatarUrl
+                : params.row.account.avatarUrl
             }
             alt="avatar"
           />
-          {params.row.traveler.account.name}
+          {params.row.account.name}
         </div>
       );
     },
     renderHeader: () => <span>Khách hàng</span>,
   },
   {
-    field: "modifiedAt",
+    field: "createdAt",
     width: 220,
     renderCell: (params) => {
-      const date = new Date(params.row.statusLog[0].modifiedAt);
+      const date = new Date(params.row.createdAt);
 
       const formattedDateTime = date.toLocaleString("en-GB");
-
       return (
         <div>
           <span>{formattedDateTime}</span>
@@ -65,37 +73,18 @@ export const transactionsColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      let statusLog = null;
-      params.row.statusLog.forEach((log) => {
-        if (log.status !== "RESERVED") {
-          statusLog = log;
-        }
-      });
-
-      if (statusLog === null) {
-        return (
-          <div className={`cellWithStatus reserved`}>
-            <HourglassTopIcon />
-          </div>
-        );
-      } else {
-        switch (statusLog.status) {
-          case "CONFIRMED":
-            return (
-              <div className={`cellWithStatus confirmed`}>
-                <CheckCircleIcon />
-              </div>
-            );
-          case "CANCELLED":
-            return (
-              <div className={`cellWithStatus cancelled`}>
-                <CancelIcon />
-              </div>
-            );
-          default:
-            // Handle default case or unknown status
-            break;
-        }
+      switch (params.row.currentStatus) {
+        case "RESERVED":
+          return (
+            <div className={`cellWithStatus confirmed`}>Đã hoàn thành</div>
+          );
+        case "CANCELLED":
+          return <div className={`cellWithStatus cancelled`}>Đã hủy</div>;
+        case "TEMPORARY":
+          return <div className={`cellWithStatus temporary`}>Đang xử lý</div>;
+        default:
+          // Handle default case or unknown status
+          break;
       }
     },
     renderHeader: () => <span>Trạng thái</span>,
