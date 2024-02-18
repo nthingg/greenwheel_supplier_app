@@ -1,10 +1,7 @@
 import "../assets/scss/productCreate.scss";
 import "../assets/scss/shared.scss";
-import EditIcon from "@mui/icons-material/Edit";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { LOAD_DETAIL_PRODUCT } from "../services/queries";
-import { useQuery } from "@apollo/client";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";

@@ -36,7 +36,7 @@ const SupplierPage = () => {
             />
           </div>
           <div className="right">
-            <Link to="/products/new" className="link">
+            <Link to="/suppliers/new" className="link">
               <AddIcon />
               <span>Thêm nhà cung cấp</span>
             </Link>

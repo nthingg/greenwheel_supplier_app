@@ -1,12 +1,6 @@
 import SideBar from "./components/SideBar";
 import "./index.css";
-import {
-  useParams,
-  Routes,
-  Route,
-  Navigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useParams, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import ProductPage from "./pages/ProductPage";
@@ -24,10 +18,9 @@ import SupplierDetailPage from "./pages/SupplierDetailPage";
 import DestinationPage from "./pages/DestinationPage";
 import DestinationDetailPage from "./pages/DestinationDetailPage";
 import ProductCreatePage from "./pages/ProductCreatePage";
+import SupplierCreatePage from "./pages/SupplierCreatePage";
 
 function App() {
-  const { productId } = useParams();
-
   return (
     <ApolloProvider client={client}>
       <div className="app">
@@ -49,21 +42,12 @@ function App() {
                 index
                 element={TOKEN ? <ProductPage /> : <Navigate to="/login" />}
               />
-              <Route
-                path=":productId"
-                element={<ProductDetailPage id={productId} />}
-              />
+              <Route path=":productId" element={<ProductDetailPage />} />
               <Route path="detail">
-                <Route
-                  path=":productId"
-                  element={<ProductDetailPage productId={productId} />}
-                />
+                <Route path=":productId" element={<ProductDetailPage />} />
               </Route>
               <Route path="edit">
-                <Route
-                  path=":productId"
-                  element={<ProductEditPage id={productId} />}
-                />
+                <Route path=":productId" element={<ProductEditPage />} />
               </Route>
             </Route>
             <Route path="suppliers">
@@ -72,6 +56,7 @@ function App() {
                 element={TOKEN ? <SupplierPage /> : <Navigate to="/login" />}
               />
               <Route path=":supplierId" element={<SupplierDetailPage />} />
+              <Route path="new" element={<SupplierCreatePage />} />
               <Route path="add-product">
                 <Route path=":supplierId" element={<ProductCreatePage />} />
               </Route>

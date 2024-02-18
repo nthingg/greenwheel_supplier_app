@@ -34,6 +34,7 @@ import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 
 const TransactionDetailPage = () => {
   const { orderId } = useParams();
+  console.log(orderId);
   const [order, setOrder] = useState(null);
   const [details, setDetails] = useState(null);
   const [date, setDate] = useState("");
@@ -84,12 +85,9 @@ const TransactionDetailPage = () => {
       const today = new Date();
 
       setCancellable(threeDaysLater > today);
-      // setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
 
-      // const foundStatus = data["orders"]["nodes"][0]["statusLog"].find(
-      //   (entry) =>
-      //     entry?.description !== null && entry?.description !== undefined
-      // );
+      setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
+
       // setReasonCancelled(
       //   foundStatus?.description.replace(/^Cancel Reason: /, "")
       // );
@@ -113,7 +111,7 @@ const TransactionDetailPage = () => {
     cancel({
       variables: {
         input: {
-          id: parseInt(orderId),
+          id: orderId,
           reason: finalReason,
         },
       },
