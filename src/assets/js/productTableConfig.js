@@ -40,39 +40,6 @@ export const productsColumns = [
     renderHeader: () => <span>Đơn giá</span>,
   },
   {
-    field: "paymentType",
-    width: 200,
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      let typeText = "";
-
-      switch (params.row.paymentType) {
-        case "PER_DAY":
-          typeText = "Theo ngày";
-          break;
-        case "PER_UNIT":
-          typeText = "Theo sản phẩm";
-          break;
-        default:
-          // Handle default case or unknown status
-          break;
-      }
-      return <div>{typeText}</div>;
-    },
-    renderHeader: () => <span>Cách thức thanh toán</span>,
-  },
-  {
-    field: "partySize",
-    width: 200,
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      return <div>{params.row.partySize}</div>;
-    },
-    renderHeader: () => <span>Số người phù hợp</span>,
-  },
-  {
     field: "status",
     headerName: "Trạng thái",
     width: 140,

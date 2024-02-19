@@ -20,6 +20,13 @@
                 display: flex;
                 align-items: center;
 
+                .reason {
+                    cursor: pointer;
+                    margin: 0 0 10px 30px;
+                    font-weight: normal;
+                    font-size: 18px;
+                }
+
                 .status {
                     margin-left: 30px;
                     font-weight: normal;

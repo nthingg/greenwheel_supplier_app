@@ -70,8 +70,8 @@ const TransacionTable = ({ orders }) => {
               }}
             >
               {(params.row.currentStatus === "RESERVED"
-                ? viewOption
-                : options
+                ? options
+                : viewOption
               ).map((option) => (
                 <MenuItem
                   key={option}

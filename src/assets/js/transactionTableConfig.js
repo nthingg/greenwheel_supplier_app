@@ -9,16 +9,16 @@ export const transactionsColumns = [
     },
     renderHeader: () => <span>STT</span>,
   },
-  {
-    field: "id",
-    width: 360,
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      return <div>{params.row.id}</div>;
-    },
-    renderHeader: () => <span>Mã HĐ</span>,
-  },
+  // {
+  //   field: "id",
+  //   width: 360,
+  //   align: "center",
+  //   headerAlign: "center",
+  //   renderCell: (params) => {
+  //     return <div>{params.row.id}</div>;
+  //   },
+  //   renderHeader: () => <span>Mã HĐ</span>,
+  // },
   {
     field: "name",
     width: 240,
@@ -43,13 +43,20 @@ export const transactionsColumns = [
   {
     field: "createdAt",
     width: 220,
+    align: "center",
+    headerAlign: "center",
     renderCell: (params) => {
       const date = new Date(params.row.createdAt);
 
       const formattedDateTime = date.toLocaleString("en-GB");
+      const formattedDate = formattedDateTime.substring(
+        0,
+        formattedDateTime.indexOf(", ")
+      );
+
       return (
         <div>
-          <span>{formattedDateTime}</span>
+          <span>{formattedDate}</span>
         </div>
       );
     },
@@ -75,9 +82,7 @@ export const transactionsColumns = [
     renderCell: (params) => {
       switch (params.row.currentStatus) {
         case "RESERVED":
-          return (
-            <div className={`cellWithStatus confirmed`}>Đã hoàn thành</div>
-          );
+          return <div className={`cellWithStatus confirmed`}>Đã chấp nhận</div>;
         case "CANCELLED":
           return <div className={`cellWithStatus cancelled`}>Đã hủy</div>;
         case "TEMPORARY":

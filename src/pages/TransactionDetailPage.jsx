@@ -1,14 +1,13 @@
 import "../assets/scss/transactionDetail.scss";
+import "../assets/scss/traceTable.scss";
 import "../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
-
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DetailTable from "../components/TransactionDetailTable";
 import { useEffect, useState } from "react";
 import { LOAD_DETAIL_ORDER } from "../services/queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { CANCEL_ORDER, CONFIRM_ORDER } from "../services/mutations";
+import { CANCEL_ORDER } from "../services/mutations";
 import {
   Dialog,
   DialogActions,
@@ -19,7 +18,6 @@ import {
   Button,
   styled,
   FormControl,
-  FormLabel,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -31,14 +29,17 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { PickersDay } from "@mui/x-date-pickers";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import TracesTable from "../components/TraceTable";
 
 const TransactionDetailPage = () => {
   const { orderId } = useParams();
-  console.log(orderId);
   const [order, setOrder] = useState(null);
   const [details, setDetails] = useState(null);
   const [date, setDate] = useState("");
   const [open, setOpen] = useState(false);
+  const [traces, setTraces] = useState([]);
+  const [openReason, setOpenReason] = useState(false);
+  const [openTraces, setOpenTraces] = useState(false);
   const [reason, setReason] = useState("");
   const [mainReason, setMainReason] = useState("Hết hàng");
   const [reasonCancelled, setReasonCancelled] = useState(null);
@@ -86,20 +87,41 @@ const TransactionDetailPage = () => {
 
       setCancellable(threeDaysLater > today);
 
-      // setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
+      const startDate = data["orders"]["nodes"][0]["plan"]["startDate"];
+      const serveDayIndexes = data["orders"]["nodes"][0]["serveDateIndexes"];
 
+      const newDatesList = serveDayIndexes.map((index) => {
+        const newDate = new Date(startDate);
+        newDate.setDate(newDate.getDate() + index);
+        return newDate.toISOString().slice(0, 10); // Format as YYYY-MM-DD
+      });
+
+      setHighlitedDays(newDatesList);
+
+      const reason = data["orders"]["nodes"][0].traces[0].description;
       setReasonCancelled(
-        data["orders"]["nodes"][0].traces.length == 0
-          ? null
-          : data["orders"]["nodes"][0].traces[0].description
+        data["orders"]["nodes"][0].traces.length === 0 ? null : reason
       );
-      console.log(data["orders"]["nodes"][0]);
-      console.log(reasonCancelled);
+
+      // console.log(data["orders"]["nodes"][0].traces);
+      let res = data["orders"]["nodes"][0].traces.map((node, id) => {
+        const { __typename, ...rest } = node;
+        return { ...rest, id: id + 1 }; // Add the index to the object
+      });
+      setTraces(res);
     }
   }, [data, loading, error]);
 
   const handleClickOpen = () => {
     setOpen(true);
+  };
+
+  const handleClickOpenReason = () => {
+    setOpenReason(true);
+  };
+
+  const handleClickOpenTraces = () => {
+    setOpenTraces(true);
   };
 
   const handleClose = () => {
@@ -120,6 +142,14 @@ const TransactionDetailPage = () => {
         },
       },
     });
+  };
+
+  const handleCloseReason = () => {
+    setOpenReason(false);
+  };
+
+  const handleCloseTraces = () => {
+    setOpenTraces(false);
   };
 
   const HighlightedDay = styled(PickersDay)(({ theme }) => ({
@@ -168,11 +198,16 @@ const TransactionDetailPage = () => {
               {order?.currentStatus === "CANCELLED" && (
                 <p className="status cancelled">Đã hủy</p>
               )}
+              {order?.currentStatus === "CANCELLED" && (
+                <a className="reason" onClick={handleClickOpenReason}>
+                  Nguyên nhân hủy bỏ
+                </a>
+              )}
               {order?.currentStatus === "RESERVED" && (
-                <p className="status confirmed">Đã hoàn thành</p>
+                <p className="status confirmed">Đã chấp nhận</p>
               )}
             </div>
-            {order?.currentStatus === "TEMPORARY" && (
+            {order?.currentStatus === "RESERVED" && (
               <div className="groupBtn">
                 {cancellable === true && (
                   <button className="remove" onClick={handleClickOpen}>
@@ -201,12 +236,12 @@ const TransactionDetailPage = () => {
                   <span className="itemKey">Thời gian tạo:</span>
                   <span className="itemValue">{date}</span>
                 </div>
-                <div className="detailItem">
+                {/* <div className="detailItem">
                   <span className="itemKey">Tổng hóa đơn:</span>
                   <span className="itemValue">
                     {order?.total.toLocaleString("vi-VN") + "đ"}
                   </span>
-                </div>
+                </div> */}
               </div>
               <div className="right">
                 <div className="detailItem">
@@ -215,7 +250,7 @@ const TransactionDetailPage = () => {
                     {order?.details[0].product.supplier.name}
                   </span>
                 </div>
-                <div className="detailItem">
+                {/* <div className="detailItem">
                   <span className="itemKey">Dịch vụ:</span>
                   <span className="itemValue">
                     {(() => {
@@ -239,7 +274,7 @@ const TransactionDetailPage = () => {
                       }
                     })()}
                   </span>
-                </div>
+                </div> */}
                 <div className="detailItem">
                   <span className="itemKey">Địa chỉ:</span>
                   <span
@@ -253,6 +288,14 @@ const TransactionDetailPage = () => {
                     {order?.details[0]?.product?.supplier?.address}
                   </span>
                 </div>
+                <div className="detailItem">
+                  <span className="itemKey">Lịch sử thay đổi:</span>
+                  <span className="itemValue">
+                    <a className="reason" onClick={handleClickOpenTraces}>
+                      Chi tiết
+                    </a>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -261,8 +304,10 @@ const TransactionDetailPage = () => {
               <h1 className="itemTitle">Các dịch vụ đã đặt</h1>
               <DetailTable details={details} />
             </div>
+          </div>
+          <div className="bottom">
             <div className="item">
-              {/* <h1 className="itemTitle">Các ngày phục vụ</h1>
+              <h1 className="itemTitle">Các ngày phục vụ</h1>
               <div className="calendar">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <p>
@@ -283,9 +328,7 @@ const TransactionDetailPage = () => {
                   </p>
                   <DateCalendar
                     value={
-                      order?.servingDates[0]
-                        ? dayjs(order?.servingDates[0])
-                        : dayjs()
+                      highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
                     }
                     readOnly
                     slots={{
@@ -298,10 +341,10 @@ const TransactionDetailPage = () => {
                     }}
                   />
                 </LocalizationProvider>
-              </div> */}
+              </div>
             </div>
           </div>
-          {reasonCancelled && (
+          {/* {reasonCancelled && (
             <div className="bottom">
               <div className="item">
                 <h1 className="itemTitle">Thông tin thêm</h1>
@@ -313,9 +356,10 @@ const TransactionDetailPage = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
+      <div className=""></div>
       <Dialog
         open={open}
         onClose={() => {
@@ -388,6 +432,51 @@ const TransactionDetailPage = () => {
             Hủy
           </Button>
           <Button onClick={handleClose}>Xác nhận</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openReason}
+        onClose={() => {
+          setOpenReason(false);
+        }}
+      >
+        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+          Nguyên nhân hủy bỏ
+        </DialogTitle>
+        <DialogContent style={{ width: 500 }}>
+          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+            Nguyên nhân được đưa ra cho việc hủy đơn hàng:
+          </DialogContentText>
+          <DialogContentText
+            style={{ padding: "20px 0 10px 0", fontWeight: "bold" }}
+          >
+            {reasonCancelled == null ? "Không có" : reasonCancelled}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseReason}>Xác nhận</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openTraces}
+        onClose={() => {
+          setOpenTraces(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+          Lịch sử thay đổi
+        </DialogTitle>
+        <DialogContent style={{ width: 1200 }}>
+          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+            Chi tiết các thay đổi liên quan đến đơn hàng #{order?.id}:
+          </DialogContentText>
+          <TracesTable traces={traces} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseTraces}>Xác nhận</Button>
         </DialogActions>
       </Dialog>
     </div>

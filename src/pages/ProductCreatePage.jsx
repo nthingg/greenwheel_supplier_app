@@ -35,8 +35,8 @@ const ProductCreatePage = () => {
   ];
 
   const paymentOptions = [
-    { value: "PER_DAY", label: "Theo ngày" },
-    { value: "PER_UNIT", label: "Theo sản phẩm" },
+    { value: "PER_DAY", label: "Thuê theo ngày" },
+    { value: "PER_UNIT", label: "Mua sản phẩm" },
   ];
 
   const periodOptions = [
@@ -159,9 +159,9 @@ const ProductCreatePage = () => {
               </div>
 
               <div className="detailItem">
-                <span className="itemKey">Cách thức thanh toán:</span>
+                <span className="itemKey">Hình thức thanh toán:</span>
                 <Select
-                  placeholder={"Chọn cách thức thanh toán"}
+                  placeholder={"Chọn hình thức thanh toán"}
                   className="basic-single"
                   classNamePrefix="select"
                   isDisabled={false}

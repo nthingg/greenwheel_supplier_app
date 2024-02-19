@@ -170,16 +170,16 @@ const SupplierDetailPage = () => {
           <p>{"Vị trí"}</p>
         </div>
         <div className="mapContainer">
-          <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={position}
-              zoom={15}
-              // onClick={handleMapClick}
-            >
-              <MarkerF position={position} />
-            </GoogleMap>
-          </LoadScript>
+          {/* <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo"> */}
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={position}
+            zoom={15}
+            // onClick={handleMapClick}
+          >
+            <MarkerF position={position} />
+          </GoogleMap>
+          {/* </LoadScript> */}
         </div>
       </div>
     </div>

@@ -5,11 +5,40 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { LOAD_ORDERS } from "../services/queries";
+import { LOAD_ORDERS_FILTER } from "../services/queries";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { IconButton } from "@mui/material";
 
 const TransactionPage = () => {
-  const { error, loading, data, refetch } = useQuery(LOAD_ORDERS);
+  const iconColors = ["success", "error"]; // Define colors based on index
+  const orderStatus = ["RESERVED", "CANCELLED"];
+  const [selectedDiv, setSelectedDiv] = useState(0);
+  const [selectStatus, setSelectedStatus] = useState(orderStatus[0]);
   const [orders, setOrders] = useState([]);
+
+  const handleClick = (index) => {
+    setSelectedDiv(index);
+    switch (index) {
+      case 0:
+        setSelectedStatus([orderStatus[0]]);
+        refetch();
+        break;
+      case 1:
+        setSelectedStatus([orderStatus[1]]);
+        refetch();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const { error, loading, data, refetch } = useQuery(LOAD_ORDERS_FILTER, {
+    variables: {
+      status: selectStatus,
+    },
+  });
+
   useEffect(() => {
     if (!loading && !error && data.orders && data.orders.nodes) {
       let res = data.orders.nodes.map((node, index) => {
@@ -53,6 +82,27 @@ const TransactionPage = () => {
               <RefreshIcon />
             </button>
           </div>
+        </div>
+        <div className="icon-row">
+          {[0, 1].map((index) => (
+            <div
+              key={index}
+              className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
+              onClick={() => {
+                handleClick(index);
+              }}
+            >
+              <IconButton color={iconColors[index]}>
+                {/* Replace with appropriate icons */}
+                {index === 0 && <CheckBoxIcon />}
+                {index === 1 && <CancelIcon />}
+              </IconButton>
+              <span>
+                {index === 0 && "Đã chấp nhận"}
+                {index === 1 && "Đã hủy"}
+              </span>
+            </div>
+          ))}
         </div>
         <TransacionTable orders={orders} />
       </div>

@@ -94,9 +94,9 @@ const ProductDetailPage = () => {
                   {(() => {
                     switch (product?.isAvailable) {
                       case true:
-                        return "Đang hoạt động";
+                        return "Đang phục vụ";
                       case false:
-                        return "Ngưng hoạt động";
+                        return "Ngưng ngưng phục vụ";
                       default:
                         return "Khác";
                     }

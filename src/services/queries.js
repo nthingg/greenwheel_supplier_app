@@ -49,6 +49,27 @@ export const LOAD_ORDERS = gql`
   }
 `;
 
+export const LOAD_ORDERS_FILTER = gql`
+  query LoadOrders($status: [OrderStatus!]) {
+    orders(
+      first: 100
+      order: { id: ASC }
+      where: { currentStatus: { in: $status } }
+    ) {
+      nodes {
+        id
+        total
+        currentStatus
+        createdAt
+        account {
+          name
+          avatarUrl
+        }
+      }
+    }
+  }
+`;
+
 export const LOAD_SUPPLIERS = gql`
   {
     suppliers(first: 100, order: { id: ASC }) {
@@ -146,9 +167,11 @@ export const LOAD_DETAIL_ORDER = gql`
           phone
           name
         }
-        traces(where: { isCustomerModification: { eq: false } }) {
+        traces {
           description
           isCustomerModification
+          modifiedAt
+          status
         }
         plan {
           startDate

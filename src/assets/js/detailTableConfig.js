@@ -21,6 +21,8 @@ export const detailsColumns = [
   {
     field: "quantity",
     width: 100,
+    align: "center",
+    headerAlign: "center",
     renderCell: (params) => {
       return <div>{params.row.quantity}</div>;
     },
@@ -44,7 +46,10 @@ export const detailsColumns = [
     align: "right",
     headerAlign: "center",
     renderCell: (params) => {
-      const formattedPrice = params.row.price.toLocaleString("vi-VN") + "đ";
+      const formattedPrice =
+        (params.row.product.price * params.row.quantity).toLocaleString(
+          "vi-VN"
+        ) + "đ";
       return <div className="prodPrice">{formattedPrice}</div>;
     },
     renderHeader: () => <span>Thành tiền</span>,

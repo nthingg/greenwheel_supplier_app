@@ -1,14 +1,13 @@
-.detailTable {
-    height: 350px;
-    width: 1072px;
-    margin-top: 30px;
+.traceTable {
+    width: 1152px;
+    height: 400px;
+
+    .prodPrice {
+        padding-right: 70px;
+    }
 
     p {
         margin: 0;
-    }
-
-    .prodPrice {
-        margin-right: 80px;
     }
 
     .cellWithImg {
@@ -28,12 +27,17 @@
         padding: 5px;
         border-radius: 5px;
 
-        &.true {
+        &.confirmed {
             background-color: rgba(0, 128, 0, 0.05);
             color: green;
         }
 
-        &.false {
+        &.temporary {
+            background-color: rgba(126, 128, 0, 0.05);
+            color: goldenrod;
+        }
+
+        &.cancelled {
             background-color: rgba(255, 0, 0, 0.05);
             color: crimson;
         }
@@ -47,8 +51,7 @@
         .viewButton {
             padding: 2px 5px;
             border-radius: 5px;
-            color: darkblue;
-            border: 1px dotted rgba(0, 0, 139, 0.596);
+            color: black;
             cursor: pointer;
         }
 
