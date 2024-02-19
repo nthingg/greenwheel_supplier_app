@@ -72,11 +72,17 @@ const MapWithSearch = () => {
     <div>
       <input id="autocomplete" type="text" placeholder="Nhập địa chỉ" />
       <div id="map" style={{ height: '400px', width: '100%' }}></div>
-      {place && (
+      {place ? (
         <div>
           <p>Kinh độ: {place.longitude}</p>
           <p>Vĩ độ: {place.latitude}</p>
           <p>Địa chỉ chính xác: {place.address}</p>
+        </div>
+      ) : (
+        <div>
+          <p>Kinh độ: 106.7009</p>
+          <p>Vĩ độ: 10.7769</p>
+          <p>Địa chỉ chính xác: Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam</p>
         </div>
       )}
     </div>
