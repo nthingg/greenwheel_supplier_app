@@ -146,6 +146,10 @@ export const LOAD_DETAIL_ORDER = gql`
           phone
           name
         }
+        traces(where: { isCustomerModification: { eq: false } }) {
+          description
+          isCustomerModification
+        }
         plan {
           startDate
         }

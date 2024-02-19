@@ -86,11 +86,15 @@ const TransactionDetailPage = () => {
 
       setCancellable(threeDaysLater > today);
 
-      setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
+      // setHighlitedDays(data["orders"]["nodes"][0]["servingDates"]);
 
-      // setReasonCancelled(
-      //   foundStatus?.description.replace(/^Cancel Reason: /, "")
-      // );
+      setReasonCancelled(
+        data["orders"]["nodes"][0].traces.length == 0
+          ? null
+          : data["orders"]["nodes"][0].traces[0].description
+      );
+      console.log(data["orders"]["nodes"][0]);
+      console.log(reasonCancelled);
     }
   }, [data, loading, error]);
 

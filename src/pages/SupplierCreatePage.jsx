@@ -1,4 +1,5 @@
 import "../assets/scss/productCreate.scss";
+import "../assets/scss/supplierCreate.scss";
 import "../assets/scss/shared.scss";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -10,16 +11,51 @@ import { InputAdornment, TextField } from "@mui/material";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { addPosts, useAddProduct } from "../services/requests";
+import { GoogleMap, LoadScript, MarkerF } from "@react-google-maps/api";
 
 const SupplierCreatePage = () => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
 
+  const containerStyle = {
+    width: "550px",
+    height: "400px",
+  };
+
+  const center = {
+    lat: 10.779784,
+    lng: 106.695418,
+  };
+
+  const defaultAddress =
+    "Dinh Độc Lập, 135 Nam Kỳ Khởi Nghĩa, Bến Thành, Quận 1, Thành phố Hồ Chí Minh";
   const [file, setFile] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState("");
+  const [position, setPosition] = useState(center);
+  const [address, setAddress] = useState(defaultAddress);
+
+  const handleMapClick = (e) => {
+    const { latLng } = e;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+    setPosition({ lat, lng });
+    fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.results.length > 0) {
+          setAddress(data.results[0].formatted_address);
+        } else {
+          setAddress("Không có địa chỉ");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const { handleAddProduct, loadingAdd, errorAdd } = useAddProduct();
 
@@ -89,6 +125,18 @@ const SupplierCreatePage = () => {
                 }
                 alt=""
               />
+            </div>
+            <div className="mapContainer">
+              <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={position}
+                  zoom={15}
+                  onClick={handleMapClick}
+                >
+                  <MarkerF position={position} />
+                </GoogleMap>
+              </LoadScript>
             </div>
           </div>
           <div className="right">
