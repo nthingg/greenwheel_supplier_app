@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { GoogleMap, LoadScript, MarkerF } from "@react-google-maps/api";
+import {
+  Autocomplete,
+  GoogleMap,
+  LoadScript,
+  MarkerF,
+  StandaloneSearchBox,
+} from "@react-google-maps/api";
 import SaveIcon from "@mui/icons-material/Save";
 import { Link } from "react-router-dom";
 import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
@@ -92,7 +98,26 @@ function ProfileUpdate() {
                     <EditLocationAltIcon />
                     {showMap ? "Ẩn bản đồ" : "Chỉnh sửa"}
                   </button>
-                  <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
+                  <LoadScript
+                    googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo"
+                    libraries={["places"]}
+                  >
+                    {/* <StandaloneSearchBox>
+                      <input type="text" placeholder="Enter location" />
+                    </StandaloneSearchBox> */}
+                    <Autocomplete
+                      options={{
+                        componentRestrictions: { country: "vn" }, // Optional: Limit search to Vietnam
+                      }}
+                    >
+                      {/* Render the autocomplete input */}
+                      <input
+                        type="text"
+                        placeholder="Nhập địa chỉ"
+                        // value={autocomplete?.getQuery() || ""}
+                        // onChange={(e) => autocomplete?.setQuery(e.target.value)}
+                      />
+                    </Autocomplete>
                     <GoogleMap
                       mapContainerStyle={containerStyle}
                       center={position}
