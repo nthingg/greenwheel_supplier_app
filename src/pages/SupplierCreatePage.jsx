@@ -184,7 +184,7 @@ const SupplierCreatePage = () => {
                   className="basic-single"
                   type="text"
                   // defaultValue={200000}
-                  placeholder="Nhập tên dịch vụ"
+                  placeholder="Nhập địa chỉ"
                   size="small"
                   name="name"
                   onChange={(e) => {
