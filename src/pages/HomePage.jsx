@@ -18,10 +18,10 @@ const HomePage = () => {
           <Featured />
           <Chart title="Last 6 Months (Revenue)" aspect={3 / 1} />
         </div>
-        <div className="list_container">
+        {/* <div className="list_container">
           <div className="list_title">Latest Transaction</div>
           <Table />
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -67,7 +67,7 @@ function App() {
                   <Route path=":supplierId" element={<ProductCreatePage />} />
                 </Route>
               </Route>
-              <Route path="transactions">
+              <Route path="orders">
                 <Route
                   index
                   element={

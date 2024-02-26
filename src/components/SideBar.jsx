@@ -39,6 +39,12 @@ const SideBar = () => {
               <span>Hồ sơ</span>
             </li>
           </NavLink> */}
+          <NavLink to="/plans" style={{ textDecoration: "none" }}>
+            <li>
+              <MapIcon className="icon" />
+              <span>Quản lý kế hoạch</span>
+            </li>
+          </NavLink>
           <NavLink to="/destinations" style={{ textDecoration: "none" }}>
             <li>
               <MapIcon className="icon" />
@@ -57,7 +63,7 @@ const SideBar = () => {
               <span>Quản lý dịch vụ</span>
             </li>
           </NavLink> */}
-          <NavLink to="/transactions" style={{ textDecoration: "none" }}>
+          <NavLink to="/orders" style={{ textDecoration: "none" }}>
             <li>
               <CreditCardIcon className="icon" />
               <span>Quản lý đơn hàng</span>

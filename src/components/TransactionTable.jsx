@@ -17,7 +17,7 @@ const TransacionTable = ({ orders }) => {
   const ITEM_HEIGHT = 48;
 
   const handleDetailClick = () => {
-    navigate(`/transactions/${anchorId}`);
+    navigate(`/orders/${anchorId}`);
   };
 
   const handleCancelClick = () => {

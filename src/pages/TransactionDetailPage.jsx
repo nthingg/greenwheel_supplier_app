@@ -191,7 +191,7 @@ const TransactionDetailPage = () => {
     <div className="transactionDetail">
       <div className="sharedTitle">
         <div className="navigation">
-          <Link to="/transactions" className="navigateButton">
+          <Link to="/orders" className="navigateButton">
             <ArrowCircleLeftIcon />
             <p>Trở về</p>
           </Link>
