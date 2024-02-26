@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LOAD_DETAIL_PLAN } from "../services/queries";
 import { useQuery } from "@apollo/client";
+import { DataGrid } from "@mui/x-data-grid";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import {
@@ -33,6 +34,7 @@ const PlanDetailPage = () => {
   const [departDate, setDepartDate] = useState(false);
   const [endDate, setEndDate] = useState(false);
   const [closeRegDate, setCloseRegDate] = useState(false);
+  const [schedules, setSchedule] = useState([]);
 
   const containerStyle = {
     width: "950px",
@@ -70,6 +72,12 @@ const PlanDetailPage = () => {
         return { ...rest, index: index + 1 }; // Add the index to the object
       });
       setOrders(res);
+
+      let resSche = data["plans"]["nodes"][0]["orders"].map((node, index) => {
+        const { __typename, ...rest } = node;
+        return { ...rest };
+      });
+      setOrders(resSche);
 
       let resEmer = data["plans"]["nodes"][0]["savedContacts"].map(
         (node, id) => {
@@ -209,7 +217,7 @@ const PlanDetailPage = () => {
                 <div className="detailItem">
                   <span className="itemKey">Chi phí bình quân:</span>
                   <span className="itemValue">
-                    {(plan?.gcoinBudgetPerCapita*100).toLocaleString("vi-VN") + "đ"} 
+                    {(plan?.gcoinBudgetPerCapita * 100).toLocaleString("vi-VN") + "đ"}
                   </span>
                 </div>
               </div>
@@ -218,6 +226,7 @@ const PlanDetailPage = () => {
           <div className="bottom">
             <div className="item">
               <h1 className="itemTitle">Kế hoạch chi tiết</h1>
+             
             </div>
           </div>
           <div className="bottom">
