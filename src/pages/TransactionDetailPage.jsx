@@ -53,7 +53,7 @@ const TransactionDetailPage = () => {
 
   const { error, loading, data, refetch } = useQuery(LOAD_DETAIL_ORDER, {
     variables: {
-      id: orderId,
+      id: parseInt(orderId, 10),
     },
   });
 

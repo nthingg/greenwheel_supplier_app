@@ -5,6 +5,7 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import { useNavigate } from "react-router-dom";
 import { LOGIN } from "../services/mutations";
 import { useMutation } from "@apollo/client";
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,15 @@ const LoginPage = () => {
     if (!loading && !error && data && data.authorize) {
       const newToken = data.authorize.accessToken;
       setToken(newToken);
+      console.log(newToken);
+      const decoded = jwtDecode(newToken);
+      console.log(
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      );
+      localStorage.setItem(
+        "role",
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      );
       localStorage.setItem("token", newToken);
       if (token !== undefined) {
         navigate("/");

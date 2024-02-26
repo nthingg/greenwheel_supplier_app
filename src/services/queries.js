@@ -231,7 +231,7 @@ export const LOAD_DETAIL_PLAN = gql`
 `;
 
 export const LOAD_DETAIL_ORDER = gql`
-  query GetOrderById($id: UUID!) {
+  query GetOrderById($id: Int!) {
     orders(where: { id: { eq: $id } }) {
       nodes {
         id
