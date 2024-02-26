@@ -100,6 +100,11 @@ const PlanDetailPage = () => {
 
       //Schedule
       console.log(data["plans"]["nodes"][0]["schedule"]);
+      console.log(data["plans"]["nodes"][0]["schedule"][0]);
+      console.log(data["plans"]["nodes"][0]["schedule"][0]["events"]);
+      console.log(data["plans"]["nodes"][0]["schedule"][0]["events"][0].type);
+      setSchedule(data["plans"]["nodes"][0]["schedule"]);
+
     }
   }, [data, loading, error]);
 
@@ -224,6 +229,17 @@ const PlanDetailPage = () => {
           <div className="bottom">
             <div className="item">
               <h1 className="itemTitle">Kế hoạch chi tiết</h1>
+              {plan?.schedule.map((day, dayIndex) => (
+                <div> 
+                  <p> Ngày {dayIndex+1} :
+                  <ul>
+                    {day.events.map((event, eventIndex) => (
+                      <li key={eventIndex}>{event.shortDescription}</li>
+                    ))}
+                  </ul>
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
           <div className="bottom">
