@@ -229,7 +229,7 @@ const SupplierCreatePage = () => {
                     color="success"
                     className="basic-single"
                     type="text"
-                    placeholder="Nhập tên dịch vụ"
+                  placeholder="Nhập địa chỉ"
                     size="small"
                     name="name"
                   />
