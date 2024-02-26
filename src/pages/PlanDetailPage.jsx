@@ -138,11 +138,11 @@ const PlanDetailPage = () => {
                   <span className="itemValue">{plan?.createAt}</span>
                 </div> */}
                 <div className="detailItem">
-                  <span className="itemKey">Ngày kết thúc đăng ký:</span>
+                  <span className="itemKey">Ngày chốt thành viên:</span>
                   <span className="itemValue">{closeRegDate}</span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Giới hạn thành viên:</span>
+                  <span className="itemKey">Số thành viên tối đa:</span>
                   <span className="itemValue">
                     {plan?.memberLimit + " người"}
                   </span>
@@ -167,7 +167,7 @@ const PlanDetailPage = () => {
                   <span className="itemValue">{endDate}</span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Địa điểm đến:</span>
+                  <span className="itemKey">Địa điểm:</span>
                   <span className="itemValue">
                     <a href={`/destinations/${plan?.destination.id}`}>
                       {plan?.destination.name}
@@ -207,12 +207,17 @@ const PlanDetailPage = () => {
                   </span>
                 </div> */}
                 <div className="detailItem">
-                  <span className="itemKey">Bình quân đầu người:</span>
+                  <span className="itemKey">Chi phí bình quân:</span>
                   <span className="itemValue">
-                    {plan?.gcoinBudgetPerCapita}
+                    {(plan?.gcoinBudgetPerCapita*100).toLocaleString("vi-VN") + "đ"} 
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="bottom">
+            <div className="item">
+              <h1 className="itemTitle">Kế hoạch chi tiết</h1>
             </div>
           </div>
           <div className="bottom">
@@ -221,12 +226,12 @@ const PlanDetailPage = () => {
               <TransacionTable orders={orders} />
             </div>
           </div>
-          <div className="bottom">
+          {/* <div className="bottom">
             <div className="item">
               <h1 className="itemTitle">Danh sách số khẩn cấp</h1>
               <EmergencyTable list={emergencies} />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <Dialog

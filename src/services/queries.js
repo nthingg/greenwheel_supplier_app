@@ -225,6 +225,14 @@ export const LOAD_DETAIL_PLAN = gql`
           phone
           address
         }
+        schedule {
+          events {
+            type
+            shortDescription
+            description
+            duration
+          }
+        }
       }
     }
   }
@@ -399,3 +407,5 @@ export const FILTER_AVAILABLE_TRAVELER = gql`
     }
   }
 `;
+
+
