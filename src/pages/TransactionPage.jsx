@@ -53,7 +53,7 @@ const TransactionPage = () => {
   return (
     <div className="transaction">
       <div className="sharedTitle">
-        <p>Danh sách hóa đơn</p>
+        <p>Danh sách đơn hàng</p>
       </div>
       <div className="transactionContainer">
         <div className="tableHeader">

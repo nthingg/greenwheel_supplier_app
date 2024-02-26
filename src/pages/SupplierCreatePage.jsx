@@ -7,18 +7,32 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import { InputAdornment, TextField } from "@mui/material";
-import Select from "react-select";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  TextField,
+  Button,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { addPosts, useAddProduct } from "../services/requests";
-import { GoogleMap, LoadScript, MarkerF } from "@react-google-maps/api";
+import {
+  Autocomplete,
+  GoogleMap,
+  MarkerF,
+  useLoadScript,
+} from "@react-google-maps/api";
+import MapIcon from "@mui/icons-material/Map";
 
 const SupplierCreatePage = () => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
 
   const containerStyle = {
-    width: "550px",
+    width: "950px",
     height: "400px",
   };
 
@@ -26,6 +40,11 @@ const SupplierCreatePage = () => {
     lat: 10.779784,
     lng: 106.695418,
   };
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo",
+    libraries: ["places"], // Include the "places" library if using Autocomplete
+  });
 
   const defaultAddress =
     "Dinh Độc Lập, 135 Nam Kỳ Khởi Nghĩa, Bến Thành, Quận 1, Thành phố Hồ Chí Minh";
@@ -35,6 +54,16 @@ const SupplierCreatePage = () => {
   const [coordinates, setCoordinates] = useState("");
   const [position, setPosition] = useState(center);
   const [address, setAddress] = useState(defaultAddress);
+  const [open, setOpen] = useState(false);
+  const [searchResult, setSearchResult] = useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleMapClick = (e) => {
     const { latLng } = e;
@@ -55,6 +84,7 @@ const SupplierCreatePage = () => {
       .catch((error) => {
         console.error(error);
       });
+    console.log(address);
   };
 
   const { handleAddProduct, loadingAdd, errorAdd } = useAddProduct();
@@ -87,6 +117,28 @@ const SupplierCreatePage = () => {
     }
   };
 
+  function onLoad(autocomplete) {
+    setSearchResult(autocomplete);
+  }
+
+  function onPlaceChanged() {
+    if (searchResult != null) {
+      //variable to store the result
+      const place = searchResult.getPlace();
+      const formattedAddress = place.formatted_address;
+      //console log all results
+      console.log(place.geometry.location.lat());
+      console.log(place.geometry.location.lng());
+      console.log(`Formatted Address: ${formattedAddress}`);
+      const center = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setPosition(center);
+    } else {
+      alert("Please enter text");
+    }
+  }
   return (
     <div className="edit">
       <div className="sharedTitle">
@@ -125,18 +177,6 @@ const SupplierCreatePage = () => {
                 }
                 alt=""
               />
-            </div>
-            <div className="mapContainer">
-              <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
-                <GoogleMap
-                  mapContainerStyle={containerStyle}
-                  center={position}
-                  zoom={15}
-                  onClick={handleMapClick}
-                >
-                  <MarkerF position={position} />
-                </GoogleMap>
-              </LoadScript>
             </div>
           </div>
           <div className="right">
@@ -177,20 +217,26 @@ const SupplierCreatePage = () => {
               </div>
               <div className="detailItem">
                 <span className="itemKey">Địa chỉ:</span>
-                <TextField
-                  id="outlined-disabled"
-                  color="success"
-                  // label="Số người"
-                  className="basic-single"
-                  type="text"
-                  // defaultValue={200000}
-                  placeholder="Nhập tên dịch vụ"
-                  size="small"
-                  name="name"
-                  onChange={(e) => {
-                    setName(e.target.value);
+                <Autocomplete
+                  options={{
+                    componentRestrictions: { country: "vn" }, // Optional: Limit search to Vietnam
                   }}
-                />
+                  onPlaceChanged={onPlaceChanged}
+                  onLoad={onLoad}
+                >
+                  <TextField
+                    id="outlined-disabled"
+                    color="success"
+                    className="basic-single"
+                    type="text"
+                    placeholder="Nhập tên dịch vụ"
+                    size="small"
+                    name="name"
+                  />
+                </Autocomplete>
+                <IconButton color="info" onClick={handleClickOpen}>
+                  <MapIcon />
+                </IconButton>
               </div>
             </div>
           </div>
@@ -207,6 +253,42 @@ const SupplierCreatePage = () => {
           </button>
         </div>
       </div>
+
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+          Nhập địa chỉ
+        </DialogTitle>
+        <DialogContent style={{ width: 1000 }}>
+          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+            Tìm kiếm địa điểm chính xác:
+          </DialogContentText>
+          <div>
+            {isLoaded ? (
+              <div>
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={position}
+                  zoom={15}
+                  onClick={handleMapClick}
+                >
+                  <MarkerF position={position} />
+                </GoogleMap>
+              </div>
+            ) : (
+              <div>Loading map...</div>
+            )}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Xác nhận</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

@@ -79,7 +79,15 @@ const TransactionDetailPage = () => {
       data["orders"]["nodes"]
     ) {
       setOrder(data["orders"]["nodes"][0]);
-      setDetails(data["orders"]["nodes"][0]["details"]);
+
+      let resDetail = data["orders"]["nodes"][0]["details"].map(
+        (node, index) => {
+          const { __typename, ...rest } = node;
+          return { ...rest, index: index + 1 }; // Add the index to the object
+        }
+      );
+      setDetails(resDetail);
+
       const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
       setDate(date.toLocaleString("en-GB"));
       const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
@@ -98,10 +106,12 @@ const TransactionDetailPage = () => {
 
       setHighlitedDays(newDatesList);
 
-      const reason = data["orders"]["nodes"][0].traces[0].description;
-      setReasonCancelled(
-        data["orders"]["nodes"][0].traces.length === 0 ? null : reason
-      );
+      if (data["orders"]["nodes"][0].traces.length > 1) {
+        const reason = data["orders"]["nodes"][0].traces[1].description;
+        setReasonCancelled(
+          data["orders"]["nodes"][0].traces.length === 0 ? null : reason
+        );
+      }
 
       // console.log(data["orders"]["nodes"][0].traces);
       let res = data["orders"]["nodes"][0].traces.map((node, id) => {
@@ -185,9 +195,9 @@ const TransactionDetailPage = () => {
             <ArrowCircleLeftIcon />
             <p>Trở về</p>
           </Link>
-          <p>Danh sách hóa đơn</p>
+          <p>Danh sách đơn hàng</p>
           <ArrowForwardIosIcon />
-          <p> Thông tin hóa đơn</p>
+          <p> Thông tin đơn hàng</p>
         </div>
       </div>
       <div className="transactionContainer">
@@ -200,7 +210,7 @@ const TransactionDetailPage = () => {
               )}
               {order?.currentStatus === "CANCELLED" && (
                 <a className="reason" onClick={handleClickOpenReason}>
-                  Nguyên nhân hủy bỏ
+                  Lí do hủy bỏ
                 </a>
               )}
               {order?.currentStatus === "RESERVED" && (
@@ -247,7 +257,11 @@ const TransactionDetailPage = () => {
                 <div className="detailItem">
                   <span className="itemKey">Nhà cung cấp:</span>
                   <span className="itemValue">
-                    {order?.details[0].product.supplier.name}
+                    <a
+                      href={`/suppliers/${order?.details[0].product.supplier.id}`}
+                    >
+                      {order?.details[0].product.supplier.name}
+                    </a>
                   </span>
                 </div>
                 {/* <div className="detailItem">
@@ -314,13 +328,13 @@ const TransactionDetailPage = () => {
                     {(() => {
                       switch (order?.period) {
                         case "MORNING":
-                          return "Check-in vào buổi sáng";
+                          return "Phục vụ vào buổi sáng";
                         case "NOON":
-                          return "Check-in vào buổi trưa";
+                          return "Phục vụ vào buổi trưa";
                         case "AFTERNOON":
-                          return "Check-in vào buổi chiều";
+                          return "Phục vụ vào buổi chiều";
                         case "EVENING":
-                          return "Check-in vào buổi tối";
+                          return "Phục vụ vào buổi tối";
                         default:
                           return `Check-in vào ${order?.period}`;
                       }
@@ -442,11 +456,11 @@ const TransactionDetailPage = () => {
         }}
       >
         <DialogTitle backgroundColor={"#239b56"} color={"white"}>
-          Nguyên nhân hủy bỏ
+          Lý do hủy bỏ
         </DialogTitle>
         <DialogContent style={{ width: 500 }}>
           <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Nguyên nhân được đưa ra cho việc hủy đơn hàng:
+            Lý do cụ thể được đưa ra cho việc hủy đơn hàng:
           </DialogContentText>
           <DialogContentText
             style={{ padding: "20px 0 10px 0", fontWeight: "bold" }}

@@ -5,16 +5,27 @@ import { useEffect, useState } from "react";
 
 const DetailTable = ({ details }) => {
   const [list, setDetails] = useState([]);
+  const [sum, setSum] = useState(0);
 
   useEffect(() => {
     if (details) {
       setDetails(details);
+      const sum = details.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.product.price * currentValue.quantity,
+        0
+      );
+      setSum(sum);
     }
   });
 
   return (
     <div className="detailTable">
+      <div className="total">
+        <p>Tổng: {sum.toLocaleString("vi-VN") + "đ"}</p>
+      </div>
       <DataGrid
+        className="tableDetail"
         rows={list}
         columns={detailsColumns}
         rowSelection={false}

@@ -180,6 +180,7 @@ export const LOAD_DETAIL_ORDER = gql`
         details {
           product {
             supplier {
+              id
               name
               address
             }

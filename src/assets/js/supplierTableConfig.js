@@ -1,6 +1,5 @@
-import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
-import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
-import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { Switch } from "@mui/material";
 
 export const suppliersColumns = [
@@ -18,9 +17,12 @@ export const suppliersColumns = [
     width: 380,
     renderCell: (params) => {
       return (
-        <div className="cellWithImg">
-          <img className="cellImg" src={params.row.imageUrl} alt="avatar" />
-          {params.row.name}
+        // <div className="cellWithImg">
+        //   <img className="cellImg" src={params.row.imageUrl} alt="avatar" />
+        //   {params.row.name}
+        // </div>
+        <div>
+          <a href={`/suppliers/${params.row.id}`}>{params.row.name}</a>
         </div>
       );
     },
@@ -54,12 +56,16 @@ export const suppliersColumns = [
     headerAlign: "center",
     renderCell: (params) => {
       if (params.row.account != null) {
-        return <div>{"Đã có"}</div>;
+        return (
+          <div className="cellWithStatus AVAILABLE">{<CheckCircleIcon />}</div>
+        );
       } else {
-        return <div>{"Chưa"}</div>;
+        return (
+          <div className="cellWithStatus PERMANENT_STOP">{<CancelIcon />}</div>
+        );
       }
     },
-    renderHeader: () => <span>Tài khoản đăng nhập</span>,
+    renderHeader: () => <span>Quyền truy cập</span>,
   },
   {
     field: "status",

@@ -5,7 +5,7 @@ export const detailsColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.product.id}</div>;
+      return <div>{params.row.index}</div>;
     },
     renderHeader: () => <span>#</span>,
   },
@@ -14,7 +14,15 @@ export const detailsColumns = [
     headerName: "TÊN DỊCH VỤ",
     width: 400,
     renderCell: (params) => {
-      return <div>{params.row.product.name}</div>;
+      return (
+        <div>
+          {
+            <a href={`/products/${params.row.product.id}`}>
+              {params.row.product.name}
+            </a>
+          }
+        </div>
+      );
     },
     renderHeader: () => <span>Tên dịch vụ</span>,
   },

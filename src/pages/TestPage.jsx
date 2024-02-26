@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const MapWithSearch = () => {
   const [map, setMap] = useState(null);
@@ -8,7 +8,7 @@ const MapWithSearch = () => {
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
-      const googleScript = document.createElement('script');
+      const googleScript = document.createElement("script");
       googleScript.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo&libraries=places`;
       googleScript.async = true;
       googleScript.defer = true;
@@ -28,7 +28,10 @@ const MapWithSearch = () => {
         zoom: 13,
         center: mapCenter,
       };
-      const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+      const map = new google.maps.Map(
+        document.getElementById("map"),
+        mapOptions
+      );
       setMap(map);
 
       const marker = new google.maps.Marker({
@@ -37,12 +40,14 @@ const MapWithSearch = () => {
       });
       setMarker(marker);
 
-      const autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+      const autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById("autocomplete")
+      );
       setAutocomplete(autocomplete);
 
-      autocomplete.bindTo('bounds', map);
+      autocomplete.bindTo("bounds", map);
 
-      autocomplete.addListener('place_changed', () => {
+      autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
         if (!place.geometry) {
           console.log("No details available for input: '" + place.name + "'");
@@ -71,7 +76,7 @@ const MapWithSearch = () => {
   return (
     <div>
       <input id="autocomplete" type="text" placeholder="Nhập địa chỉ" />
-      <div id="map" style={{ height: '400px', width: '100%' }}></div>
+      <div id="map" style={{ height: "400px", width: "100%" }}></div>
       {place ? (
         <div>
           <p>Kinh độ: {place.longitude}</p>
@@ -82,7 +87,10 @@ const MapWithSearch = () => {
         <div>
           <p>Kinh độ: 106.7009</p>
           <p>Vĩ độ: 10.7769</p>
-          <p>Địa chỉ chính xác: Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam</p>
+          <p>
+            Địa chỉ chính xác: Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh,
+            Việt Nam
+          </p>
         </div>
       )}
     </div>

@@ -11,20 +11,15 @@ export const productsColumns = [
     },
     renderHeader: () => <span>STT</span>,
   },
-  // {
-  //   field: "id",
-  //   headerClassName: "prodHeader",
-  //   width: 70,
-  //   align: "center",
-  //   headerAlign: "center",
-  //   // renderCell: (params) => params.rowIndex + 1,
-  //   renderHeader: () => <span>STT</span>,
-  // },
   {
     field: "name",
     width: 400,
     renderCell: (params) => {
-      return <div>{params.row.name}</div>;
+      return (
+        <div>
+          <a href={`/products/${params.row.id}`}>{params.row.name}</a>
+        </div>
+      );
     },
     renderHeader: () => <span>Tên dịch vụ</span>,
   },

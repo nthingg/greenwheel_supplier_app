@@ -7,6 +7,15 @@
         margin: 0;
     }
 
+    .total {
+        position: absolute;
+        z-index: 2;
+        background-color: white;
+        padding: 8px;
+        bottom: 604px;
+        right: 515px;
+    }
+
     .prodPrice {
         margin-right: 80px;
     }

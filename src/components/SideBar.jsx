@@ -51,16 +51,16 @@ const SideBar = () => {
               <span>Quản lý nhà cung cấp</span>
             </li>
           </NavLink>
-          <NavLink to="/products" style={{ textDecoration: "none" }}>
+          {/* <NavLink to="/products" style={{ textDecoration: "none" }}>
             <li>
               <FastfoodIcon className="icon" />
               <span>Quản lý dịch vụ</span>
             </li>
-          </NavLink>
+          </NavLink> */}
           <NavLink to="/transactions" style={{ textDecoration: "none" }}>
             <li>
               <CreditCardIcon className="icon" />
-              <span>Quản lý hóa đơn</span>
+              <span>Quản lý đơn hàng</span>
             </li>
           </NavLink>
           <NavLink to="/emulator" style={{ textDecoration: "none" }}>

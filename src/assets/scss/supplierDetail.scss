@@ -10,7 +10,83 @@
 
     .tableProducts {
         margin: 20px 0 0 40px;
-        width: 1402px;
+        width: 1002px;
+
+        .icon-row {
+            margin-bottom: 20px;
+            display: flex;
+            // justify-content: space-between;
+        }
+
+        .icon-item {
+            width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+
+            span {
+                margin-right: 8px;
+            }
+        }
+
+        .icon-item.selected {
+            border-bottom-color: #2ecc71; /* Change to your desired color */
+            border-width: 4px;
+            background-color: #f7f7fb;
+        }
+
+        .link {
+            text-decoration: none;
+            color: white;
+            background-color: #2ecc71;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+
+            p {
+                margin: 0;
+            }
+        }
+
+        .link:hover {
+            background-color: #27ae60;
+
+            p {
+                color: white;
+            }
+        }
+
+        .tableHeader {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 20px;
+
+            .left {
+                input {
+                    width: 300px;
+                }
+            }
+
+            .right {
+                display: flex;
+
+                button {
+                    margin: 0 0 0 10px;
+                    border: none;
+                }
+
+                span {
+                    margin: 0 10px 0 10px;
+                    font-weight: bold;
+                }
+            }
+        }
     }
 
     .productTable {
@@ -25,6 +101,38 @@
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 8px;
         padding: 10px 10px 80px 10px;
+
+        .supplierHeader {
+            display: flex;
+            align-items: center;
+
+            .reason {
+                cursor: pointer;
+                margin: 0 0 10px 30px;
+                font-weight: normal;
+                font-size: 18px;
+            }
+
+            .status {
+                margin-left: 30px;
+                font-weight: normal;
+                font-size: 18px;
+                padding: 10px;
+
+                color: white;
+                border-radius: 10px;
+            }
+
+            .confirmed {
+                background-color: #28b463;
+                font-size: 16px;
+            }
+
+            .cancelled {
+                background-color: #e74c3c;
+                font-size: 16px;
+            }
+        }
 
         .prodTitle {
             padding: 20px 20px 0 40px;

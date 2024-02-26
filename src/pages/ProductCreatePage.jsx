@@ -64,6 +64,8 @@ const ProductCreatePage = () => {
       supplierId: parseInt(supplierId),
     };
 
+    console.log(productData);
+
     const prodCreated = await handleAddProduct(productData);
     if (prodCreated !== null) {
       navigate(`/suppliers/${supplierId}`);

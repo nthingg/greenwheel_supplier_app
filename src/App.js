@@ -25,7 +25,10 @@ import { LoadScript } from "@react-google-maps/api";
 function App() {
   return (
     <ApolloProvider client={client}>
-      <LoadScript googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo">
+      <LoadScript
+        googleMapsApiKey="AIzaSyCzYlFQ9BHxHZRRYS2RFMz-ofS_lWw_XLo"
+        libraries={["places"]}
+      >
         <div className="app">
           <SideBar />
           <main className={TOKEN ? "content" : "loginContent"}>
