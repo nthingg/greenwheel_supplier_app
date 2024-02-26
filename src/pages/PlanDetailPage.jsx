@@ -5,7 +5,6 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LOAD_DETAIL_PLAN } from "../services/queries";
 import { useQuery } from "@apollo/client";
-import { DataGrid } from "@mui/x-data-grid";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import {
@@ -77,7 +76,8 @@ const PlanDetailPage = () => {
         const { __typename, ...rest } = node;
         return { ...rest };
       });
-      setOrders(resSche);
+      setSchedule(resSche);
+      console.log(schedules);
 
       let resEmer = data["plans"]["nodes"][0]["savedContacts"].map(
         (node, id) => {
