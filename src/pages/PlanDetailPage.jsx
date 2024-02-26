@@ -72,9 +72,6 @@ const PlanDetailPage = () => {
       });
       setOrders(res);
 
-      setSchedule(plan?.schedule);
-      console.log(schedule);
-
       let resEmer = data["plans"]["nodes"][0]["savedContacts"].map(
         (node, id) => {
           const { __typename, ...rest } = node;
@@ -100,6 +97,9 @@ const PlanDetailPage = () => {
       setCloseRegDate(closeRegDate.toLocaleString("en-GB"));
       const endDate = new Date(data["plans"]["nodes"][0]["endDate"]);
       setEndDate(endDate.toLocaleString("en-GB"));
+
+      //Schedule
+      console.log(data["plans"]["nodes"][0]["schedule"]);
     }
   }, [data, loading, error]);
 
