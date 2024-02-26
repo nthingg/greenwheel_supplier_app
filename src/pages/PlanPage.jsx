@@ -1,4 +1,5 @@
 import "../assets/scss/productPage.scss";
+import "../assets/scss/planTable.scss";
 import "../assets/scss/filter.scss";
 import "../assets/scss/shared.scss";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
