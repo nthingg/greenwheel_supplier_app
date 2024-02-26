@@ -32,6 +32,26 @@ export const LOAD_PRODUCTS_FILTER = gql`
   }
 `;
 
+export const LOAD_PLANS_FILTER = gql`
+  query LoadPlans($type: Boolean!) {
+    plans(first: 100, order: { id: ASC }, where: { isPublic: { eq: $type } }) {
+      nodes {
+        id
+        name
+        account {
+          name
+        }
+        memberCount
+        destination {
+          name
+        }
+        startDate
+        isPublic
+      }
+    }
+  }
+`;
+
 export const LOAD_ORDERS = gql`
   {
     orders(first: 100, order: { id: ASC }) {
@@ -148,6 +168,63 @@ export const LOAD_PROFILE = gql`
         thumbnailUrl
         type
         phone
+      }
+    }
+  }
+`;
+
+export const LOAD_DETAIL_PLAN = gql`
+  query GetPlanById($id: Int!) {
+    plans(where: { id: { eq: $id } }) {
+      nodes {
+        id
+        name
+        account {
+          name
+          phone
+        }
+        closeRegDate
+        createdAt
+        currentGcoinBudget
+        isPublic
+        memberCount
+        memberLimit
+        members {
+          account {
+            name
+            phone
+          }
+          status
+        }
+        departDate
+        departure {
+          coordinates
+        }
+        destination {
+          id
+          name
+          coordinate {
+            coordinates
+          }
+        }
+        endDate
+        gcoinBudgetPerCapita
+        orders {
+          id
+          total
+          currentStatus
+          createdAt
+          account {
+            name
+            avatarUrl
+          }
+        }
+        savedContacts {
+          imageUrl
+          name
+          phone
+          address
+        }
       }
     }
   }
