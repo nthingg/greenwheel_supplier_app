@@ -12,6 +12,7 @@ import PublicOffIcon from "@mui/icons-material/PublicOff";
 import { IconButton } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import PlanTable from "../components/PlanTable";
+import { Lock } from "@mui/icons-material";
 
 const PlanPage = () => {
   const iconColors = ["info", "disable"];
@@ -101,12 +102,12 @@ const PlanPage = () => {
             >
               <IconButton color={iconColors[index]}>
                 {/* Replace with appropriate icons */}
-                {index === 0 && <PublicIcon />}
-                {index === 1 && <PublicOffIcon />}
+                {index === 0 && <PublicIcon color="success" />}
+                {index === 1 && <Lock color="success" />}
               </IconButton>
               <span>
                 {index === 0 && "Công khai"}
-                {index === 1 && "Đang ẩn"}
+                {index === 1 && "Riêng tư"}
               </span>
             </div>
           ))}
