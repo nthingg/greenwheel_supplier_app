@@ -59,16 +59,16 @@ const SideBar = () => {
           )}
           {(role === "STAFF" || role === "SUPPLIER") && ( // Conditional rendering for STAFF role
             <>
-              <NavLink to="/suppliers" style={{ textDecoration: "none" }}>
-                <li>
-                  <StoreIcon className="icon" />
-                  <span>Quản lý nhà cung cấp</span>
-                </li>
-              </NavLink>
               <NavLink to="/orders" style={{ textDecoration: "none" }}>
                 <li>
                   <CreditCardIcon className="icon" />
                   <span>Quản lý đơn hàng</span>
+                </li>
+              </NavLink>
+              <NavLink to="/suppliers" style={{ textDecoration: "none" }}>
+                <li>
+                  <StoreIcon className="icon" />
+                  <span>Quản lý nhà cung cấp</span>
                 </li>
               </NavLink>
             </>

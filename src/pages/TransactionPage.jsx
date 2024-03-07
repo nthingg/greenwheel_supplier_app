@@ -1,14 +1,18 @@
+//scss
 import "../assets/scss/transactionPage.scss";
+//icon
 import TransacionTable from "../components/TransactionTable";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import SearchIcon from "@mui/icons-material/Search";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { IconButton } from "@mui/material";
+//graphql
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { LOAD_ORDERS_FILTER } from "../services/queries";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { IconButton } from "@mui/material";
+import { LOAD_ORDERS_FILTER } from "../services/graphql/order";
 
 const TransactionPage = () => {
   const iconColors = ["success", "error"]; // Define colors based on index
@@ -53,36 +57,42 @@ const TransactionPage = () => {
   return (
     <div className="transaction">
       <div className="sharedTitle">
-        <p>Danh sách đơn hàng</p>
+        <div>
+          <p className="title">Đơn hàng</p>
+          <p className="sub-title">Danh sách đơn hàng</p>
+        </div>
+      </div>
+      <div className="header">
+        <div className="left">
+          <input
+            type="text"
+            className={"form-control"}
+            id="floatingValue"
+            name="value"
+            placeholder="Tìm kiếm ..."
+          />
+          <button className="link">
+            <SearchIcon />
+          </button>
+        </div>
+        <div className="right">
+          <button className="link">
+            <FilterAltIcon />
+          </button>
+          <button className="link">
+            <CloudDownloadIcon /> <span>Xuất file Excel</span>
+          </button>
+          <button
+            className="link"
+            onClick={() => {
+              refetch();
+            }}
+          >
+            <RefreshIcon />
+          </button>
+        </div>
       </div>
       <div className="transactionContainer">
-        <div className="tableHeader">
-          <div className="left">
-            <input
-              type="text"
-              className={"form-control"}
-              id="floatingValue"
-              name="value"
-              placeholder="Tìm kiếm ..."
-            />
-          </div>
-          <div className="right">
-            <button className="link">
-              <FilterAltIcon />
-            </button>
-            <button className="link">
-              <CloudDownloadIcon /> <span>Xuất file Excel</span>
-            </button>
-            <button
-              className="link"
-              onClick={() => {
-                refetch();
-              }}
-            >
-              <RefreshIcon />
-            </button>
-          </div>
-        </div>
         <div className="icon-row">
           {[0, 1].map((index) => (
             <div

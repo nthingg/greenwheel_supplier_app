@@ -1,4 +1,4 @@
-import "../assets/scss/productTable.scss";
+import "../assets/scss/supplierTable.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
@@ -97,7 +97,7 @@ const SupplierTable = ({ suppliers }) => {
     },
   ];
   return (
-    <div className="productTable">
+    <div className="supplierTable">
       <DataGrid
         rows={suppliers}
         columns={suppliersColumns.concat(actionColumn)}

@@ -10,7 +10,7 @@ export const suppliersColumns = [
     align: "center",
     headerAlign: "center",
     // renderCell: (params) => params.rowIndex + 1,
-    renderHeader: () => <span>STT</span>,
+    renderHeader: () => <span>#</span>,
   },
   {
     field: "name",
@@ -21,9 +21,7 @@ export const suppliersColumns = [
         //   <img className="cellImg" src={params.row.imageUrl} alt="avatar" />
         //   {params.row.name}
         // </div>
-        <div>
-          <a href={`/suppliers/${params.row.id}`}>{params.row.name}</a>
-        </div>
+        <div>{params.row.name}</div>
       );
     },
     renderHeader: () => <span>Tên nhà cung cấp</span>,

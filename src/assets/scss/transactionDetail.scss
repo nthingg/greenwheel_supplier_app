@@ -1,10 +1,97 @@
 .transactionDetail {
-    background-color: #f3fdf3;
+    background-color: #f2f2f2;
     padding: 20px 30px 50px 30px;
+    height: fit-content;
+    min-height: 100vh;
 
     .dialogTitle {
         background-color: #239b56 !important;
         color: white;
+    }
+
+    .order-modify {
+        .groupBtn {
+            display: flex;
+
+            .edit,
+            .remove {
+                width: 130px;
+                text-decoration: none;
+                font-size: 16px;
+                padding: 4px;
+                margin: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                border: none;
+
+                svg {
+                    color: white;
+                    margin-right: 6px;
+                }
+
+                p {
+                    color: white;
+                    margin: 0;
+                }
+            }
+
+            .edit {
+                background-color: #28b463;
+            }
+
+            .remove {
+                background-color: #e74c3c;
+            }
+
+            .edit:hover {
+                background-color: #239b56;
+            }
+
+            .remove:hover {
+                background-color: #b03a2e;
+            }
+        }
+    }
+
+    .order-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .order-id {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .reason {
+            cursor: pointer;
+            margin: 0 0 10px 30px;
+            font-weight: normal;
+            font-size: 18px;
+        }
+
+        .status {
+            margin-left: 30px;
+            font-weight: normal;
+            font-size: 18px;
+            padding: 10px;
+
+            color: white;
+            border-radius: 10px;
+        }
+
+        .confirmed {
+            background-color: #28b463;
+            font-size: 16px;
+        }
+
+        .cancelled {
+            background-color: #e74c3c;
+            font-size: 16px;
+        }
     }
 
     .transactionContainer {
@@ -15,106 +102,31 @@
         border-radius: 8px;
         padding: 30px 40px 60px 40px;
 
-        .top {
-            .order-header {
-                display: flex;
-                align-items: center;
-
-                .reason {
-                    cursor: pointer;
-                    margin: 0 0 10px 30px;
-                    font-weight: normal;
-                    font-size: 18px;
-                }
-
-                .status {
-                    margin-left: 30px;
-                    font-weight: normal;
-                    font-size: 18px;
-                    padding: 10px;
-
-                    color: white;
-                    border-radius: 10px;
-                }
-
-                .confirmed {
-                    background-color: #28b463;
-                    font-size: 16px;
-                }
-
-                .cancelled {
-                    background-color: #e74c3c;
-                    font-size: 16px;
-                }
-            }
-
-            .groupBtn {
-                display: flex;
-
-                .edit,
-                .remove {
-                    width: 130px;
-                    text-decoration: none;
-                    font-size: 16px;
-                    padding: 10px;
-                    margin: 10px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    display: flex;
-                    justify-content: center;
-                    border: none;
-
-                    svg {
-                        color: white;
-                        margin-right: 6px;
-                    }
-
-                    p {
-                        color: white;
-                        margin: 0;
-                    }
-                }
-
-                .edit {
-                    background-color: #28b463;
-                }
-
-                .remove {
-                    background-color: #e74c3c;
-                }
-
-                .edit:hover {
-                    background-color: #239b56;
-                }
-
-                .remove:hover {
-                    background-color: #b03a2e;
-                }
-            }
-        }
-
         .bottom {
             margin-top: 40px;
             display: flex;
             justify-content: space-between;
-        }
 
-        .calendar {
-            .Mui-selected {
-                background-color: #28b463;
-            }
+            .calendar {
+                width: fit-content;
+                margin-bottom: 40px;
 
-            box-shadow:
-                0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-                0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-                0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-            p {
-                margin: 30px 0 0 0;
-                padding: 15px 0 15px 10px;
-                border-radius: 3px;
-                background-color: #28b463;
-                color: white;
-                font-weight: bold;
+                .Mui-selected {
+                    background-color: #28b463;
+                }
+
+                box-shadow:
+                    0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+                    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+                    0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+                p {
+                    margin: 30px 0 0 0;
+                    padding: 15px 0 15px 10px;
+                    border-radius: 3px;
+                    background-color: #28b463;
+                    color: white;
+                    font-weight: bold;
+                }
             }
         }
 
@@ -148,7 +160,6 @@
             }
 
             .itemTitle {
-                margin-bottom: 10px;
                 font-size: 24px;
                 font-weight: normal;
             }

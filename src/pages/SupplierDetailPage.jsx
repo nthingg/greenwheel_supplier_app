@@ -1,5 +1,4 @@
 import "../assets/scss/supplierDetail.scss";
-
 import "../assets/scss/shared.scss";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -25,7 +24,12 @@ import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import BedIcon from "@mui/icons-material/Bed";
 import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from "@mui/icons-material/Search";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Dialog,
   DialogActions,
@@ -120,36 +124,45 @@ const SupplierDetailPage = () => {
     <div className="supplierDetailContainer">
       <div className="sharedTitle">
         <div className="navigation">
-          <Link to="/suppliers" className="navigateButton">
-            <ArrowCircleLeftIcon />
-            <p>Trở về</p>
-          </Link>
-          <p>Danh sách nhà cung cấp</p>
-          <ArrowForwardIosIcon />
-          <p> Thông tin nhà cung cấp</p>
+          <div className="left">
+            <div className="return-btn">
+              <Link to="/suppliers" className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">
+                Thông tin chi tiết nhà cung cấp
+              </div>
+              <div className="return-body">
+                <p>Danh sách nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết nhà cung cấp</p>
+              </div>
+            </div>
+          </div>
+          <div className="right">
+            <Link to="/suppliers/new-product" className="modify-supplier">
+              <EditIcon />
+              <p>Chỉnh sửa</p>
+            </Link>
+          </div>
         </div>
       </div>
       <div className="detailContainer">
         <div className="prodTitle">
-          <div className="supplierHeader">
+          <div className="supplier-header">
             <p>{supplier?.name}</p>
-            {supplier?.isActive === false && (
-              <p className="status cancelled">Ngưng hoạt động</p>
-            )}
-            {supplier?.isActive === true && (
-              <p className="status confirmed">Đang hoạt động</p>
-            )}
-          </div>
-
-          <div className="">
-            <Link to="/suppliers/new-product" className="link mb-3">
-              <EditIcon />
-              <p>Chỉnh sửa</p>
-            </Link>
-            {/* <Link to="/suppliers/new-product" className="link">
-              <AddBoxIcon />
-              <p>Thêm dịch vụ</p>
-            </Link> */}
+            <div className="supplier-name"></div>
+            <div className="supplier-status">
+              {supplier?.isActive === false && (
+                <p className="status cancelled">Ngưng hoạt động</p>
+              )}
+              {supplier?.isActive === true && (
+                <p className="status confirmed">Đang hoạt động</p>
+              )}
+            </div>
           </div>
         </div>
         <div className="supplierDetail">
@@ -179,86 +192,115 @@ const SupplierDetailPage = () => {
                   {supplier?.balance.toLocaleString("vi-VN") + "đ"}
                 </span>
               </div>
+              <div className="detailItem">
+                <span className="itemKey">Danh mục:</span>
+                <span className="itemValue">
+                  {(() => {
+                    switch (supplier?.type) {
+                      case "RESTAURANT":
+                        return "Nhà hàng";
+                      case "GROCERY_STORE":
+                        return "Tạp hóa";
+                      case "HOTEL":
+                        return "Khách sạn";
+                      case "REPAIR_SHOP":
+                        return "Cửa hàng sửa chữa";
+                      case "VEHICLE_RENTAL":
+                        return "Dịch vụ thuê xe";
+                      default:
+                        return "Khác";
+                    }
+                  })()}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="rowTitle">
-          <p>{"Danh sách dịch vụ"}</p>
-        </div>
         <div className="tableProducts">
-          <div className="tableHeader">
-            <div className="left">
-              <input
-                type="text"
-                className={"form-control"}
-                id="floatingValue"
-                name="value"
-                placeholder="Tìm kiếm ..."
-              />
-            </div>
-            <div className="right">
-              {/* <Link to="/products/new" className="link">
+          <div className="bottom">
+            {(supplier?.type == "REPAIR_SHOP" ||
+              supplier?.type == "VEHICLE_RENTAL") && (
+              <Accordion disabled>
+                <AccordionSummary
+                  sx={{
+                    fontSize: 24,
+                    minWidth: 1400,
+                  }}
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel3-content"
+                  id="panel3-header"
+                >
+                  Các dịch vụ hiện có
+                </AccordionSummary>
+              </Accordion>
+            )}
+            {supplier?.type != "REPAIR_SHOP" &&
+              supplier?.type != "VEHICLE_RENTAL" && (
+                <Accordion>
+                  <AccordionSummary
+                    sx={{
+                      fontSize: 24,
+                    }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    Các dịch vụ hiện có
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{
+                      minWidth: 1400,
+                    }}
+                  >
+                    <div className="header">
+                      <div className="left">
+                        <input
+                          type="text"
+                          className={"form-control"}
+                          id="floatingValue"
+                          name="value"
+                          placeholder="Tìm kiếm ..."
+                        />
+                        <button className="link">
+                          <SearchIcon />
+                        </button>
+                      </div>
+                      <div className="right">
+                        {/* <Link to="/products/new" className="link">
               <AddIcon />
               <span>Thêm dịch vụ</span>
             </Link> */}
-              <Link
-                to={`/suppliers/add-product/${supplierId}`}
-                className="link"
-              >
-                <AddCircleIcon />
-                <span>Thêm dịch vụ</span>
-              </Link>
-              <button className="link">
-                <span>Tải xuống file Excel</span>
-                <CloudDownloadIcon />
-              </button>
-              <button className="link">
-                <FilterAltIcon />
-              </button>
-              <button
-                className="link"
-                // onClick={() => {
-                //   refetch();
-                // }}
-              >
-                <RefreshIcon />
-              </button>
-            </div>
+                        <Link
+                          to={`/suppliers/add-product/${supplierId}`}
+                          className="link"
+                        >
+                          <AddCircleIcon />
+                          <span>Thêm dịch vụ</span>
+                        </Link>
+                        <button className="link">
+                          <span>Tải xuống file Excel</span>
+                          <CloudDownloadIcon />
+                        </button>
+                        <button className="link">
+                          <FilterAltIcon />
+                        </button>
+                        <button
+                          className="link"
+                          // onClick={() => {
+                          //   refetch();
+                          // }}
+                        >
+                          <RefreshIcon />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="detail-table">
+                      <ProductTable products={products} />
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              )}
           </div>
-          <div className="icon-row">
-            {[0, 1, 2, 3, 4, 5, 6].map((index) => (
-              <div
-                key={index}
-                className={`icon-item ${
-                  selectedDiv === index ? "selected" : ""
-                }`}
-                onClick={() => {
-                  handleClick(index);
-                }}
-              >
-                <IconButton color="success">
-                  {/* Replace with appropriate icons */}
-                  {index === 0 && <FormatListBulletedIcon />}
-                  {index === 1 && <LocalDiningIcon />}
-                  {index === 2 && <EmojiFoodBeverageIcon />}
-                  {index === 3 && <HolidayVillageIcon />}
-                  {index === 4 && <BedIcon />}
-                  {index === 5 && <DirectionsCarFilledIcon />}
-                  {index === 6 && <InventoryIcon />}
-                </IconButton>
-                <span>
-                  {index === 0 && "Tất cả"}
-                  {index === 1 && "Thức ăn"}
-                  {index === 2 && "Đồ uống"}
-                  {index === 3 && "Lều trại"}
-                  {index === 4 && "Phòng xá"}
-                  {index === 5 && "Xe cộ"}
-                  {index === 6 && "Khác"}
-                </span>
-              </div>
-            ))}
-          </div>
-          <ProductTable products={products} />
         </div>
       </div>
       <Dialog

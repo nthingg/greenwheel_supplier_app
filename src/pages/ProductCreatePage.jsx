@@ -1,6 +1,6 @@
 import "../assets/scss/productCreate.scss";
 import "../assets/scss/shared.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -10,20 +10,12 @@ import { InputAdornment, TextField } from "@mui/material";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { addPosts, useAddProduct } from "../services/requests";
+import { useQuery } from "@apollo/client";
+import { LOAD_DETAIL_SUPPLIER } from "../services/queries";
 
 const ProductCreatePage = () => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
-
-  const [file, setFile] = useState("");
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [paymentType, setPaymentType] = useState("");
-  const [price, setPrice] = useState(0);
-  const [periods, setPeriods] = useState([]);
-  const [partySize, setPartySize] = useState(0);
-
-  const { handleAddProduct, loadingAdd, errorAdd } = useAddProduct();
 
   const serviceOptions = [
     { value: "FOOD", label: "Thức ăn" },
@@ -45,6 +37,54 @@ const ProductCreatePage = () => {
     { value: "AFTERNOON", label: "Chiều" },
     { value: "EVENING", label: "Tối" },
   ];
+
+  const [file, setFile] = useState("");
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [paymentType, setPaymentType] = useState("");
+  const [price, setPrice] = useState(0);
+  const [periods, setPeriods] = useState([]);
+  const [partySize, setPartySize] = useState(0);
+  const [supplier, setSupplier] = useState(null);
+  const [payment, setPayment] = useState(serviceOptions);
+  const [disabledPayment, setDisabledPayment] = useState(true);
+  const [prod, setProd] = useState(serviceOptions);
+
+  const { handleAddProduct, loadingAdd, errorAdd } = useAddProduct();
+
+  //supplier
+  const { error, loading, data } = useQuery(LOAD_DETAIL_SUPPLIER, {
+    variables: {
+      id: parseInt(supplierId, 10),
+    },
+  });
+  useEffect(() => {
+    if (
+      !loading &&
+      !error &&
+      data &&
+      data["suppliers"] &&
+      data["suppliers"]["nodes"]
+    ) {
+      setSupplier(data["suppliers"]["nodes"][0]);
+      if (supplier?.type == "GROCERY_STORE") {
+        setProd([serviceOptions[0], serviceOptions[1]]);
+      } else if (supplier?.type == "HOTEL") {
+        setProd([
+          serviceOptions[0],
+          serviceOptions[1],
+          serviceOptions[2],
+          serviceOptions[3],
+        ]);
+      } else if (supplier?.type == "RESTAURANT") {
+        setProd([serviceOptions[0], serviceOptions[1]]);
+      } else if (supplier?.type == "VEHICLE_RENTAL") {
+        setProd([serviceOptions[4]]);
+      } else {
+        setProd([serviceOptions[4], serviceOptions[5]]);
+      }
+    }
+  }, [data, loading, error]);
 
   const handleConfirmClick = async () => {
     // Example usage:
@@ -80,15 +120,24 @@ const ProductCreatePage = () => {
     <div className="edit">
       <div className="sharedTitle">
         <div className="navigation">
-          <Link to={`/suppliers/${supplierId}`} className="navigateButton">
-            <ArrowCircleLeftIcon />
-            <p>Trở về</p>
-          </Link>
-          <p>Danh sách nhà cung cấp</p>
-          <ArrowForwardIosIcon />
-          <p>Chi tiết nhà cung cấp</p>
-          <ArrowForwardIosIcon />
-          <p>Thêm dịch vụ</p>
+          <div className="left">
+            <div className="return-btn">
+              <Link to="/suppliers" className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">Thêm dịch vụ</div>
+              <div className="return-body">
+                <p>Danh sách nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>{supplier?.name}</p>
+                <ArrowForwardIosIcon />
+                <p>Thêm dịch vụ</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div className="detailContainer">
@@ -145,9 +194,16 @@ const ProductCreatePage = () => {
                   isDisabled={false}
                   isClearable={false}
                   name="service"
-                  options={serviceOptions}
+                  options={prod}
                   onChange={(e) => {
                     setType(e.value);
+                    if (e.value == "FOOD" || e.value == "BEVERAGE") {
+                      setDisabledPayment(false);
+                      setPayment([paymentOptions[1]]);
+                    } else {
+                      setDisabledPayment(false);
+                      setPayment([paymentOptions[0]]);
+                    }
                   }}
                   theme={(theme) => ({
                     ...theme,
@@ -166,10 +222,10 @@ const ProductCreatePage = () => {
                   placeholder={"Chọn hình thức thanh toán"}
                   className="basic-single"
                   classNamePrefix="select"
-                  isDisabled={false}
+                  isDisabled={disabledPayment}
                   isClearable={false}
                   name="paymentType"
-                  options={paymentOptions}
+                  options={payment}
                   onChange={(e) => {
                     setPaymentType(e.value);
                   }}

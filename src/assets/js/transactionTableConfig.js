@@ -1,44 +1,23 @@
 export const transactionsColumns = [
   {
     field: "index",
-    width: 100,
+    width: 80,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
       return <div>{params.row.index}</div>;
     },
-    renderHeader: () => <span>STT</span>,
+    renderHeader: () => <span>#</span>,
   },
-  // {
-  //   field: "id",
-  //   width: 360,
-  //   align: "center",
-  //   headerAlign: "center",
-  //   renderCell: (params) => {
-  //     return <div>{params.row.id}</div>;
-  //   },
-  //   renderHeader: () => <span>Mã HĐ</span>,
-  // },
   {
-    field: "name",
-    width: 240,
+    field: "id",
+    width: 150,
+    align: "center",
+    headerAlign: "center",
     renderCell: (params) => {
-      return (
-        <div className="cellWithImg">
-          <img
-            className="cellImg"
-            src={
-              params.row.account.avatarUrl === null
-                ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                : params.row.account.avatarUrl
-            }
-            alt="avatar"
-          />
-          {params.row.account.name}
-        </div>
-      );
+      return <div>{params.row.id}</div>;
     },
-    renderHeader: () => <span>Khách hàng</span>,
+    renderHeader: () => <span>Mã đơn hàng</span>,
   },
   {
     field: "createdAt",
@@ -63,16 +42,55 @@ export const transactionsColumns = [
     renderHeader: () => <span>Ngày tạo</span>,
   },
   {
-    field: "total",
-    width: 220,
-    align: "right",
+    field: "name",
+    width: 240,
+    renderCell: (params) => {
+      return (
+        <div className="cellWithImg">
+          <img
+            className="cellImg"
+            src={
+              params.row.account.avatarUrl === null
+                ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                : params.row.account.avatarUrl
+            }
+            alt="avatar"
+          />
+          {params.row.account.name}
+        </div>
+      );
+    },
+    renderHeader: () => <span>Khách hàng</span>,
+  },
+  // {
+  //   field: "total",
+  //   width: 220,
+  //   align: "right",
+  //   headerAlign: "center",
+  //   renderCell: (params) => {
+  //     const amount = params.row.total;
+  //     const formattedPrice = amount.toLocaleString("vi-VN") + "đ";
+  //     return <div className="prodPrice">{formattedPrice}</div>;
+  //   },
+  //   renderHeader: () => <span>Tổng</span>,
+  // },
+  {
+    field: "phone",
+    width: 200,
+    align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      const amount = params.row.total;
-      const formattedPrice = amount.toLocaleString("vi-VN") + "đ";
-      return <div className="prodPrice">{formattedPrice}</div>;
+      return <div>{params.row.account.phone}</div>;
     },
-    renderHeader: () => <span>Tổng</span>,
+    renderHeader: () => <span>Số điện thoại</span>,
+  },
+  {
+    field: "supplierName",
+    width: 240,
+    renderCell: (params) => {
+      return <div>{params.row.supplier.name}</div>;
+    },
+    renderHeader: () => <span>Tên nhà cung cấp</span>,
   },
   {
     field: "status",

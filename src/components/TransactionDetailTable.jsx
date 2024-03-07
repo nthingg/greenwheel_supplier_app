@@ -21,9 +21,9 @@ const DetailTable = ({ details }) => {
 
   return (
     <div className="detailTable">
-      <div className="total">
+      {/* <div className="total">
         <p>Tổng: {sum.toLocaleString("vi-VN") + "đ"}</p>
-      </div>
+      </div> */}
       <DataGrid
         className="tableDetail"
         rows={list}

@@ -4,8 +4,8 @@ import "../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DetailTable from "../components/TransactionDetailTable";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
-import { LOAD_DETAIL_ORDER } from "../services/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { CANCEL_ORDER } from "../services/mutations";
 import {
@@ -21,6 +21,15 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  StepContent,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -30,6 +39,8 @@ import { PickersDay } from "@mui/x-date-pickers";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import TracesTable from "../components/TraceTable";
+import { LOAD_DETAIL_ORDER } from "../services/graphql/order";
+import { green } from "@mui/material/colors";
 
 const TransactionDetailPage = () => {
   const { orderId } = useParams();
@@ -147,7 +158,7 @@ const TransactionDetailPage = () => {
     cancel({
       variables: {
         input: {
-          id: orderId,
+          id: parseInt(orderId, 10),
           reason: finalReason,
         },
       },
@@ -191,42 +202,59 @@ const TransactionDetailPage = () => {
     <div className="transactionDetail">
       <div className="sharedTitle">
         <div className="navigation">
-          <Link to="/orders" className="navigateButton">
-            <ArrowCircleLeftIcon />
-            <p>Trở về</p>
-          </Link>
-          <p>Danh sách đơn hàng</p>
-          <ArrowForwardIosIcon />
-          <p> Thông tin đơn hàng</p>
+          <div className="left">
+            <div className="return-btn">
+              <Link to="/orders" className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">Thông tin chi tiết đơn hàng</div>
+              <div className="return-body">
+                <p>Danh sách đơn hàng</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết đơn hàng</p>
+              </div>
+            </div>
+          </div>
+          <div className="right">
+            <div className="order-modify">
+              {order?.currentStatus === "RESERVED" && (
+                <div className="groupBtn">
+                  {cancellable === true && (
+                    <button className="remove" onClick={handleClickOpen}>
+                      <CancelIcon />
+                      <p>Huỷ đơn</p>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       <div className="transactionContainer">
         <div className="top">
           <div className="sharedTitle">
             <div className="order-header">
-              <p>Mã đơn #{order?.id}</p>
-              {order?.currentStatus === "CANCELLED" && (
-                <p className="status cancelled">Đã hủy</p>
-              )}
-              {order?.currentStatus === "CANCELLED" && (
-                <a className="reason" onClick={handleClickOpenReason}>
-                  Lí do hủy bỏ
-                </a>
-              )}
-              {order?.currentStatus === "RESERVED" && (
-                <p className="status confirmed">Đã chấp nhận</p>
-              )}
-            </div>
-            {order?.currentStatus === "RESERVED" && (
-              <div className="groupBtn">
-                {cancellable === true && (
-                  <button className="remove" onClick={handleClickOpen}>
-                    <CancelIcon />
-                    <p>Huỷ đơn</p>
-                  </button>
+              <div className="order-id">
+                <p>Mã đơn #{order?.id}</p>
+              </div>
+              <div className="order-status">
+                {order?.currentStatus === "CANCELLED" && (
+                  <p className="status cancelled">Đã hủy</p>
+                )}
+                {order?.currentStatus === "CANCELLED" && (
+                  <a className="reason" onClick={handleClickOpenReason}>
+                    Lí do hủy bỏ
+                  </a>
+                )}
+                {order?.currentStatus === "RESERVED" && (
+                  <p className="status confirmed">Đã chấp nhận</p>
                 )}
               </div>
-            )}
+            </div>
           </div>
         </div>
         <div className="center">
@@ -264,31 +292,6 @@ const TransactionDetailPage = () => {
                     </a>
                   </span>
                 </div>
-                {/* <div className="detailItem">
-                  <span className="itemKey">Dịch vụ:</span>
-                  <span className="itemValue">
-                    {(() => {
-                      switch (order?.details[0].product.supplier.type) {
-                        case "CAMPING":
-                          return "Cắm trại";
-                        case "GROCERY":
-                          return "Tạp hóa";
-                        case "MOTEL":
-                          return "Nhà nghỉ";
-                        case "REPAIR":
-                          return "Sửa xe";
-                        case "RESTAURANT":
-                          return "Nhà hàng";
-                        case "TAXI":
-                          return "Taxi";
-                        case "VEHICLE_RENTING":
-                          return "Thuê xe";
-                        default:
-                          return "Khác";
-                      }
-                    })()}
-                  </span>
-                </div> */}
                 <div className="detailItem">
                   <span className="itemKey">Địa chỉ:</span>
                   <span
@@ -314,63 +317,101 @@ const TransactionDetailPage = () => {
             </div>
           </div>
           <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Các dịch vụ đã đặt</h1>
-              <DetailTable details={details} />
-            </div>
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Các dịch vụ đã đặt
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <DetailTable details={details} />
+              </AccordionDetails>
+            </Accordion>
           </div>
           <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Các ngày phục vụ</h1>
-              <div className="calendar">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <p>
-                    {(() => {
-                      switch (order?.period) {
-                        case "MORNING":
-                          return "Phục vụ vào buổi sáng";
-                        case "NOON":
-                          return "Phục vụ vào buổi trưa";
-                        case "AFTERNOON":
-                          return "Phục vụ vào buổi chiều";
-                        case "EVENING":
-                          return "Phục vụ vào buổi tối";
-                        default:
-                          return `Check-in vào ${order?.period}`;
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Các ngày phục vụ
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <div className="calendar">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <p>
+                      {(() => {
+                        switch (order?.period) {
+                          case "MORNING":
+                            return "Phục vụ vào buổi sáng";
+                          case "NOON":
+                            return "Phục vụ vào buổi trưa";
+                          case "AFTERNOON":
+                            return "Phục vụ vào buổi chiều";
+                          case "EVENING":
+                            return "Phục vụ vào buổi tối";
+                          default:
+                            return `Check-in vào ${order?.period}`;
+                        }
+                      })()}
+                    </p>
+                    <DateCalendar
+                      value={
+                        highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
                       }
-                    })()}
-                  </p>
-                  <DateCalendar
-                    value={
-                      highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
-                    }
-                    readOnly
-                    slots={{
-                      day: ServerDay,
-                    }}
-                    slotProps={{
-                      day: {
-                        highlightedDays,
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              </div>
-            </div>
-          </div>
-          {/* {reasonCancelled && (
-            <div className="bottom">
-              <div className="item">
-                <h1 className="itemTitle">Thông tin thêm</h1>
-                <div className="reasonTable">
-                  <p className="title">Lý do hủy bỏ</p>
-                  <div className="body">
-                    <p>{reasonCancelled}</p>
-                  </div>
+                      readOnly
+                      slots={{
+                        day: ServerDay,
+                      }}
+                      slotProps={{
+                        day: {
+                          highlightedDays,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
                 </div>
-              </div>
-            </div>
-          )} */}
+              </AccordionDetails>
+            </Accordion>
+          </div>
+          <div className="bottom">
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Ghi chú
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <p>{order?.note === "" ? "Không có ghi chú" : order?.note}</p>
+              </AccordionDetails>
+            </Accordion>
+          </div>
         </div>
       </div>
       <div className=""></div>
@@ -483,11 +524,57 @@ const TransactionDetailPage = () => {
         <DialogTitle backgroundColor={"#239b56"} color={"white"}>
           Lịch sử thay đổi
         </DialogTitle>
-        <DialogContent style={{ width: 1200 }}>
+        <DialogContent style={{ width: 400 }}>
           <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Chi tiết các thay đổi liên quan đến đơn hàng #{order?.id}:
+            Trạng thái đơn hàng #{order?.id}:
           </DialogContentText>
-          <TracesTable traces={traces} />
+          <Box sx={{ maxWidth: 400 }}>
+            <Stepper activeStep={traces.length - 1} orientation="vertical">
+              {traces?.map((trace) => (
+                <Step key={trace}>
+                  <StepLabel>
+                    <Typography>
+                      {(() => {
+                        switch (trace.status) {
+                          case "RESERVED":
+                            return "Khách đặt thành công";
+                          case "CANCELLED":
+                            if (trace.isCustomerModification == true) {
+                              return "Khách đã hủy";
+                            } else {
+                              return "Nhà cung cấp đã hủy";
+                            }
+                          default:
+                            return "Khác";
+                        }
+                      })()}
+                    </Typography>
+                  </StepLabel>
+                  <StepContent>
+                    <p className="trace-date">
+                      {(() => {
+                        const date = new Date(trace.modifiedAt);
+
+                        const formattedDateTime = date.toLocaleString("en-GB");
+                        return formattedDateTime;
+                      })()}
+                    </p>
+                  </StepContent>
+                </Step>
+              ))}
+              {traces.length === 1 && (
+                <Step key={null}>
+                  <StepLabel>
+                    <Typography>Đang chờ xử lý</Typography>
+                  </StepLabel>
+                  <StepContent>
+                    <p className="trace-date">N/A</p>
+                  </StepContent>
+                </Step>
+              )}
+            </Stepper>
+          </Box>
+          {/* <TracesTable traces={traces} /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseTraces}>Xác nhận</Button>

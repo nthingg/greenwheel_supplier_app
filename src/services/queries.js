@@ -52,44 +52,6 @@ export const LOAD_PLANS_FILTER = gql`
   }
 `;
 
-export const LOAD_ORDERS = gql`
-  {
-    orders(first: 100, order: { id: ASC }) {
-      nodes {
-        id
-        total
-        currentStatus
-        createdAt
-        account {
-          name
-          avatarUrl
-        }
-      }
-    }
-  }
-`;
-
-export const LOAD_ORDERS_FILTER = gql`
-  query LoadOrders($status: [OrderStatus!]) {
-    orders(
-      first: 100
-      order: { id: ASC }
-      where: { currentStatus: { in: $status } }
-    ) {
-      nodes {
-        id
-        total
-        currentStatus
-        createdAt
-        account {
-          name
-          avatarUrl
-        }
-      }
-    }
-  }
-`;
-
 export const LOAD_SUPPLIERS = gql`
   {
     suppliers(first: 100, order: { id: ASC }) {
@@ -238,50 +200,6 @@ export const LOAD_DETAIL_PLAN = gql`
   }
 `;
 
-export const LOAD_DETAIL_ORDER = gql`
-  query GetOrderById($id: Int!) {
-    orders(where: { id: { eq: $id } }) {
-      nodes {
-        id
-        total
-        deposit
-        period
-        currentStatus
-        createdAt
-        account {
-          phone
-          name
-        }
-        traces {
-          description
-          isCustomerModification
-          modifiedAt
-          status
-        }
-        plan {
-          startDate
-        }
-        serveDateIndexes
-        details {
-          product {
-            supplier {
-              id
-              name
-              address
-            }
-            id
-            name
-            imageUrl
-            price
-          }
-          quantity
-          price
-        }
-      }
-    }
-  }
-`;
-
 export const LOAD_DETAIL_PRODUCT = gql`
   query GetProductById($id: Int!) {
     products(where: { id: { eq: $id } }) {
@@ -311,6 +229,7 @@ export const LOAD_DETAIL_SUPPLIER = gql`
         imageUrl
         balance
         isActive
+        type
         account {
           isMale
           isActive
@@ -407,5 +326,3 @@ export const FILTER_AVAILABLE_TRAVELER = gql`
     }
   }
 `;
-
-

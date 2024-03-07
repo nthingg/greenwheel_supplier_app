@@ -10,12 +10,19 @@
     align-items: center;
     justify-content: center;
     padding: 10px;
+    margin: 0 4px 0 4px;
     border-bottom: 2px solid transparent;
     cursor: pointer;
 
     span {
         margin-right: 8px;
     }
+}
+
+.icon-item:hover {
+    border-width: 4px;
+    background-color: #f7f7fb;
+    border-bottom-color: white; /* Change to your desired color */
 }
 
 .icon-item.selected {
