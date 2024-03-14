@@ -60,8 +60,11 @@ const TransactionDetailPage = () => {
   const [reasonCancelled, setReasonCancelled] = useState(null);
   const [highlightedDays, setHighlitedDays] = useState([]);
   const [cancellable, setCancellable] = useState(false);
+  const [servable, setServable] = useState(false);
   const [status, setStatus] = useState("");
   const [phone, setPhone] = useState("");
+  const [finalCancellable, setFinalCancellable] = useState("");
+  const [finalServable, setFinalServable] = useState("");
 
   const [
     change,
@@ -129,10 +132,6 @@ const TransactionDetailPage = () => {
           timeZone: "UTC",
         })
       );
-      const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
-      const today = new Date();
-
-      setCancellable(threeDaysLater > today);
 
       const startDate = data["orders"]["nodes"][0]["plan"]["startDate"];
       const serveDayIndexes = data["orders"]["nodes"][0]["serveDateIndexes"];
@@ -142,6 +141,23 @@ const TransactionDetailPage = () => {
         newDate.setDate(newDate.getDate() + index);
         return newDate.toISOString().slice(0, 10); // Format as YYYY-MM-DD
       });
+
+      const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
+      const today = new Date();
+      setCancellable(threeDaysLater > today);
+      setFinalCancellable(
+        threeDaysLater.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
+
+      const start = new Date(data["orders"]["nodes"][0]["plan"]["startDate"]);
+      setServable(start > today);
+      setFinalServable(
+        start.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
 
       setHighlitedDays(newDatesList);
 
@@ -315,18 +331,19 @@ const TransactionDetailPage = () => {
                     <p>Huỷ đơn</p>
                   </button>
                 )}
-                {(status === "RESERVED" || status === "PREPARED") && (
-                  <button className="sepa">
-                    <FiberManualRecordIcon />
-                  </button>
-                )}
+                {(status === "RESERVED" || status === "PREPARED") &&
+                  cancellable === true && (
+                    <button className="sepa">
+                      <FiberManualRecordIcon />
+                    </button>
+                  )}
                 {status === "RESERVED" && (
                   <button className="prepare" onClick={handleChangeStatus}>
                     <MicrowaveIcon />
                     <p>Chuẩn bị</p>
                   </button>
                 )}
-                {status === "PREPARED" && (
+                {status === "PREPARED" && servable && (
                   <button className="edit" onClick={handleChangeStatus}>
                     <CheckCircleIcon />
                     <p>Phục vụ</p>
@@ -383,8 +400,16 @@ const TransactionDetailPage = () => {
                   <span className="itemValue">{formatPhoneNumber(phone)}</span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Thời gian tạo:</span>
+                  <span className="itemKey">Ngày tạo:</span>
                   <span className="itemValue">{date}</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Hạn hủy đơn:</span>
+                  <span className="itemValue">{finalCancellable}</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Hạn phục vụ:</span>
+                  <span className="itemValue">{finalServable}</span>
                 </div>
                 {/* <div className="detailItem">
                   <span className="itemKey">Tổng hóa đơn:</span>
@@ -582,51 +607,32 @@ const TransactionDetailPage = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Để xác minh việc chủ động hủy bỏ yêu cầu, nhà cung cấp vui lòng đưa
-            ra lý do phù hợp.
+            Gửi OTP cho nhà du lịch để xác nhận việc hủy đơn:
           </DialogContentText>
-          <FormControl>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="Hết hàng"
-              name="radio-buttons-group"
+          <div className="otp-field">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Nhập OTP"
+              type="text"
+              fullWidth
               onChange={(e) => {
-                console.log(e.target.value);
-                setMainReason(e.target.value);
+                setReason(e.target.value);
               }}
-            >
-              <FormControlLabel
-                value="Hết hàng"
-                control={<Radio />}
-                label="Hết hàng"
-              />
-              <FormControlLabel
-                value="Thời gian nhận hàng quá lâu/sớm"
-                control={<Radio />}
-                label="Thời gian nhận hàng quá lâu/sớm"
-              />
-              <FormControlLabel
-                value="Cửa hàng đóng cửa"
-                control={<Radio />}
-                label="Cửa hàng đóng cửa"
-              />
-              <FormControlLabel
-                value="Không liên hệ được với khách"
-                control={<Radio />}
-                label="Không liên hệ được với khách"
-              />
-              <FormControlLabel
-                value="Nghi vấn lừa đảo"
-                control={<Radio />}
-                label="Nghi vấn lừa đảo"
-              />
-            </RadioGroup>
-          </FormControl>
+            />
+            <button>Gửi OTP</button>
+          </div>
+
+          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+            Để đảm bảo tính xác minh của yêu cầu hủy bỏ, nhà cung cấp có thể đưa
+            thêm lý do phù hợp.
+          </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Lý do khác"
+            label="Lý do khác cho việc hủy bỏ"
             type="text"
             fullWidth
             onChange={(e) => {

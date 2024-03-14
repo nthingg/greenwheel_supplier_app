@@ -6,23 +6,20 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import PublicIcon from "@mui/icons-material/Public";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import LanguageIcon from "@mui/icons-material/Language";
-import PublicOffIcon from "@mui/icons-material/PublicOff";
 import {
   FormControl,
   FormControlLabel,
-  IconButton,
   Radio,
   RadioGroup,
 } from "@mui/material";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import PlanTable from "../components/PlanTable";
-import { LOAD_PLANS_FILTER } from "../services/graphql/plan";
+import { LOAD_PLANS, LOAD_PLANS_FILTER } from "../services/graphql/plan";
 
 const PlanPage = () => {
   const planStat = [
@@ -38,7 +35,7 @@ const PlanPage = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [isReadyHidden, setIsReadyHidden] = useState(true);
   const [isVeriHidden, setIsVeriHidden] = useState(true);
-  const [registerStatus, setRegisterStatus] = useState("public");
+  const [registerStatus, setRegisterStatus] = useState("private");
   const [registerReadyStatus, setRegisterReadyStatus] = useState("incoming");
   const [registerVeriStatus, setRegisterVeriStatus] = useState("happening");
 
@@ -47,31 +44,26 @@ const PlanPage = () => {
     switch (index) {
       case 1:
         setSelectedStatus(planStat[4]);
-        refetch();
         break;
       case 2:
         setSelectedStatus(planStat[0]);
-        refetch();
         break;
       case 3:
         setSelectedStatus(planStat[5]);
-        refetch();
         break;
       case 4:
         setSelectedStatus(planStat[3]);
-        refetch();
         break;
       case 5:
         setSelectedStatus(planStat[2]);
-        refetch();
         break;
       case 6:
         setSelectedStatus(planStat[1]);
-        refetch();
         break;
       default:
         break;
     }
+    refetch();
   };
 
   const { error, loading, data, refetch } = useQuery(LOAD_PLANS_FILTER, {
@@ -79,6 +71,76 @@ const PlanPage = () => {
       status: selectedStatus,
     },
   });
+  const {
+    error: errorTotal,
+    loading: loadingTotal,
+    data: dataTotal,
+    refetch: refetchTotal,
+  } = useQuery(LOAD_PLANS);
+
+  const [privatePlans, setPrivate] = useState(0);
+  const [publicPlans, setPublic] = useState(0);
+  const [canceledPlans, setCanceled] = useState(0);
+  const [verifiedPlans, setVerified] = useState(0);
+  const [readyPlans, setReady] = useState(0);
+  const [publishedPlans, setPublished] = useState(0);
+  useEffect(() => {
+    if (
+      !loadingTotal &&
+      !errorTotal &&
+      dataTotal &&
+      dataTotal["plans"]["nodes"]
+    ) {
+      let countPrivate = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "PRIVATE") {
+          countPrivate++;
+        }
+      }
+
+      let countPublic = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "PUBLIC") {
+          countPublic++;
+        }
+      }
+
+      let countReady = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "READY") {
+          countReady++;
+        }
+      }
+
+      let countCanceled = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "CANCELED") {
+          countCanceled++;
+        }
+      }
+
+      let countVerified = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "VERIFIED") {
+          countVerified++;
+        }
+      }
+
+      let countPublished = 0;
+      for (const item of dataTotal["plans"]["nodes"]) {
+        if (item["status"] === "PUBLISHED") {
+          countPublished++;
+        }
+      }
+
+      setPrivate(countPrivate);
+      setPublic(countPublic);
+      setReady(countReady);
+      setCanceled(countCanceled);
+      setVerified(countVerified);
+      setPublished(countPublished);
+    }
+  }, [dataTotal, loadingTotal, errorTotal]);
 
   const [plans, setPlans] = useState([]);
   useEffect(() => {
@@ -143,12 +205,13 @@ const PlanPage = () => {
                   setIsReadyHidden(true);
                   setIsVeriHidden(true);
                   if (registerStatus === "private") {
+                    console.log("check private");
                     handleClick(6);
-                    setSelectedDiv(0);
                   } else {
+                    console.log("check public");
                     handleClick(5);
-                    setSelectedDiv(0);
                   }
+                  setSelectedDiv(0);
                 } else if (index == 1) {
                   setIsReadyHidden(false);
                   setIsHidden(true);
@@ -175,10 +238,10 @@ const PlanPage = () => {
               {index === 4 && <LanguageIcon sx={{ color: "#3498DB" }} />}
               <span>
                 {index === 0 && "Chờ chốt"}
-                {index === 1 && "Sẵn sàng"}
-                {index === 2 && "Đã hủy"}
-                {index === 3 && "Đã xác nhận"}
-                {index === 4 && "Xuất bản"}
+                {index === 1 && `Sẵn sàng (${readyPlans})`}
+                {index === 2 && `Đã hủy (${canceledPlans})`}
+                {index === 3 && `Đã xác nhận (${verifiedPlans})`}
+                {index === 4 && `Xuất bản (${publishedPlans})`}
               </span>
             </div>
           ))}
@@ -192,6 +255,7 @@ const PlanPage = () => {
             sx={{ marginBottom: 2, marginLeft: 2 }}
             hidden={isHidden}
             onClick={(e) => {
+              setRegisterStatus(e.target.value);
               if (e.target.value === "private") {
                 handleClick(6);
                 setSelectedDiv(0);
@@ -199,7 +263,6 @@ const PlanPage = () => {
                 handleClick(5);
                 setSelectedDiv(0);
               }
-              setRegisterStatus(e.target.value);
             }}
           >
             <FormControlLabel
@@ -214,7 +277,7 @@ const PlanPage = () => {
                   }}
                 />
               }
-              label="Riêng tư"
+              label={`Riêng tư (${privatePlans})`}
             />
             <FormControlLabel
               value="public"
@@ -228,7 +291,7 @@ const PlanPage = () => {
                   }}
                 />
               }
-              label="Công khai"
+              label={`Công khai (${publicPlans})`}
             />
           </RadioGroup>
         </FormControl>

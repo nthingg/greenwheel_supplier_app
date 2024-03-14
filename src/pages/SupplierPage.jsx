@@ -121,15 +121,19 @@ const SupplierPage = () => {
                 handleClick(index);
               }}
             >
-              <IconButton color={"success"}>
-                {/* Replace with appropriate icons */}
-                {index === 0 && <FormatListBulletedIcon />}
-                {index === 1 && <LocalDiningIcon />}
-                {index === 2 && <BedIcon />}
-                {index === 3 && <EmojiFoodBeverageIcon />}
-                {index === 4 && <BuildIcon />}
-                {index === 5 && <DirectionsCarFilledIcon />}
-              </IconButton>
+              {/* Replace with appropriate icons */}
+              {index === 0 && (
+                <FormatListBulletedIcon sx={{ color: "#3498DB" }} />
+              )}
+              {index === 1 && <LocalDiningIcon sx={{ color: "#3498DB" }} />}
+              {index === 2 && <BedIcon sx={{ color: "#3498DB" }} />}
+              {index === 3 && (
+                <EmojiFoodBeverageIcon sx={{ color: "#3498DB" }} />
+              )}
+              {index === 4 && <BuildIcon sx={{ color: "#3498DB" }} />}
+              {index === 5 && (
+                <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+              )}
               <span>
                 {index === 0 && "Tất cả"}
                 {index === 1 && "Nhà hàng"}

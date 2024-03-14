@@ -23,6 +23,17 @@ export const LOAD_PLANS_FILTER = gql`
   }
 `;
 
+export const LOAD_PLANS = gql`
+  {
+    plans(first: 100, order: { id: ASC }) {
+      nodes {
+        id
+        status
+      }
+    }
+  }
+`;
+
 export const LOAD_DETAIL_PLAN = gql`
   query GetPlanById($id: Int!) {
     plans(where: { id: { eq: $id } }) {

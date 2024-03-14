@@ -102,11 +102,18 @@ const SideBar = () => {
               className="user_image"
               alt="Profile"
             ></img>
-
-            <div className="user_info">
-              <span className="name">Administrator</span>
-              <span className="role">Admin</span>
-            </div>
+            {(role === "STAFF" || role === "SUPPLIER") && (
+              <div className="user_info">
+                <span className="name">Supplier</span>
+                <span className="role">Greenwheels supplier</span>
+              </div>
+            )}
+            {role === "ADMIN" && (
+              <div className="user_info">
+                <span className="name">Administrator</span>
+                <span className="role">Greenwheels admin</span>
+              </div>
+            )}
           </div>
           <div>
             <button

@@ -15,7 +15,10 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
-import { LOAD_ACCOUNTS_FILTER } from "../services/graphql/account";
+import {
+  LOAD_ACCOUNTS,
+  LOAD_ACCOUNTS_FILTER,
+} from "../services/graphql/account";
 import AccountTable from "../components/AccountTable";
 
 const AccountPage = () => {
@@ -43,6 +46,50 @@ const AccountPage = () => {
         break;
     }
   };
+
+  const {
+    error: errorTotal,
+    loading: loadingTotal,
+    data: dataTotal,
+    refetch: refetchTotal,
+  } = useQuery(LOAD_ACCOUNTS);
+
+  const [accountTravelers, setTravelers] = useState(0);
+  const [accountSuppliers, setSuppliers] = useState(0);
+  const [accountStaffs, setStaffs] = useState(0);
+  useEffect(() => {
+    if (
+      !loadingTotal &&
+      !errorTotal &&
+      dataTotal &&
+      dataTotal["accounts"]["nodes"]
+    ) {
+      let countTraveler = 0;
+      for (const item of dataTotal["accounts"]["nodes"]) {
+        if (item["role"] === "TRAVELER") {
+          countTraveler++;
+        }
+      }
+
+      let countSupplier = 0;
+      for (const item of dataTotal["accounts"]["nodes"]) {
+        if (item["role"] === "SUPPLIER") {
+          countSupplier++;
+        }
+      }
+
+      let countStaff = 0;
+      for (const item of dataTotal["accounts"]["nodes"]) {
+        if (item["role"] === "STAFF") {
+          countStaff++;
+        }
+      }
+
+      setTravelers(countTraveler);
+      setSuppliers(countSupplier);
+      setStaffs(countStaff);
+    }
+  }, [dataTotal, loadingTotal, errorTotal]);
 
   const { error, loading, data, refetch } = useQuery(LOAD_ACCOUNTS_FILTER, {
     variables: {
@@ -121,9 +168,9 @@ const AccountPage = () => {
                 <ManageAccountsRoundedIcon sx={{ color: "#3498DB" }} />
               )}
               <span>
-                {index === 0 && "Nhà du lịch"}
-                {index === 1 && "Nhà cung cấp"}
-                {index === 2 && "Quản lý"}
+                {index === 0 && `Nhà du lịch (${accountTravelers})`}
+                {index === 1 && `Nhà cung cấp (${accountSuppliers})`}
+                {index === 2 && `Quản lý (${accountStaffs})`}
               </span>
             </div>
           ))}

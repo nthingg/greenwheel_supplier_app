@@ -25,6 +25,17 @@ export const LOAD_ORDERS_FILTER = gql`
   }
 `;
 
+export const LOAD_ORDERS = gql`
+  {
+    orders(first: 100, order: { id: ASC }) {
+      nodes {
+        id
+        currentStatus
+      }
+    }
+  }
+`;
+
 export const LOAD_DETAIL_ORDER = gql`
   query GetOrderById($id: Int!) {
     orders(where: { id: { eq: $id } }) {

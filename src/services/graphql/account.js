@@ -21,6 +21,17 @@ export const LOAD_ACCOUNTS_FILTER = gql`
   }
 `;
 
+export const LOAD_ACCOUNTS = gql`
+  {
+    accounts(first: 100, order: { id: ASC }) {
+      nodes {
+        id
+        role
+      }
+    }
+  }
+`;
+
 export const LOAD_DETAIL_ACCOUNT = gql`
   query GetAccountById($id: Int!) {
     accounts(where: { id: { eq: $id } }) {

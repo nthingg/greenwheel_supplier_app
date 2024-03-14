@@ -11,7 +11,7 @@ import { IconButton } from "@mui/material";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { LOAD_ORDERS_FILTER } from "../services/graphql/order";
+import { LOAD_ORDERS, LOAD_ORDERS_FILTER } from "../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -35,28 +35,89 @@ const TransactionPage = () => {
     switch (index) {
       case 0:
         setSelectedStatus([orderStatus[0]]);
-        refetch();
         break;
       case 1:
         setSelectedStatus([orderStatus[1]]);
-        refetch();
         break;
       case 2:
         setSelectedStatus([orderStatus[2]]);
-        refetch();
         break;
       case 3:
         setSelectedStatus([orderStatus[3]]);
-        refetch();
         break;
       case 4:
         setSelectedStatus([orderStatus[4]]);
-        refetch();
         break;
       default:
         break;
     }
+    refetch();
+    refetchTotal();
   };
+
+  const [reservedOrders, setReserved] = useState(0);
+  const [prepOrders, setPrep] = useState(0);
+  const [servedOrders, setServed] = useState(0);
+  const [cancelledOrders, setCancelled] = useState(0);
+  const [complainOrders, setComplain] = useState(0);
+  const {
+    error: errorTotal,
+    loading: loadingTotal,
+    data: dataTotal,
+    refetch: refetchTotal,
+  } = useQuery(LOAD_ORDERS);
+
+  useEffect(() => {
+    if (
+      !loadingTotal &&
+      !errorTotal &&
+      dataTotal.orders &&
+      dataTotal.orders.nodes
+    ) {
+      console.log(dataTotal);
+
+      let countReserved = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "RESERVED") {
+          countReserved++;
+        }
+      }
+
+      let countPrep = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "PREPARED") {
+          countPrep++;
+        }
+      }
+
+      let countServed = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "SERVED") {
+          countServed++;
+        }
+      }
+
+      let countCanceled = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "CANCELLED") {
+          countCanceled++;
+        }
+      }
+
+      let countComplain = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "COMPLAINED") {
+          countComplain++;
+        }
+      }
+
+      setReserved(countReserved);
+      setPrep(countPrep);
+      setServed(countServed);
+      setCancelled(countCanceled);
+      setComplain(countComplain);
+    }
+  }, [dataTotal, loadingTotal, errorTotal]);
 
   const { error, loading, data, refetch } = useQuery(LOAD_ORDERS_FILTER, {
     variables: {
@@ -132,11 +193,11 @@ const TransactionPage = () => {
               {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
               {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
               <span>
-                {index === 0 && "Đã đặt"}
-                {index === 1 && "Đã chuẩn bị"}
-                {index === 2 && "Đã phục vụ"}
-                {index === 3 && "Đã hủy"}
-                {index === 4 && "Bị phản ánh"}
+                {index === 0 && `Đã đặt (${reservedOrders})`}
+                {index === 1 && `Đã chuẩn bị (${prepOrders})`}
+                {index === 2 && `Đã phục vụ (${servedOrders})`}
+                {index === 3 && `Đã hủy (${cancelledOrders})`}
+                {index === 4 && `Bị phản ánh (${complainOrders})`}
               </span>
             </div>
           ))}
