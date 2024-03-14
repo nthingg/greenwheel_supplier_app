@@ -9,14 +9,6 @@ export const LOGIN = gql`
   }
 `;
 
-export const CANCEL_ORDER = gql`
-  mutation cancel($input: OrderCancelInput!) {
-    cancelOrder(dto: $input) {
-      id
-    }
-  }
-`;
-
 export const CREATE_PRODUCT = gql`
   mutation createProduct($input: ProductCreateInput!) {
     createProduct(dto: $input) {

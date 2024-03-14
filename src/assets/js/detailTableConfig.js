@@ -12,7 +12,7 @@ export const detailsColumns = [
   {
     field: "name",
     headerName: "TÊN DỊCH VỤ",
-    width: 400,
+    width: 300,
     renderCell: (params) => {
       return <div>{params.row.product.name}</div>;
     },
@@ -30,7 +30,7 @@ export const detailsColumns = [
   },
   {
     field: "price",
-    width: 250,
+    width: 200,
     align: "right",
     headerAlign: "center",
     renderCell: (params) => {
@@ -42,7 +42,7 @@ export const detailsColumns = [
   },
   {
     field: "total",
-    width: 250,
+    width: 200,
     align: "right",
     headerAlign: "center",
     renderCell: (params) => {

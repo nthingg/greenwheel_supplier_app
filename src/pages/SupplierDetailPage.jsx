@@ -58,6 +58,7 @@ const SupplierDetailPage = () => {
 
   const [address, setAddress] = useState(defaultAddress);
   const [showMap, setShowMap] = useState(false);
+  const [phone, setPhone] = useState("");
 
   const handleClick = (index) => {
     setSelectedDiv(index);
@@ -91,6 +92,7 @@ const SupplierDetailPage = () => {
         lng: data["suppliers"]["nodes"][0].coordinate.coordinates[0],
       };
       setPosition(center);
+      setPhone(data["suppliers"]["nodes"][0].phone);
     }
   }, [data, loading, error]);
 
@@ -119,6 +121,37 @@ const SupplierDetailPage = () => {
       setProducts(res);
     }
   }, [dataProducts, loadingProducts, errorProducts]);
+
+  function formatPhoneNumber(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2, part3;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = phoneNumber.slice(0, 3);
+        part2 = phoneNumber.slice(3, 6);
+        part3 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = phoneNumber.slice(0, 4);
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        console.warn(`Invalid phone number length: ${phoneNumber}`);
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1} ${part2} ${part3}`;
+  }
 
   return (
     <div className="supplierDetailContainer">
@@ -175,7 +208,7 @@ const SupplierDetailPage = () => {
             <div className="details">
               <div className="detailItem">
                 <span className="itemKey">Số điện thoại:</span>
-                <span className="itemValue">{supplier?.phone}</span>
+                <span className="itemValue">{formatPhoneNumber(phone)}</span>
               </div>
               <div className="detailItem">
                 <span className="itemKey">Địa chỉ:</span>
@@ -218,7 +251,7 @@ const SupplierDetailPage = () => {
         </div>
         <div className="tableProducts">
           <div className="bottom">
-            {(supplier?.type == "REPAIR_SHOP" ||
+            {/* {(supplier?.type == "REPAIR_SHOP" ||
               supplier?.type == "VEHICLE_RENTAL") && (
               <Accordion disabled>
                 <AccordionSummary
@@ -233,7 +266,7 @@ const SupplierDetailPage = () => {
                   Các dịch vụ hiện có
                 </AccordionSummary>
               </Accordion>
-            )}
+            )} */}
             {supplier?.type != "REPAIR_SHOP" &&
               supplier?.type != "VEHICLE_RENTAL" && (
                 <Accordion>

@@ -97,3 +97,19 @@ export const LOAD_NUMBERS_RESERVED = gql`
     }
   }
 `;
+
+export const CANCEL_ORDER = gql`
+  mutation cancel($input: OrderCancelInput!) {
+    cancelOrder(dto: $input) {
+      id
+    }
+  }
+`;
+
+export const CHANGE_STATUS_ORDER = gql`
+  mutation changeStatus($input: OrderChangeStatusInput!) {
+    changeOrderStatus(dto: $input) {
+      id
+    }
+  }
+`;

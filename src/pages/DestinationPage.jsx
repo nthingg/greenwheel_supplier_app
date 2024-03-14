@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import "../assets/scss/productPage.scss";
+import "../assets/scss/destinationPage.scss";
 import "../assets/scss/shared.scss";
 import ProductTable from "../components/ProductTable";
 import AddIcon from "@mui/icons-material/Add";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -21,39 +23,44 @@ const DestinationPage = () => {
   }, [data, loading, error]);
 
   return (
-    <div className="product">
+    <div className="destination-page">
       <div className="sharedTitle">
-        <p>Danh sách địa điểm</p>
-      </div>
-      <div className="productContainer">
-        <div className="tableHeader">
-          <div className="left">
-            <input
-              type="text"
-              className={"form-control"}
-              id="floatingValue"
-              name="value"
-              placeholder="Tìm kiếm bằng STT, tên địa điểm, vị trí..."
-            />
-          </div>
-          <div className="right">
-            <Link to="/products/new" className="link">
-              <AddIcon />
-              <span>Thêm địa điểm</span>
-            </Link>
-            <button className="link">
-              <FilterAltIcon />
-            </button>
-            <button
-              className="link"
-              onClick={() => {
-                refetch();
-              }}
-            >
-              <RefreshIcon />
-            </button>
-          </div>
+        <div>
+          <p className="title">Địa điểm</p>
+          <p className="sub-title">Danh sách địa điểm</p>
         </div>
+      </div>
+      <div className="header">
+        <div className="left">
+          <input
+            type="text"
+            className={"form-control"}
+            id="floatingValue"
+            name="value"
+            placeholder="Tìm kiếm ..."
+          />
+          <button className="link">
+            <SearchIcon />
+          </button>
+        </div>
+        <div className="right">
+          <button className="link">
+            <FilterAltIcon />
+          </button>
+          <button className="link">
+            <CloudDownloadIcon /> <span>Xuất file Excel</span>
+          </button>
+          <button
+            className="link"
+            onClick={() => {
+              refetch();
+            }}
+          >
+            <RefreshIcon />
+          </button>
+        </div>
+      </div>
+      <div className="destinationContainer">
         <DestinationTable destinations={destinations} />
       </div>
     </div>

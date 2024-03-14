@@ -1,6 +1,4 @@
-import { Switch } from "@mui/material";
-
-export const plansColumns = [
+export const accountPlansColumns = [
   {
     field: "index",
     width: 80,
@@ -19,18 +17,6 @@ export const plansColumns = [
     },
     renderHeader: () => <span>Kế hoạch</span>,
   },
-  {
-    field: "host",
-    width: 180,
-    align: "right",
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      return <div>{params.row.account.name}</div>;
-    },
-    renderHeader: () => <span>Trưởng nhóm</span>,
-  },
-
   {
     field: "destination",
     width: 260,

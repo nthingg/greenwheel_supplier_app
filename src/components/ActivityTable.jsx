@@ -1,18 +1,19 @@
-import "../assets/scss/emergencyTable.scss";
+import "../assets/scss/activityTable.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
-import { emergenciesColumns } from "../assets/js/emergencyTableConfig";
+import { activitiesColumn } from "../assets/js/activitiyTableConfig";
 
-const EmergencyTable = ({ list }) => {
+const ActivityTable = ({ activities }) => {
   return (
-    <div className="emergencyTable">
+    <div className="activityTable">
       <DataGrid
-        rows={list}
-        columns={emergenciesColumns}
+        rows={activities}
+        columns={activitiesColumn}
         rowSelection={false}
         pagination
-        pageSizeOptions={[]}
-        autoHeight={true}
+        // pageSizeOptions={[]}
+        // autoHeight={true}
+        autoPageSize
         showColumnVerticalBorder={true}
         sx={{
           "& .MuiDataGrid-columnHeader": {
@@ -30,4 +31,4 @@ const EmergencyTable = ({ list }) => {
   );
 };
 
-export default EmergencyTable;
+export default ActivityTable;

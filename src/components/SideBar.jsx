@@ -6,6 +6,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import TerminalIcon from "@mui/icons-material/Terminal";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MapIcon from "@mui/icons-material/Map";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -47,6 +48,12 @@ const SideBar = () => {
                 <li>
                   <CalendarMonthIcon className="icon" />
                   <span>Quản lý kế hoạch</span>
+                </li>
+              </NavLink>
+              <NavLink to="/accounts" style={{ textDecoration: "none" }}>
+                <li>
+                  <AccountCircleIcon className="icon" />
+                  <span>Quản lý tài khoản</span>
                 </li>
               </NavLink>
               <NavLink to="/destinations" style={{ textDecoration: "none" }}>

@@ -9,12 +9,40 @@
         color: white;
     }
 
+    .mix-table {
+        display: flex;
+        justify-content: space-around;
+
+        .left,
+        .right {
+            .table-title {
+                font-size: 24px;
+            }
+        }
+    }
+
     .order-modify {
         .groupBtn {
             display: flex;
 
+            .sepa {
+                height: 100%;
+                text-decoration: none;
+                font-size: 16px;
+                padding: 4px;
+                margin: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                border: none;
+            }
+
             .edit,
-            .remove {
+            .remove,
+            .prepare,
+            .serve {
+                height: 100%;
                 width: 130px;
                 text-decoration: none;
                 font-size: 16px;
@@ -52,6 +80,14 @@
             .remove:hover {
                 background-color: #b03a2e;
             }
+
+            .prepare {
+                background-color: #f4d03f;
+            }
+
+            .prepare:hover {
+                background-color: #d4ac0d;
+            }
         }
     }
 
@@ -83,8 +119,23 @@
             border-radius: 10px;
         }
 
-        .confirmed {
+        .reserved {
+            background-color: #3498db;
+            font-size: 16px;
+        }
+
+        .prepared {
+            background-color: #f4d03f;
+            font-size: 16px;
+        }
+
+        .served {
             background-color: #28b463;
+            font-size: 16px;
+        }
+
+        .complained {
+            background-color: #3498db;
             font-size: 16px;
         }
 

@@ -1,4 +1,4 @@
-.planDetail {
+.travelerProfile {
     background-color: #f2f2f2;
     padding: 20px 30px 50px 30px;
     height: fit-content;
@@ -16,6 +16,52 @@
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 8px;
         padding: 30px 40px 60px 40px;
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+
+            .profile-name {
+                font-size: 32px;
+                font-weight: 600;
+                display: flex;
+                line-height: 80px;
+
+                p {
+                    margin: 0;
+                }
+
+                .cellImg {
+                    width: 96px;
+                    height: 96px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    margin-right: 20px;
+                }
+            }
+
+            .status {
+                margin-left: 30px;
+                font-weight: normal;
+                font-size: 18px;
+                padding: 10px;
+
+                color: white;
+                border-radius: 10px;
+            }
+
+            .confirmed {
+                background-color: #28b463;
+                font-size: 16px;
+            }
+
+            .cancelled {
+                background-color: #e74c3c;
+                font-size: 16px;
+            }
+        }
 
         .mix-table {
             display: flex;
@@ -49,13 +95,6 @@
 
         .top {
             margin-bottom: 20px;
-
-            .detail-title {
-                p {
-                    font-size: 32px;
-                    font-weight: 600;
-                }
-            }
         }
 
         .bottom {

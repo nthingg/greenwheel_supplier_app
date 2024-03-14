@@ -32,7 +32,33 @@ export const suppliersColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.phone}</div>;
+      function formatPhoneNumber(phoneNumber) {
+        // Replace leading "+84" with "0" (if present)
+        phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+        let part1, part2;
+        switch (phoneNumber.length) {
+          case 9:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(6);
+            break;
+          case 10:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(7);
+            break;
+          case 11:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(7);
+            break;
+          default:
+            // Handle invalid lengths (optional)
+            return phoneNumber;
+        }
+
+        // Combine parts with spaces
+        return `${part1}${part2}`;
+      }
+      return <div>{formatPhoneNumber(params.row.phone)}</div>;
     },
     renderHeader: () => <span>SĐT</span>,
   },

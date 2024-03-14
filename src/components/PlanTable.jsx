@@ -6,20 +6,21 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { plansColumns } from "../assets/js/planConfig";
+import { accountPlansColumns } from "../assets/js/accountPlanConfig";
 
-const PlanTable = ({ plans }) => {
+const PlanTable = ({ plans, accountPlans }) => {
   const navigate = useNavigate();
 
   const actionColumn = [
     {
       field: "action",
-      width: 140,
+      width: 100,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        let check = params.row.isPublic;
+        let check = params.row.status;
         switch (check) {
-          case true:
+          case "PUBLISHED":
             return (
               <IconButton
                 color="info"
@@ -30,15 +31,42 @@ const PlanTable = ({ plans }) => {
                 <VisibilityIcon />
               </IconButton>
             );
-          case false:
+          case "READY":
             return (
-              <IconButton color="info" disabled={true}>
-                <VisibilityOffIcon />
+              <IconButton
+                color="info"
+                onClick={() => {
+                  navigate(`/plans/${params.row.id}`);
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+            );
+          case "CANCELED":
+            return (
+              <IconButton
+                color="info"
+                onClick={() => {
+                  navigate(`/plans/${params.row.id}`);
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+            );
+          case "VERIFIED":
+            return (
+              <IconButton
+                color="info"
+                onClick={() => {
+                  navigate(`/plans/${params.row.id}`);
+                }}
+              >
+                <VisibilityIcon />
               </IconButton>
             );
           default:
             return (
-              <IconButton color="info">
+              <IconButton color="info" disabled={true}>
                 <VisibilityOffIcon />
               </IconButton>
             );
@@ -48,26 +76,56 @@ const PlanTable = ({ plans }) => {
     },
   ];
   return (
-    <div className="planTable">
-      <DataGrid
-        rows={plans}
-        columns={plansColumns.concat(actionColumn)}
-        rowSelection={false}
-        pagination
-        autoPageSize
-        showColumnVerticalBorder={true}
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#2ECC71",
-            color: "white",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightWidth: "2px",
-          },
-          boxShadow: 2,
-        }}
-      />
+    <div>
+      {plans && (
+        <div className="planTable">
+          <DataGrid
+            rows={plans}
+            columns={plansColumns.concat(actionColumn)}
+            rowSelection={false}
+            pagination
+            pageSizeOptions={8}
+            autoHeight={true}
+            showColumnVerticalBorder={true}
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2ECC71",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightWidth: "2px",
+              },
+              boxShadow: 2,
+            }}
+          />
+        </div>
+      )}
+      {accountPlans && (
+        <div className="planTable">
+          <DataGrid
+            rows={accountPlans}
+            columns={accountPlansColumns}
+            rowSelection={false}
+            pagination
+            autoPageSize={true}
+            pageSizeOptions={[]}
+            showColumnVerticalBorder={true}
+            sx={{
+              height: 320,
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2ECC71",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightWidth: "2px",
+              },
+              boxShadow: 2,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

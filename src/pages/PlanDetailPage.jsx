@@ -3,11 +3,16 @@ import "../assets/scss/traceTable.scss";
 import "../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LOAD_DETAIL_PLAN } from "../services/queries";
 import { useQuery } from "@apollo/client";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Dialog,
   DialogActions,
@@ -15,11 +20,20 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  styled,
 } from "@mui/material";
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import MapIcon from "@mui/icons-material/Map";
 import TransacionTable from "../components/TransactionTable";
 import EmergencyTable from "../components/EmergencyTable";
+import { LOAD_DETAIL_PLAN } from "../services/graphql/plan";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { PickersDay } from "@mui/x-date-pickers";
+import ActivityTable from "../components/ActivityTable";
+import MemberTable from "../components/MemberTable";
+import PlanOrderTable from "../components/PlanOrderTable";
 
 const PlanDetailPage = () => {
   const { planId } = useParams();
@@ -28,12 +42,22 @@ const PlanDetailPage = () => {
   const [emergencies, setEmergencies] = useState([]);
   const [open, setOpen] = useState(false);
   const [openDepart, setOpenDepart] = useState(false);
-  const [position, setPosition] = useState(false);
-  const [positionDepart, setPositionDepart] = useState(false);
-  const [departDate, setDepartDate] = useState(false);
-  const [endDate, setEndDate] = useState(false);
-  const [closeRegDate, setCloseRegDate] = useState(false);
-  const [schedule, setSchedule] = useState(null);
+  const [position, setPosition] = useState(null);
+  const [positionDepart, setPositionDepart] = useState(null);
+  const [departDate, setDepartDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
+  const [closeRegDate, setCloseRegDate] = useState("");
+  const [schedule, setSchedule] = useState([]);
+  const [phone, setPhone] = useState("");
+  const [dates, setDates] = useState([]);
+  const [eventIndex, setEventIndex] = useState(-1);
+  const [activities, setActivities] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [currentDate, setCurrentDate] = useState("");
+  const [phoneHide, setPhoneHide] = useState("");
+  const [phoneVisibility, setPhoneVisibility] = useState(false);
 
   const containerStyle = {
     width: "950px",
@@ -61,6 +85,68 @@ const PlanDetailPage = () => {
       id: parseInt(planId, 10),
     },
   });
+
+  const triggerPhone = () => {
+    setPhoneVisibility(!phoneVisibility);
+  };
+
+  function formatPhoneNumber(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2, part3;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = phoneNumber.slice(0, 3);
+        part2 = phoneNumber.slice(3, 6);
+        part3 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = phoneNumber.slice(0, 4);
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        console.warn(`Invalid phone number length: ${phoneNumber}`);
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1} ${part2} ${part3}`;
+  }
+
+  function formatPhoneNumberCen(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1}${part2}`;
+  }
 
   useEffect(() => {
     if (!loading && !error && data && data["plans"] && data["plans"]["nodes"]) {
@@ -91,73 +177,188 @@ const PlanDetailPage = () => {
       };
       setPositionDepart(depart);
 
-      const departDate = new Date(data["plans"]["nodes"][0]["departDate"]);
-      setDepartDate(departDate.toLocaleString("en-GB"));
-      const closeRegDate = new Date(data["plans"]["nodes"][0]["closeRegDate"]);
-      setCloseRegDate(closeRegDate.toLocaleString("en-GB"));
+      const departDate = new Date(data["plans"]["nodes"][0]["departAt"]);
+      setDepartDate(
+        departDate.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
+      const closeRegDate = new Date(data["plans"]["nodes"][0]["regClosedAt"]);
+      setCloseRegDate(
+        closeRegDate.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
       const endDate = new Date(data["plans"]["nodes"][0]["endDate"]);
-      setEndDate(endDate.toLocaleString("en-GB"));
+      setEndDate(
+        endDate.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
+      const startDate = new Date(data["plans"]["nodes"][0]["startDate"]);
+      setStartDate(
+        startDate.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
+      const createdAt = new Date(data["plans"]["nodes"][0]["createdAt"]);
+      setCreatedAt(
+        createdAt.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
 
       //Schedule
-      console.log(data["plans"]["nodes"][0]["schedule"]);
-      console.log(data["plans"]["nodes"][0]["schedule"][0]);
-      console.log(data["plans"]["nodes"][0]["schedule"][0]["events"]);
-      console.log(data["plans"]["nodes"][0]["schedule"][0]["events"][0].type);
       setSchedule(data["plans"]["nodes"][0]["schedule"]);
 
+      setPhone(formatPhoneNumber(data["plans"]["nodes"][0].account.phone));
+      setPhoneHide(
+        formatPhoneNumberCen(data["plans"]["nodes"][0].account.phone)
+      );
+
+      const startDateFormat = new Date(startDate);
+      const endDateFormat = new Date(endDate);
+
+      const dateArray = [];
+      let currentDate = startDate;
+
+      while (currentDate <= endDate) {
+        dateArray.push(currentDate.toISOString().slice(0, 10)); // Extract YYYY-MM-DD format
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      setDates(dateArray);
+
+      let resMem = data["plans"]["nodes"][0]["members"].map((node, id) => {
+        const { __typename, ...rest } = node;
+        return { ...rest, id: id + 1 }; // Add the index to the object
+      });
+      setMembers(resMem);
     }
   }, [data, loading, error]);
 
+  const HighlightedDay = styled(PickersDay)(({ theme }) => ({
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+    },
+  }));
+
+  //higlight the dates in highlightedDays arra
+  const ServerDay = (props) => {
+    const { dates = [], day, outsideCurrentMonth, ...other } = props;
+
+    const isSelected =
+      !props.outsideCurrentMonth && dates.includes(day.format("YYYY-MM-DD"));
+
+    return (
+      <HighlightedDay
+        {...other}
+        outsideCurrentMonth={outsideCurrentMonth}
+        day={day}
+        selected={isSelected}
+      />
+    );
+  };
+
   return (
-    <div className="transactionDetail">
+    <div className="planDetail">
       <div className="sharedTitle">
         <div className="navigation">
-          <Link to="/plans" className="navigateButton">
-            <ArrowCircleLeftIcon />
-            <p>Trở về</p>
-          </Link>
-          <p>Danh sách kế hoạch</p>
-          <ArrowForwardIosIcon />
-          <p> Thông tin kế hoạch</p>
+          <div className="left">
+            <div className="return-btn">
+              <Link to="/plans" className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">Thông tin chi tiết kế hoạch</div>
+              <div className="return-body">
+                <p>Danh sách kế hoạch</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết kế hoạch</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="transactionContainer">
+      <div className="planDetailContainer">
         <div className="top">
-          <div className="sharedTitle">
-            <div className="order-header">
-              <p>{plan?.name}</p>
-            </div>
+          <div className="detail-title">
+            <p>{plan?.name}</p>
           </div>
         </div>
         <div className="center">
           <div className="item">
-            <h1 className="itemTitle">Thông tin chi tiết về kế hoạch</h1>
+            <h1 className="itemTitle">Thông tin chi tiết</h1>
             <div className="details">
               <div className="left">
                 <div className="detailItem">
                   <span className="itemKey">Trưởng nhóm:</span>
-                  <span className="itemValue">{plan?.account.name}</span>
+                  <span className="itemValue">
+                    <a href={`/plans/traveler-info/${plan?.account.id}`}>
+                      {plan?.account.name}
+                    </a>
+                  </span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Số điện thoại:</span>
-                  <span className="itemValue">{plan?.account.phone}</span>
+                  {phoneVisibility === false ? (
+                    <span className="itemValue">
+                      {phoneHide}
+                      <IconButton
+                        className="mapBtn"
+                        color="info"
+                        onClick={triggerPhone}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </span>
+                  ) : (
+                    <span className="itemValue">
+                      {phone}
+                      <IconButton
+                        className="mapBtn"
+                        color="info"
+                        onClick={triggerPhone}
+                      >
+                        <VisibilityOffIcon />
+                      </IconButton>
+                    </span>
+                  )}
                 </div>
-                {/* <div className="detailItem">
-                  <span className="itemKey">Ngày tạo:</span>
-                  <span className="itemValue">{plan?.createAt}</span>
-                </div> */}
                 <div className="detailItem">
-                  <span className="itemKey">Ngày chốt thành viên:</span>
-                  <span className="itemValue">{closeRegDate}</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Số thành viên tối đa:</span>
+                  <span className="itemKey">Thành viên:</span>
                   <span className="itemValue">
-                    {plan?.memberLimit + " người"}
+                    {plan?.memberCount}/{plan?.memberLimit} người
                   </span>
                 </div>
+                {/* <div className="detailItem">
+                  <span className="itemKey">Ngày bắt đầu:</span>
+                  <span className="itemValue">{startDate}</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Ngày kết thúc:</span>
+                  <span className="itemValue">{endDate}</span>
+                </div> */}
               </div>
               <div className="right">
+                <div className="detailItem">
+                  <span className="itemKey">Địa điểm:</span>
+                  <span className="itemValue">
+                    <a href={`/destinations/${plan?.destination.id}`}>
+                      {plan?.destination.name}
+                    </a>
+                    <IconButton
+                      className="mapBtn"
+                      color="info"
+                      onClick={handleClickOpen}
+                    >
+                      <MapIcon />
+                    </IconButton>
+                  </span>
+                </div>
                 <div className="detailItem">
                   <span className="itemKey">Ngày khởi hành:</span>
                   <span className="itemValue">
@@ -175,46 +376,25 @@ const PlanDetailPage = () => {
                   <span className="itemKey">Ngày kết thúc:</span>
                   <span className="itemValue">{endDate}</span>
                 </div>
-                <div className="detailItem">
-                  <span className="itemKey">Địa điểm:</span>
-                  <span className="itemValue">
-                    <a href={`/destinations/${plan?.destination.id}`}>
-                      {plan?.destination.name}
-                    </a>
-                    <IconButton
-                      className="mapBtn"
-                      color="info"
-                      onClick={handleClickOpen}
-                    >
-                      <MapIcon />
-                    </IconButton>
-                  </span>
-                </div>
                 {/* <div className="detailItem">
-                  <span className="itemKey">Dịch vụ:</span>
+                  <span className="itemKey">Thành viên hiện tại:</span>
                   <span className="itemValue">
-                    {(() => {
-                      switch (order?.details[0].product.supplier.type) {
-                        case "CAMPING":
-                          return "Cắm trại";
-                        case "GROCERY":
-                          return "Tạp hóa";
-                        case "MOTEL":
-                          return "Nhà nghỉ";
-                        case "REPAIR":
-                          return "Sửa xe";
-                        case "RESTAURANT":
-                          return "Nhà hàng";
-                        case "TAXI":
-                          return "Taxi";
-                        case "VEHICLE_RENTING":
-                          return "Thuê xe";
-                        default:
-                          return "Khác";
-                      }
-                    })()}
+                    {plan?.memberCount + " người"}
                   </span>
                 </div> */}
+                {/* <div className="detailItem">
+                  <span className="itemKey">Thành viên tối đa:</span>
+                  <span className="itemValue">
+                    {plan?.memberLimit + " người"}
+                  </span>
+                </div>
+                {plan?.status === "PUBLIC" && (
+                  <div className="detailItem">
+                    <span className="itemKey">Ngày chốt:</span>
+                    <span className="itemValue">{closeRegDate}</span>
+                  </div>
+                )}
+
                 <div className="detailItem">
                   <span className="itemKey">Chi phí bình quân:</span>
                   <span className="itemValue">
@@ -222,37 +402,161 @@ const PlanDetailPage = () => {
                       "vi-VN"
                     ) + "đ"}
                   </span>
-                </div>
+                </div> */}
+                {/* {(plan?.status == "PUBLISHED" || plan?.status == "READY") && (
+                  <div className="detailItem">
+                    <span className="itemKey">Quỹ nhóm hiện có:</span>
+                    <span className="itemValue">
+                      {(plan?.currentGcoinBudget * 100).toLocaleString(
+                        "vi-VN"
+                      ) + "đ"}
+                    </span>
+                  </div>
+                )} */}
               </div>
             </div>
           </div>
-          <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Kế hoạch chi tiết</h1>
-              {plan?.schedule.map((day, dayIndex) => (
-                <div> 
-                  <p> Ngày {dayIndex+1} :
-                  <ul>
-                    {day.events.map((event, eventIndex) => (
-                      <li key={eventIndex}>{event.shortDescription}</li>
-                    ))}
-                  </ul>
-                  </p>
+          {/* <div className="bottom">
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Lịch trình ({startDate} - {endDate})
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <div className="mix-table">
+                  <div className="left">
+                    <p className="activities-title">Ngày hoạt động</p>
+                    <div className="calendar">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateCalendar
+                          value={dates[0] ? dayjs(dates[0]) : dayjs()}
+                          // readOnly
+                          slots={{
+                            day: ServerDay,
+                          }}
+                          slotProps={{
+                            day: {
+                              dates,
+                            },
+                          }}
+                          onChange={(value) => {
+                            // Create a date object
+                            const date = new Date(value.$y, value.$M, value.$D);
+                            date.setDate(date.getDate() + 1);
+                            const dateConverted = date
+                              .toISOString()
+                              .slice(0, 10);
+                            if (dates.indexOf(dateConverted) == -1) {
+                              setActivities(null);
+                            } else {
+                              let list =
+                                plan?.schedule[dates.indexOf(dateConverted)];
+
+                              let res = list.events.map((node, id) => {
+                                const { __typename, ...rest } = node;
+                                return { ...rest, id: id + 1 }; // Add the index to the object
+                              });
+                              setActivities(res);
+                            }
+
+                            // console.log(activities);
+                          }}
+                        />
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                  <div className="right">
+                    <p className="activities-title">Chi tiết hoạt động</p>
+                    <div className="activities-container">
+                      <div className="tbl">
+                        {activities && (
+                          <ActivityTable activities={activities} />
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </AccordionDetails>
+            </Accordion>
           </div>
           <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Danh sách đơn hàng</h1>
-              <TransacionTable orders={orders} />
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Danh sách thành viên
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <MemberTable members={members} />
+              </AccordionDetails>
+            </Accordion>
+          </div> */}
+          <div className="bottom">
+            {/* <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Danh sách đơn hàng
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <PlanOrderTable orders={orders} />
+              </AccordionDetails>
+            </Accordion> */}
+            <div className="bottom">
+              <div className="item">
+                <h1 className="itemTitle">Danh sách đơn hàng</h1>
+                <PlanOrderTable orders={orders} />
+              </div>
             </div>
           </div>
           {/* <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Danh sách số khẩn cấp</h1>
-              <EmergencyTable list={emergencies} />
-            </div>
+            <Accordion>
+              <AccordionSummary
+                sx={{
+                  fontSize: 24,
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Danh sách số khẩn cấp
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  minWidth: 1400,
+                }}
+              >
+                <EmergencyTable list={emergencies} />
+              </AccordionDetails>
+            </Accordion>
           </div> */}
         </div>
       </div>

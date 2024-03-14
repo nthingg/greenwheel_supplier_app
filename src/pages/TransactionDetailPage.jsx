@@ -7,7 +7,6 @@ import DetailTable from "../components/TransactionDetailTable";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { CANCEL_ORDER } from "../services/mutations";
 import {
   Dialog,
   DialogActions,
@@ -38,9 +37,14 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { PickersDay } from "@mui/x-date-pickers";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
-import TracesTable from "../components/TraceTable";
-import { LOAD_DETAIL_ORDER } from "../services/graphql/order";
-import { green } from "@mui/material/colors";
+import MicrowaveIcon from "@mui/icons-material/Microwave";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import {
+  CANCEL_ORDER,
+  CHANGE_STATUS_ORDER,
+  LOAD_DETAIL_ORDER,
+} from "../services/graphql/order";
 
 const TransactionDetailPage = () => {
   const { orderId } = useParams();
@@ -56,6 +60,13 @@ const TransactionDetailPage = () => {
   const [reasonCancelled, setReasonCancelled] = useState(null);
   const [highlightedDays, setHighlitedDays] = useState([]);
   const [cancellable, setCancellable] = useState(false);
+  const [status, setStatus] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const [
+    change,
+    { data: changeData, loading: changeLoading, error: changeError },
+  ] = useMutation(CHANGE_STATUS_ORDER);
 
   const [
     cancel,
@@ -67,6 +78,19 @@ const TransactionDetailPage = () => {
       id: parseInt(orderId, 10),
     },
   });
+
+  useEffect(() => {
+    if (
+      !changeLoading &&
+      !changeError &&
+      changeData &&
+      changeData["changeOrderStatus"]["id"]
+    ) {
+      if (changeData.changeOrderStatus.id !== undefined) {
+        refetch();
+      }
+    }
+  }, [changeData, changeLoading, changeError]);
 
   useEffect(() => {
     if (
@@ -100,7 +124,11 @@ const TransactionDetailPage = () => {
       setDetails(resDetail);
 
       const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
-      setDate(date.toLocaleString("en-GB"));
+      setDate(
+        date.toLocaleDateString("vi-VN", {
+          timeZone: "UTC",
+        })
+      );
       const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
       const today = new Date();
 
@@ -130,6 +158,12 @@ const TransactionDetailPage = () => {
         return { ...rest, id: id + 1 }; // Add the index to the object
       });
       setTraces(res);
+
+      //phone
+      setPhone(data["orders"]["nodes"][0].account.phone);
+
+      setStatus(data["orders"]["nodes"][0]["currentStatus"]);
+      console.log(status);
     }
   }, [data, loading, error]);
 
@@ -165,6 +199,33 @@ const TransactionDetailPage = () => {
     });
   };
 
+  const handleChangeStatus = () => {
+    switch (status) {
+      case "RESERVED":
+        change({
+          variables: {
+            input: {
+              orderId: parseInt(orderId, 10),
+              status: "PREPARED",
+            },
+          },
+        });
+        break;
+      case "PREPARED":
+        change({
+          variables: {
+            input: {
+              orderId: parseInt(orderId, 10),
+              status: "SERVED",
+            },
+          },
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleCloseReason = () => {
     setOpenReason(false);
   };
@@ -198,6 +259,33 @@ const TransactionDetailPage = () => {
     );
   };
 
+  function formatPhoneNumber(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1}${part2}`;
+  }
+
   return (
     <div className="transactionDetail">
       <div className="sharedTitle">
@@ -220,16 +308,31 @@ const TransactionDetailPage = () => {
           </div>
           <div className="right">
             <div className="order-modify">
-              {order?.currentStatus === "RESERVED" && (
-                <div className="groupBtn">
-                  {cancellable === true && (
-                    <button className="remove" onClick={handleClickOpen}>
-                      <CancelIcon />
-                      <p>Huỷ đơn</p>
-                    </button>
-                  )}
-                </div>
-              )}
+              <div className="groupBtn">
+                {cancellable === true && status !== "COMPLAINED" && (
+                  <button className="remove" onClick={handleClickOpen}>
+                    <CancelIcon />
+                    <p>Huỷ đơn</p>
+                  </button>
+                )}
+                {(status === "RESERVED" || status === "PREPARED") && (
+                  <button className="sepa">
+                    <FiberManualRecordIcon />
+                  </button>
+                )}
+                {status === "RESERVED" && (
+                  <button className="prepare" onClick={handleChangeStatus}>
+                    <MicrowaveIcon />
+                    <p>Chuẩn bị</p>
+                  </button>
+                )}
+                {status === "PREPARED" && (
+                  <button className="edit" onClick={handleChangeStatus}>
+                    <CheckCircleIcon />
+                    <p>Phục vụ</p>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -239,7 +342,7 @@ const TransactionDetailPage = () => {
           <div className="sharedTitle">
             <div className="order-header">
               <div className="order-id">
-                <p>Mã đơn #{order?.id}</p>
+                <p>Mã đơn #{order?.id.toString().padStart(9, "0")}</p>
               </div>
               <div className="order-status">
                 {order?.currentStatus === "CANCELLED" && (
@@ -251,7 +354,16 @@ const TransactionDetailPage = () => {
                   </a>
                 )}
                 {order?.currentStatus === "RESERVED" && (
-                  <p className="status confirmed">Đã chấp nhận</p>
+                  <p className="status reserved">Đã đặt</p>
+                )}
+                {order?.currentStatus === "PREPARED" && (
+                  <p className="status prepared">Đã chuẩn bị</p>
+                )}
+                {order?.currentStatus === "SERVED" && (
+                  <p className="status served">Đã phục vụ</p>
+                )}
+                {order?.currentStatus === "COMPLAINED" && (
+                  <p className="status complained">Bị phàn nàn</p>
                 )}
               </div>
             </div>
@@ -268,7 +380,7 @@ const TransactionDetailPage = () => {
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Số điện thoại:</span>
-                  <span className="itemValue">{order?.account.phone}</span>
+                  <span className="itemValue">{formatPhoneNumber(phone)}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Thời gian tạo:</span>
@@ -326,18 +438,62 @@ const TransactionDetailPage = () => {
                 aria-controls="panel1-content"
                 id="panel1-header"
               >
-                Các dịch vụ đã đặt
+                Các dịch vụ đặt và ngày phục vụ
               </AccordionSummary>
               <AccordionDetails
                 sx={{
                   minWidth: 1400,
                 }}
               >
-                <DetailTable details={details} />
+                <div className="mix-table">
+                  <div className="left">
+                    <p className="table-title">Dịch vụ đã đặt</p>
+                    <DetailTable details={details} />
+                  </div>
+                  <div className="right">
+                    <p className="table-title">Các ngày phục vụ</p>
+                    <div className="calendar">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <p>
+                          {(() => {
+                            switch (order?.period) {
+                              case "MORNING":
+                                return "Phục vụ vào buổi sáng";
+                              case "NOON":
+                                return "Phục vụ vào buổi trưa";
+                              case "AFTERNOON":
+                                return "Phục vụ vào buổi chiều";
+                              case "EVENING":
+                                return "Phục vụ vào buổi tối";
+                              default:
+                                return `Check-in vào ${order?.period}`;
+                            }
+                          })()}
+                        </p>
+                        <DateCalendar
+                          value={
+                            highlightedDays[0]
+                              ? dayjs(highlightedDays[0])
+                              : dayjs()
+                          }
+                          readOnly
+                          slots={{
+                            day: ServerDay,
+                          }}
+                          slotProps={{
+                            day: {
+                              highlightedDays,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                </div>
               </AccordionDetails>
             </Accordion>
           </div>
-          <div className="bottom">
+          {/* <div className="bottom">
             <Accordion>
               <AccordionSummary
                 sx={{
@@ -390,7 +546,7 @@ const TransactionDetailPage = () => {
                 </div>
               </AccordionDetails>
             </Accordion>
-          </div>
+          </div> */}
           <div className="bottom">
             <Accordion>
               <AccordionSummary

@@ -1,17 +1,20 @@
-import "../assets/scss/emergencyTable.scss";
+import "../assets/scss/planOrderTable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import React from "react";
-import { emergenciesColumns } from "../assets/js/emergencyTableConfig";
+import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { IconButton, Menu, MenuItem } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { planOrdersColumn } from "../assets/js/planOrderTableConfig";
 
-const EmergencyTable = ({ list }) => {
+const PlanOrderTable = ({ orders }) => {
   return (
-    <div className="emergencyTable">
+    <div className="planOrderTable">
       <DataGrid
-        rows={list}
-        columns={emergenciesColumns}
+        rows={orders}
+        columns={planOrdersColumn}
         rowSelection={false}
         pagination
-        pageSizeOptions={[]}
+        pageSizeOptions={8}
         autoHeight={true}
         showColumnVerticalBorder={true}
         sx={{
@@ -30,4 +33,4 @@ const EmergencyTable = ({ list }) => {
   );
 };
 
-export default EmergencyTable;
+export default PlanOrderTable;

@@ -6,17 +6,26 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { IconButton } from "@mui/material";
 //graphql
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { LOAD_ORDERS_FILTER } from "../services/graphql/order";
+import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
+import MicrowaveIcon from "@mui/icons-material/Microwave";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FeedbackIcon from "@mui/icons-material/Feedback";
 
 const TransactionPage = () => {
   const iconColors = ["success", "error"]; // Define colors based on index
-  const orderStatus = ["RESERVED", "CANCELLED"];
+  const orderStatus = [
+    "RESERVED",
+    "PREPARED",
+    "SERVED",
+    "CANCELLED",
+    "COMPLAINED",
+  ];
   const [selectedDiv, setSelectedDiv] = useState(0);
   const [selectStatus, setSelectedStatus] = useState(orderStatus[0]);
   const [orders, setOrders] = useState([]);
@@ -30,6 +39,18 @@ const TransactionPage = () => {
         break;
       case 1:
         setSelectedStatus([orderStatus[1]]);
+        refetch();
+        break;
+      case 2:
+        setSelectedStatus([orderStatus[2]]);
+        refetch();
+        break;
+      case 3:
+        setSelectedStatus([orderStatus[3]]);
+        refetch();
+        break;
+      case 4:
+        setSelectedStatus([orderStatus[4]]);
         refetch();
         break;
       default:
@@ -93,8 +114,8 @@ const TransactionPage = () => {
         </div>
       </div>
       <div className="transactionContainer">
-        <div className="icon-row">
-          {[0, 1].map((index) => (
+        <div className="icon-row ic-r-ml">
+          {[0, 1, 2, 3, 4].map((index) => (
             <div
               key={index}
               className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
@@ -102,14 +123,20 @@ const TransactionPage = () => {
                 handleClick(index);
               }}
             >
-              <IconButton color={iconColors[index]}>
-                {/* Replace with appropriate icons */}
-                {index === 0 && <CheckBoxIcon />}
-                {index === 1 && <CancelIcon />}
-              </IconButton>
+              {/* Replace with appropriate icons */}
+              {index === 0 && (
+                <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
+              )}
+              {index === 1 && <MicrowaveIcon sx={{ color: "#3498DB" }} />}
+              {index === 2 && <CheckCircleIcon sx={{ color: "#3498DB" }} />}
+              {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
+              {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
               <span>
-                {index === 0 && "Đã chấp nhận"}
-                {index === 1 && "Đã hủy"}
+                {index === 0 && "Đã đặt"}
+                {index === 1 && "Đã chuẩn bị"}
+                {index === 2 && "Đã phục vụ"}
+                {index === 3 && "Đã hủy"}
+                {index === 4 && "Bị phản ánh"}
               </span>
             </div>
           ))}

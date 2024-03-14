@@ -1,10 +1,8 @@
-.transaction {
+.destination-page {
     background-color: #f2f2f2;
     padding: 20px 0 40px 0;
-
-    .ic-r-ml {
-        margin-left: 120px;
-    }
+    height: fit-content;
+    min-height: 100vh;
 
     p {
         padding-left: 30px;
@@ -68,7 +66,7 @@
         }
     }
 
-    .transactionContainer {
+    .destinationContainer {
         padding: 40px 40px 40px 40px;
         background-color: white;
         /* Optional: Add a max-width to limit the width of the container */

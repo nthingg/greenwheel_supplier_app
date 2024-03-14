@@ -1,37 +1,24 @@
-export const emergenciesColumns = [
+export const membersColumn = [
   {
-    field: "index",
-    width: 150,
+    field: "id",
+    width: 80,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
       return <div>{params.row.id}</div>;
     },
-    renderHeader: () => <span>STT</span>,
+    renderHeader: () => <span>#</span>,
   },
   {
     field: "name",
     width: 250,
     renderCell: (params) => {
-      return (
-        <div className="cellWithImg">
-          {/* <img
-            className="cellImg"
-            src={
-              params.row.imageUrl != null
-                ? params.row.imageUrl
-                : "https://vinhphucwater.com.vn/wp-content/uploads/2023/05/no-image.jpg"
-            }
-            alt="avatar"
-          /> */}
-          {params.row.name}
-        </div>
-      );
+      return <div>{params.row.account.name}</div>;
     },
     renderHeader: () => <span>Tên</span>,
   },
   {
-    field: "host",
+    field: "phone",
     width: 180,
     align: "center",
     headerAlign: "center",
@@ -66,19 +53,38 @@ export const emergenciesColumns = [
         // Combine parts with spaces
         return `${part1} ${part2} ${part3}`;
       }
-      return <div>{formatPhoneNumber(params.row.phone)}</div>;
+      return <div>{formatPhoneNumber(params.row.account.phone)}</div>;
     },
     renderHeader: () => <span>Số điện thoại</span>,
   },
   {
-    field: "memberCount",
-    width: 700,
-    align: "right",
-    align: "left",
-    headerAlign: "left",
+    field: "weight",
+    width: 140,
+    align: "center",
+    headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.address}</div>;
+      return <div>{params.row.weight} người</div>;
     },
-    renderHeader: () => <span>Địa chỉ</span>,
+    renderHeader: () => <span>Đại diện</span>,
+  },
+  {
+    field: "status",
+    width: 140,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      switch (params.row.status) {
+        case "BLOCKED":
+          return <div>Đã chặn</div>;
+        case "INVITED":
+          return <div>Đã mời</div>;
+        case "JOINED":
+          return <div>Đã tham gia</div>;
+        default:
+          // Handle default case or unknown status
+          break;
+      }
+    },
+    renderHeader: () => <span>Trạng thái</span>,
   },
 ];

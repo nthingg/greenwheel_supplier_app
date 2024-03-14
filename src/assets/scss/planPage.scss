@@ -1,10 +1,8 @@
-.transaction {
+.plan {
     background-color: #f2f2f2;
     padding: 20px 0 40px 0;
-
-    .ic-r-ml {
-        margin-left: 120px;
-    }
+    height: fit-content;
+    min-height: 100vh;
 
     p {
         padding-left: 30px;
@@ -19,6 +17,10 @@
         justify-content: space-between;
         padding-bottom: 20px;
         margin: 0 30px 0 30px;
+
+        span {
+            margin-right: 8px;
+        }
 
         .left {
             display: flex;
@@ -68,7 +70,7 @@
         }
     }
 
-    .transactionContainer {
+    .planContainer {
         padding: 40px 40px 40px 40px;
         background-color: white;
         /* Optional: Add a max-width to limit the width of the container */

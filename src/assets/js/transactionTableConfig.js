@@ -15,9 +15,9 @@ export const transactionsColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.id}</div>;
+      return <div>{params.row.id.toString().padStart(9, "0")}</div>;
     },
-    renderHeader: () => <span>Mã đơn hàng</span>,
+    renderHeader: () => <span>Mã đơn</span>,
   },
   {
     field: "createdAt",
@@ -39,7 +39,7 @@ export const transactionsColumns = [
         </div>
       );
     },
-    renderHeader: () => <span>Ngày tạo</span>,
+    renderHeader: () => <span>Ngày đặt</span>,
   },
   {
     field: "name",
@@ -62,54 +62,111 @@ export const transactionsColumns = [
     },
     renderHeader: () => <span>Khách hàng</span>,
   },
-  // {
-  //   field: "total",
-  //   width: 220,
-  //   align: "right",
-  //   headerAlign: "center",
-  //   renderCell: (params) => {
-  //     const amount = params.row.total;
-  //     const formattedPrice = amount.toLocaleString("vi-VN") + "đ";
-  //     return <div className="prodPrice">{formattedPrice}</div>;
-  //   },
-  //   renderHeader: () => <span>Tổng</span>,
-  // },
   {
     field: "phone",
     width: 200,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.account.phone}</div>;
+      // function formatPhoneNumber(phoneNumber) {
+      //   // Replace leading "+84" with "0" (if present)
+      //   phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+      //   let part1, part2, part3;
+      //   switch (phoneNumber.length) {
+      //     case 9:
+      //       part1 = phoneNumber.slice(0, 3);
+      //       part2 = phoneNumber.slice(3, 6);
+      //       part3 = phoneNumber.slice(6);
+      //       break;
+      //     case 10:
+      //       part1 = phoneNumber.slice(0, 4);
+      //       part2 = phoneNumber.slice(4, 7);
+      //       part3 = phoneNumber.slice(7);
+      //       break;
+      //     case 11:
+      //       part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+      //       part2 = phoneNumber.slice(4, 7);
+      //       part3 = phoneNumber.slice(7);
+      //       break;
+      //     default:
+      //       // Handle invalid lengths (optional)
+      //       console.warn(`Invalid phone number length: ${phoneNumber}`);
+      //       return phoneNumber;
+      //   }
+
+      //   // Combine parts with spaces
+      //   return `${part1} ${part2} ${part3}`;
+      // }
+      function formatPhoneNumber(phoneNumber) {
+        // Replace leading "+84" with "0" (if present)
+        phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+        let part1, part2;
+        switch (phoneNumber.length) {
+          case 9:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(6);
+            break;
+          case 10:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(7);
+            break;
+          case 11:
+            part1 = "*".repeat(phoneNumber.length - 3);
+            part2 = phoneNumber.slice(7);
+            break;
+          default:
+            // Handle invalid lengths (optional)
+            return phoneNumber;
+        }
+
+        // Combine parts with spaces
+        return `${part1}${part2}`;
+      }
+
+      return <div>{formatPhoneNumber(params.row.account.phone)}</div>;
     },
-    renderHeader: () => <span>Số điện thoại</span>,
+    renderHeader: () => <span>Điện thoại</span>,
   },
+  // {
+  //   field: "supplierName",
+  //   width: 240,
+  //   renderCell: (params) => {
+  //     return <div>{params.row.supplier.name}</div>;
+  //   },
+  //   renderHeader: () => <span>Nhà cung cấp</span>,
+  // },
+  // {
+  //   field: "status",
+  //   width: 140,
+  //   align: "center",
+  //   headerAlign: "center",
+  //   renderCell: (params) => {
+  //     switch (params.row.currentStatus) {
+  //       case "RESERVED":
+  //         return <div className={`cellWithStatus confirmed`}>Đã chấp nhận</div>;
+  //       case "CANCELLED":
+  //         return <div className={`cellWithStatus cancelled`}>Đã hủy</div>;
+  //       case "TEMPORARY":
+  //         return <div className={`cellWithStatus temporary`}>Đang xử lý</div>;
+  //       default:
+  //         // Handle default case or unknown status
+  //         break;
+  //     }
+  //   },
+  //   renderHeader: () => <span>Trạng thái</span>,
+  // },
   {
-    field: "supplierName",
-    width: 240,
-    renderCell: (params) => {
-      return <div>{params.row.supplier.name}</div>;
-    },
-    renderHeader: () => <span>Tên nhà cung cấp</span>,
-  },
-  {
-    field: "status",
-    width: 140,
+    field: "total",
+    width: 150,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      switch (params.row.currentStatus) {
-        case "RESERVED":
-          return <div className={`cellWithStatus confirmed`}>Đã chấp nhận</div>;
-        case "CANCELLED":
-          return <div className={`cellWithStatus cancelled`}>Đã hủy</div>;
-        case "TEMPORARY":
-          return <div className={`cellWithStatus temporary`}>Đang xử lý</div>;
-        default:
-          // Handle default case or unknown status
-          break;
-      }
+      const amount = params.row.total;
+      const formattedPrice = amount.toLocaleString("vi-VN") + "đ";
+      return <div className="prodPrice">{formattedPrice}</div>;
     },
-    renderHeader: () => <span>Trạng thái</span>,
+    renderHeader: () => <span>Tổng</span>,
   },
 ];

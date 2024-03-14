@@ -23,12 +23,14 @@ import Test from "./pages/TestPage";
 import { LoadScript } from "@react-google-maps/api";
 import PlanPage from "./pages/PlanPage";
 import PlanDetailPage from "./pages/PlanDetailPage";
+import AccountPage from "./pages/AccountPage";
+import TravelerProfilePage from "./pages/TravelerProfilePage";
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <LoadScript
-        googleMapsApiKey="AIzaSyCmsbMmrDdsG0jgBOs8_i6gjSK5RC_MNMo"
+        googleMapsApiKey="AIzaSyAERCSiCGfcuVAjDib-6JWN5T7Agni47yU"
         libraries={["places"]}
       >
         <div className="app">
@@ -96,6 +98,15 @@ function App() {
                   element={TOKEN ? <PlanPage /> : <Navigate to="/login" />}
                 />
                 <Route path=":planId" element={<PlanDetailPage />} />
+                <Route path="traveler-info">
+                  <Route path=":travelerId" element={<TravelerProfilePage />} />
+                </Route>
+              </Route>
+              <Route path="accounts">
+                <Route
+                  index
+                  element={TOKEN ? <AccountPage /> : <Navigate to="/login" />}
+                />
               </Route>
               <Route
                 path="emulator"

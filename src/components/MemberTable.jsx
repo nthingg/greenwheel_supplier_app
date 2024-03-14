@@ -1,18 +1,18 @@
-import { tracesColumns } from "../assets/js/tracesTableConfig";
-import "../assets/scss/shared.scss";
-import "../assets/scss/transactionTable.scss";
+import "../assets/scss/memberTable.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
+import { membersColumn } from "../assets/js/memberTableConfig";
 
-const TracesTable = ({ traces }) => {
+const MemberTable = ({ members }) => {
   return (
-    <div className="traceTable">
+    <div className="planTable">
       <DataGrid
-        rows={traces}
-        columns={tracesColumns}
+        rows={members}
+        columns={membersColumn}
         rowSelection={false}
         pagination
-        autoPageSize
+        pageSizeOptions={[]}
+        autoHeight={true}
         showColumnVerticalBorder={true}
         sx={{
           "& .MuiDataGrid-columnHeader": {
@@ -30,4 +30,4 @@ const TracesTable = ({ traces }) => {
   );
 };
 
-export default TracesTable;
+export default MemberTable;
