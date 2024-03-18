@@ -1,11 +1,13 @@
 import "../assets/scss/planDetail.scss";
 import "../assets/scss/traceTable.scss";
+import "../assets/scss/loading.scss";
 import "../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -56,8 +58,6 @@ const PlanDetailPage = () => {
   const [activities, setActivities] = useState(null);
   const [members, setMembers] = useState([]);
   const [currentDate, setCurrentDate] = useState("");
-  const [phoneHide, setPhoneHide] = useState("");
-  const [phoneVisibility, setPhoneVisibility] = useState(false);
 
   const containerStyle = {
     width: "950px",
@@ -86,66 +86,39 @@ const PlanDetailPage = () => {
     },
   });
 
-  const triggerPhone = () => {
-    setPhoneVisibility(!phoneVisibility);
-  };
-
-  function formatPhoneNumber(phoneNumber) {
-    // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
-
-    let part1, part2, part3;
-    switch (phoneNumber.length) {
-      case 9:
-        part1 = phoneNumber.slice(0, 3);
-        part2 = phoneNumber.slice(3, 6);
-        part3 = phoneNumber.slice(6);
-        break;
-      case 10:
-        part1 = phoneNumber.slice(0, 4);
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      case 11:
-        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      default:
-        // Handle invalid lengths (optional)
-        console.warn(`Invalid phone number length: ${phoneNumber}`);
-        return phoneNumber;
-    }
-
-    // Combine parts with spaces
-    return `${part1} ${part2} ${part3}`;
-  }
-
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+    phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
 
-    let part1, part2;
+    let formattedParts;
     switch (phoneNumber.length) {
       case 9:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(6);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(3),
+          phoneNumber.slice(6),
+        ];
         break;
       case 10:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(7),
+        ];
         break;
       case 11:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(5),
+          phoneNumber.slice(7),
+        ];
         break;
       default:
         // Handle invalid lengths (optional)
         return phoneNumber;
     }
 
-    // Combine parts with spaces
-    return `${part1}${part2}`;
+    return formattedParts.join("");
   }
 
   useEffect(() => {
@@ -181,6 +154,9 @@ const PlanDetailPage = () => {
       setDepartDate(
         departDate.toLocaleDateString("vi-VN", {
           timeZone: "UTC",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         })
       );
       const closeRegDate = new Date(data["plans"]["nodes"][0]["regClosedAt"]);
@@ -193,6 +169,9 @@ const PlanDetailPage = () => {
       setEndDate(
         endDate.toLocaleDateString("vi-VN", {
           timeZone: "UTC",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         })
       );
       const startDate = new Date(data["plans"]["nodes"][0]["startDate"]);
@@ -211,10 +190,7 @@ const PlanDetailPage = () => {
       //Schedule
       setSchedule(data["plans"]["nodes"][0]["schedule"]);
 
-      setPhone(formatPhoneNumber(data["plans"]["nodes"][0].account.phone));
-      setPhoneHide(
-        formatPhoneNumberCen(data["plans"]["nodes"][0].account.phone)
-      );
+      setPhone(formatPhoneNumberCen(data["plans"]["nodes"][0].account.phone));
 
       const startDateFormat = new Date(startDate);
       const endDateFormat = new Date(endDate);
@@ -262,79 +238,71 @@ const PlanDetailPage = () => {
   };
 
   return (
-    <div className="planDetail">
-      <div className="sharedTitle">
-        <div className="navigation">
-          <div className="left">
-            <div className="return-btn">
-              <Link to="/plans" className="navigateButton">
-                <ArrowCircleLeftIcon />
-                <p>Trở về</p>
-              </Link>
-            </div>
-            <div className="return-title">
-              <div className="return-header">Thông tin chi tiết kế hoạch</div>
-              <div className="return-body">
-                <p>Danh sách kế hoạch</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết kế hoạch</p>
+    <div>
+      {plan === null && (
+        <div className="loading">
+          <RestartAltIcon
+            sx={{
+              fontSize: 80,
+              color: "#2ECC71",
+            }}
+          />
+        </div>
+      )}
+      {plan !== null && (
+        <div className="planDetail">
+          <div className="sharedTitle">
+            <div className="navigation">
+              <div className="left">
+                <div className="return-btn">
+                  <Link to="/plans" className="navigateButton">
+                    <ArrowCircleLeftIcon />
+                    <p>Trở về</p>
+                  </Link>
+                </div>
+                <div className="return-title">
+                  <div className="return-header">
+                    Thông tin chi tiết kế hoạch
+                  </div>
+                  <div className="return-body">
+                    <p>Danh sách kế hoạch</p>
+                    <ArrowForwardIosIcon />
+                    <p>Chi tiết kế hoạch</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="planDetailContainer">
-        <div className="top">
-          <div className="detail-title">
-            <p>{plan?.name}</p>
-          </div>
-        </div>
-        <div className="center">
-          <div className="item">
-            <h1 className="itemTitle">Thông tin chi tiết</h1>
-            <div className="details">
-              <div className="left">
-                <div className="detailItem">
-                  <span className="itemKey">Trưởng nhóm:</span>
-                  <span className="itemValue">
-                    <a href={`/plans/traveler-info/${plan?.account.id}`}>
-                      {plan?.account.name}
-                    </a>
-                  </span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Số điện thoại:</span>
-                  {phoneVisibility === false ? (
-                    <span className="itemValue">
-                      {phoneHide}
-                      <IconButton
-                        className="mapBtn"
-                        color="info"
-                        onClick={triggerPhone}
-                      >
-                        <VisibilityOffIcon />
-                      </IconButton>
-                    </span>
-                  ) : (
-                    <span className="itemValue">
-                      {phone}
-                      <IconButton
-                        className="mapBtn"
-                        color="info"
-                        onClick={triggerPhone}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                    </span>
-                  )}
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Thành viên:</span>
-                  <span className="itemValue">
-                    {plan?.memberCount}/{plan?.memberLimit} người
-                  </span>
-                </div>
-                {/* <div className="detailItem">
+          <div className="planDetailContainer">
+            <div className="top">
+              <div className="detail-title">
+                <p>{plan?.name}</p>
+              </div>
+            </div>
+            <div className="center">
+              <div className="item">
+                <h1 className="itemTitle">Thông tin chi tiết</h1>
+                <div className="details">
+                  <div className="left">
+                    <div className="detailItem">
+                      <span className="itemKey">Trưởng nhóm:</span>
+                      <span className="itemValue">
+                        <a href={`/plans/traveler-info/${plan?.account.id}`}>
+                          {plan?.account.name}
+                        </a>
+                      </span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Số điện thoại:</span>
+                      <span className="itemValue">{phone}</span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Thành viên:</span>
+                      <span className="itemValue">
+                        {plan?.memberCount}/{plan?.maxMember} người
+                      </span>
+                    </div>
+                    {/* <div className="detailItem">
                   <span className="itemKey">Ngày bắt đầu:</span>
                   <span className="itemValue">{startDate}</span>
                 </div>
@@ -342,47 +310,38 @@ const PlanDetailPage = () => {
                   <span className="itemKey">Ngày kết thúc:</span>
                   <span className="itemValue">{endDate}</span>
                 </div> */}
-              </div>
-              <div className="right">
-                <div className="detailItem">
-                  <span className="itemKey">Địa điểm:</span>
-                  <span className="itemValue">
-                    <a href={`/destinations/${plan?.destination.id}`}>
-                      {plan?.destination.name}
-                    </a>
-                    <IconButton
+                  </div>
+                  <div className="right">
+                    <div className="detailItem">
+                      <span className="itemKey">Địa điểm:</span>
+                      <span className="itemValue">
+                        <a href={`/destinations/${plan?.destination.id}`}>
+                          {plan?.destination.name}
+                        </a>
+                        {/* <IconButton
                       className="mapBtn"
                       color="info"
                       onClick={handleClickOpen}
                     >
                       <MapIcon />
-                    </IconButton>
-                  </span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Ngày khởi hành:</span>
-                  <span className="itemValue">
-                    {departDate}
-                    <IconButton
-                      className="mapBtn"
-                      color="info"
-                      onClick={handleClickOpenDepart}
-                    >
-                      <MapIcon />
-                    </IconButton>
-                  </span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Ngày kết thúc:</span>
-                  <span className="itemValue">{endDate}</span>
-                </div>
-                {/* <div className="detailItem">
+                    </IconButton> */}
+                      </span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Ngày khởi hành:</span>
+                      <span className="itemValue">{departDate}</span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Ngày kết thúc:</span>
+                      <span className="itemValue">{endDate}</span>
+                    </div>
+                    {/* <div className="detailItem">
                   <span className="itemKey">Thành viên hiện tại:</span>
                   <span className="itemValue">
                     {plan?.memberCount + " người"}
                   </span>
                 </div> */}
-                {/* <div className="detailItem">
+                    {/* <div className="detailItem">
                   <span className="itemKey">Thành viên tối đa:</span>
                   <span className="itemValue">
                     {plan?.memberLimit + " người"}
@@ -403,7 +362,7 @@ const PlanDetailPage = () => {
                     ) + "đ"}
                   </span>
                 </div> */}
-                {/* {(plan?.status == "PUBLISHED" || plan?.status == "READY") && (
+                    {/* {(plan?.status == "PUBLISHED" || plan?.status == "READY") && (
                   <div className="detailItem">
                     <span className="itemKey">Quỹ nhóm hiện có:</span>
                     <span className="itemValue">
@@ -413,10 +372,10 @@ const PlanDetailPage = () => {
                     </span>
                   </div>
                 )} */}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          {/* <div className="bottom">
+              {/* <div className="bottom">
             <Accordion>
               <AccordionSummary
                 sx={{
@@ -510,8 +469,8 @@ const PlanDetailPage = () => {
               </AccordionDetails>
             </Accordion>
           </div> */}
-          <div className="bottom">
-            {/* <Accordion>
+              <div className="bottom">
+                {/* <Accordion>
               <AccordionSummary
                 sx={{
                   fontSize: 24,
@@ -530,14 +489,14 @@ const PlanDetailPage = () => {
                 <PlanOrderTable orders={orders} />
               </AccordionDetails>
             </Accordion> */}
-            <div className="bottom">
-              <div className="item">
-                <h1 className="itemTitle">Danh sách đơn hàng</h1>
-                <PlanOrderTable orders={orders} />
+                <div className="bottom">
+                  <div className="item">
+                    <h1 className="itemTitle">Danh sách đơn hàng</h1>
+                    <PlanOrderTable orders={orders} />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          {/* <div className="bottom">
+              {/* <div className="bottom">
             <Accordion>
               <AccordionSummary
                 sx={{
@@ -558,35 +517,35 @@ const PlanDetailPage = () => {
               </AccordionDetails>
             </Accordion>
           </div> */}
-        </div>
-      </div>
-      <Dialog
-        open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-        maxWidth={false}
-      >
-        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
-          Bản đồ
-        </DialogTitle>
-        <DialogContent style={{ width: 1000 }}>
-          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Chi tiết địa điểm đến:
-          </DialogContentText>
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={position}
-            zoom={15}
+            </div>
+          </div>
+          <Dialog
+            open={open}
+            onClose={() => {
+              setOpen(false);
+            }}
+            maxWidth={false}
           >
-            <MarkerF position={position} />
-          </GoogleMap>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Đóng</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
+            <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+              Bản đồ
+            </DialogTitle>
+            <DialogContent style={{ width: 1000 }}>
+              <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+                Chi tiết địa điểm đến:
+              </DialogContentText>
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={position}
+                zoom={15}
+              >
+                <MarkerF position={position} />
+              </GoogleMap>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Đóng</Button>
+            </DialogActions>
+          </Dialog>
+          {/* <Dialog
         open={openDepart}
         onClose={() => {
           setOpenDepart(false);
@@ -611,7 +570,9 @@ const PlanDetailPage = () => {
         <DialogActions>
           <Button onClick={handleCloseDepart}>Đóng</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
+        </div>
+      )}
     </div>
   );
 };

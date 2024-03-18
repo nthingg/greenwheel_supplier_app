@@ -40,8 +40,7 @@ const AccountTable = ({ travelers, suppliers, staffs }) => {
             columns={accountsColumn.concat(actionColumn)}
             rowSelection={false}
             pagination
-            pageSizeOptions={[]}
-            autoHeight={true}
+            autoPageSize={true}
             showColumnVerticalBorder={true}
             sx={{
               "& .MuiDataGrid-columnHeader": {

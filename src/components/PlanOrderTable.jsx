@@ -14,8 +14,7 @@ const PlanOrderTable = ({ orders }) => {
         columns={planOrdersColumn}
         rowSelection={false}
         pagination
-        pageSizeOptions={8}
-        autoHeight={true}
+        autoPageSize={true}
         showColumnVerticalBorder={true}
         sx={{
           "& .MuiDataGrid-columnHeader": {
@@ -25,6 +24,9 @@ const PlanOrderTable = ({ orders }) => {
           },
           "& .MuiDataGrid-columnHeader--withRightBorder": {
             borderRightWidth: "2px",
+          },
+          ".MuiTablePagination-displayedRows": {
+            display: "none",
           },
           boxShadow: 2,
         }}

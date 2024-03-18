@@ -36,7 +36,7 @@ export const accountPlansColumns = [
     renderCell: (params) => {
       return (
         <div>
-          {params.row.memberCount} / {params.row.memberLimit}
+          {params.row.memberCount} / {params.row.maxMember}
         </div>
       );
     },
@@ -52,6 +52,9 @@ export const accountPlansColumns = [
 
       const formattedDateTime = date.toLocaleDateString("vi-VN", {
         timeZone: "UTC",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       });
 
       return (
@@ -72,6 +75,9 @@ export const accountPlansColumns = [
 
       const dateOnly = date.toLocaleDateString("vi-VN", {
         timeZone: "UTC",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       });
 
       return (

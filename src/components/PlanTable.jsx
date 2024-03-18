@@ -97,20 +97,22 @@ const PlanTable = ({ plans, accountPlans }) => {
               "& .MuiDataGrid-columnHeader--withRightBorder": {
                 borderRightWidth: "2px",
               },
+              ".MuiTablePagination-displayedRows": {
+                display: "none",
+              },
               boxShadow: 2,
             }}
           />
         </div>
       )}
       {accountPlans && (
-        <div className="planTable">
+        <div className="planAccountTable">
           <DataGrid
             rows={accountPlans}
             columns={accountPlansColumns}
             rowSelection={false}
             pagination
             autoPageSize={true}
-            pageSizeOptions={[]}
             showColumnVerticalBorder={true}
             sx={{
               height: 320,

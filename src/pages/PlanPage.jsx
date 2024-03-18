@@ -10,6 +10,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import LanguageIcon from "@mui/icons-material/Language";
+import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import {
   FormControl,
   FormControlLabel,
@@ -22,43 +23,32 @@ import PlanTable from "../components/PlanTable";
 import { LOAD_PLANS, LOAD_PLANS_FILTER } from "../services/graphql/plan";
 
 const PlanPage = () => {
-  const planStat = [
-    "CANCELED",
-    "PRIVATE",
-    "PUBLIC",
-    "PUBLISHED",
-    "READY",
-    "VERIFIED",
-  ];
+  const planStat = ["REGISTERING", "READY", "CANCELED", "COMPLETED", "FLAWED"];
   const [selectedDiv, setSelectedDiv] = useState(1);
-  const [selectedStatus, setSelectedStatus] = useState(planStat[4]);
+  const [selectedStatus, setSelectedStatus] = useState(planStat[1]);
   const [isHidden, setIsHidden] = useState(false);
-  const [isReadyHidden, setIsReadyHidden] = useState(true);
+  const [isReadyHidden, setIsReadyHidden] = useState(false);
   const [isVeriHidden, setIsVeriHidden] = useState(true);
-  const [registerStatus, setRegisterStatus] = useState("private");
   const [registerReadyStatus, setRegisterReadyStatus] = useState("incoming");
   const [registerVeriStatus, setRegisterVeriStatus] = useState("happening");
 
   const handleClick = (index) => {
     setSelectedDiv(index);
     switch (index) {
-      case 1:
-        setSelectedStatus(planStat[4]);
-        break;
-      case 2:
+      case 0:
         setSelectedStatus(planStat[0]);
         break;
-      case 3:
-        setSelectedStatus(planStat[5]);
+      case 1:
+        setSelectedStatus(planStat[1]);
         break;
-      case 4:
-        setSelectedStatus(planStat[3]);
-        break;
-      case 5:
+      case 2:
         setSelectedStatus(planStat[2]);
         break;
-      case 6:
-        setSelectedStatus(planStat[1]);
+      case 3:
+        setSelectedStatus(planStat[3]);
+        break;
+      case 4:
+        setSelectedStatus(planStat[4]);
         break;
       default:
         break;
@@ -78,12 +68,11 @@ const PlanPage = () => {
     refetch: refetchTotal,
   } = useQuery(LOAD_PLANS);
 
-  const [privatePlans, setPrivate] = useState(0);
-  const [publicPlans, setPublic] = useState(0);
+  const [registeringPlans, setRegisteringPlans] = useState(0);
   const [canceledPlans, setCanceled] = useState(0);
-  const [verifiedPlans, setVerified] = useState(0);
+  const [completedPlans, setCompletedPlans] = useState(0);
   const [readyPlans, setReady] = useState(0);
-  const [publishedPlans, setPublished] = useState(0);
+  const [flawedPlans, setFlawedPlans] = useState(0);
   useEffect(() => {
     if (
       !loadingTotal &&
@@ -91,17 +80,10 @@ const PlanPage = () => {
       dataTotal &&
       dataTotal["plans"]["nodes"]
     ) {
-      let countPrivate = 0;
+      let countRegistering = 0;
       for (const item of dataTotal["plans"]["nodes"]) {
-        if (item["status"] === "PRIVATE") {
-          countPrivate++;
-        }
-      }
-
-      let countPublic = 0;
-      for (const item of dataTotal["plans"]["nodes"]) {
-        if (item["status"] === "PUBLIC") {
-          countPublic++;
+        if (item["status"] === "REGISTERING") {
+          countRegistering++;
         }
       }
 
@@ -119,26 +101,25 @@ const PlanPage = () => {
         }
       }
 
-      let countVerified = 0;
+      let countCompleted = 0;
       for (const item of dataTotal["plans"]["nodes"]) {
-        if (item["status"] === "VERIFIED") {
-          countVerified++;
+        if (item["status"] === "COMPLETED") {
+          countCompleted++;
         }
       }
 
-      let countPublished = 0;
+      let countFlawed = 0;
       for (const item of dataTotal["plans"]["nodes"]) {
-        if (item["status"] === "PUBLISHED") {
-          countPublished++;
+        if (item["status"] === "FLAWED") {
+          countFlawed++;
         }
       }
 
-      setPrivate(countPrivate);
-      setPublic(countPublic);
+      setRegisteringPlans(countRegistering);
       setReady(countReady);
       setCanceled(countCanceled);
-      setVerified(countVerified);
-      setPublished(countPublished);
+      setCompletedPlans(countCompleted);
+      setFlawedPlans(countFlawed);
     }
   }, [dataTotal, loadingTotal, errorTotal]);
 
@@ -204,14 +185,6 @@ const PlanPage = () => {
                   setIsHidden(false);
                   setIsReadyHidden(true);
                   setIsVeriHidden(true);
-                  if (registerStatus === "private") {
-                    console.log("check private");
-                    handleClick(6);
-                  } else {
-                    console.log("check public");
-                    handleClick(5);
-                  }
-                  setSelectedDiv(0);
                 } else if (index == 1) {
                   setIsReadyHidden(false);
                   setIsHidden(true);
@@ -235,67 +208,17 @@ const PlanPage = () => {
               )}
               {index === 2 && <CancelIcon sx={{ color: "#E74C3C" }} />}
               {index === 3 && <CheckCircleIcon color="success" />}
-              {index === 4 && <LanguageIcon sx={{ color: "#3498DB" }} />}
+              {index === 4 && <BuildCircleIcon sx={{ color: "#3498DB" }} />}
               <span>
-                {/* {index === 0 && "Chờ chốt"} */}
+                {/* {index === 0 && `Chờ chốt (${registeringPlans})`} */}
                 {index === 1 && `Sẵn sàng (${readyPlans})`}
                 {index === 2 && `Đã hủy (${canceledPlans})`}
-                {index === 3 && `Đã xác nhận (${verifiedPlans})`}
-                {index === 4 && `Xuất bản (${publishedPlans})`}
+                {index === 3 && `Đã hoàn thành (${completedPlans})`}
+                {index === 4 && `Có vấn đề (${flawedPlans})`}
               </span>
             </div>
           ))}
         </div>
-        {/* <FormControl>
-          <RadioGroup
-            row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-            defaultValue={"private"}
-            sx={{ marginBottom: 2, marginLeft: 2 }}
-            hidden={isHidden}
-            onClick={(e) => {
-              setRegisterStatus(e.target.value);
-              if (e.target.value === "private") {
-                handleClick(6);
-                setSelectedDiv(0);
-              } else {
-                handleClick(5);
-                setSelectedDiv(0);
-              }
-            }}
-          >
-            <FormControlLabel
-              value="private"
-              control={
-                <Radio
-                  sx={{
-                    color: "green",
-                    "&.Mui-checked": {
-                      color: "green",
-                    },
-                  }}
-                />
-              }
-              label={`Riêng tư (${privatePlans})`}
-            />
-            <FormControlLabel
-              value="public"
-              control={
-                <Radio
-                  sx={{
-                    color: "green",
-                    "&.Mui-checked": {
-                      color: "green",
-                    },
-                  }}
-                />
-              }
-              label={`Công khai (${publicPlans})`}
-            />
-          </RadioGroup>
-        </FormControl> */}
-
         <FormControl>
           <RadioGroup
             row
@@ -320,47 +243,6 @@ const PlanPage = () => {
               }
               label="Sắp tới"
             />
-            <FormControlLabel
-              value="happening"
-              control={
-                <Radio
-                  sx={{
-                    color: "green",
-                    "&.Mui-checked": {
-                      color: "green",
-                    },
-                  }}
-                />
-              }
-              label="Đang diễn ra"
-            />
-            <FormControlLabel
-              value="ended"
-              control={
-                <Radio
-                  sx={{
-                    color: "green",
-                    "&.Mui-checked": {
-                      color: "green",
-                    },
-                  }}
-                />
-              }
-              label="Kết thúc"
-            />
-          </RadioGroup>
-        </FormControl>
-
-        <FormControl>
-          <RadioGroup
-            row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-            defaultValue={"happening"}
-            sx={{ marginBottom: 2, marginLeft: 2 }}
-            hidden={isVeriHidden}
-            onClick={(e) => {}}
-          >
             <FormControlLabel
               value="happening"
               control={

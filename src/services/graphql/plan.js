@@ -14,8 +14,8 @@ export const LOAD_PLANS_FILTER = gql`
         }
         departAt
         startDate
-        memberLimit
         memberCount
+        maxMember
         endDate
         status
       }
@@ -49,7 +49,7 @@ export const LOAD_DETAIL_PLAN = gql`
         createdAt
         currentGcoinBudget
         memberCount
-        memberLimit
+        maxMember
         status
         departAt
         departure {
@@ -83,6 +83,7 @@ export const LOAD_DETAIL_PLAN = gql`
             name
             avatarUrl
           }
+          type
         }
         savedContacts {
           imageUrl

@@ -55,7 +55,7 @@ export const LOAD_DETAIL_ACCOUNT = gql`
           }
           departAt
           startDate
-          memberLimit
+          maxMember
           memberCount
           endDate
           status

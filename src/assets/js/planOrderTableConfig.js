@@ -68,6 +68,26 @@ export const planOrdersColumn = [
     renderHeader: () => <span>Trạng thái</span>,
   },
   {
+    field: "type",
+    width: 140,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      switch (params.row.type) {
+        case "LODGING":
+          return <div>Phòng nghỉ</div>;
+        case "MEAL":
+          return <div>Ăn uống</div>;
+        case "MOVING":
+          return <div>Phương tiện</div>;
+        default:
+          // Handle default case or unknown status
+          break;
+      }
+    },
+    renderHeader: () => <span>Loại đơn</span>,
+  },
+  {
     field: "total",
     width: 150,
     align: "center",

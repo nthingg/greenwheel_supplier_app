@@ -18,8 +18,8 @@ const TravelerProfilePage = () => {
   const [traveler, setTraveler] = useState(null);
   const [plans, setPlans] = useState([]);
   const [phone, setPhone] = useState("");
-  const [phoneHide, setPhoneHide] = useState("");
-  const [phoneVisibility, setPhoneVisibility] = useState(false);
+  // const [phoneHide, setPhoneHide] = useState("");
+  // const [phoneVisibility, setPhoneVisibility] = useState(false);
   const [isActive, setIsActive] = useState("");
   const [isMale, setIsMale] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -38,66 +38,101 @@ const TravelerProfilePage = () => {
     },
   });
 
-  const triggerPhone = () => {
-    setPhoneVisibility(!phoneVisibility);
-  };
+  // const triggerPhone = () => {
+  //   setPhoneVisibility(!phoneVisibility);
+  // };
 
-  function formatPhoneNumber(phoneNumber) {
-    // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+  // function formatPhoneNumber(phoneNumber) {
+  //   // Replace leading "+84" with "0" (if present)
+  //   phoneNumber = phoneNumber.replace(/^\+84/, "0");
 
-    let part1, part2, part3;
-    switch (phoneNumber.length) {
-      case 9:
-        part1 = phoneNumber.slice(0, 3);
-        part2 = phoneNumber.slice(3, 6);
-        part3 = phoneNumber.slice(6);
-        break;
-      case 10:
-        part1 = phoneNumber.slice(0, 4);
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      case 11:
-        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      default:
-        // Handle invalid lengths (optional)
-        console.warn(`Invalid phone number length: ${phoneNumber}`);
-        return phoneNumber;
-    }
+  //   let part1, part2, part3;
+  //   switch (phoneNumber.length) {
+  //     case 9:
+  //       part1 = phoneNumber.slice(0, 3);
+  //       part2 = phoneNumber.slice(3, 6);
+  //       part3 = phoneNumber.slice(6);
+  //       break;
+  //     case 10:
+  //       part1 = phoneNumber.slice(0, 4);
+  //       part2 = phoneNumber.slice(4, 7);
+  //       part3 = phoneNumber.slice(7);
+  //       break;
+  //     case 11:
+  //       part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+  //       part2 = phoneNumber.slice(4, 7);
+  //       part3 = phoneNumber.slice(7);
+  //       break;
+  //     default:
+  //       // Handle invalid lengths (optional)
+  //       console.warn(`Invalid phone number length: ${phoneNumber}`);
+  //       return phoneNumber;
+  //   }
 
-    // Combine parts with spaces
-    return `${part1} ${part2} ${part3}`;
-  }
+  //   // Combine parts with spaces
+  //   return `${part1} ${part2} ${part3}`;
+  // }
+
+  // function formatPhoneNumberCen(phoneNumber) {
+  //   // Replace leading "+84" with "0" (if present)
+  //   phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+  //   let part1, part2;
+  //   switch (phoneNumber.length) {
+  //     case 9:
+  //       part1 = "*".repeat(phoneNumber.length - 3);
+  //       part2 = phoneNumber.slice(6);
+  //       break;
+  //     case 10:
+  //       part1 = "*".repeat(phoneNumber.length - 3);
+  //       part2 = phoneNumber.slice(7);
+  //       break;
+  //     case 11:
+  //       part1 = "*".repeat(phoneNumber.length - 3);
+  //       part2 = phoneNumber.slice(7);
+  //       break;
+  //     default:
+  //       // Handle invalid lengths (optional)
+  //       return phoneNumber;
+  //   }
+
+  //   // Combine parts with spaces
+  //   return `${part1}${part2}`;
+  // }
 
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+    phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
 
-    let part1, part2;
+    let formattedParts;
     switch (phoneNumber.length) {
       case 9:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(6);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(3),
+          phoneNumber.slice(6),
+        ];
         break;
       case 10:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(7),
+        ];
         break;
       case 11:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(5),
+          phoneNumber.slice(7),
+        ];
         break;
       default:
         // Handle invalid lengths (optional)
         return phoneNumber;
     }
 
-    // Combine parts with spaces
-    return `${part1}${part2}`;
+    return formattedParts.join("");
   }
 
   useEffect(() => {
@@ -109,8 +144,9 @@ const TravelerProfilePage = () => {
       data["accounts"]["nodes"]
     ) {
       setName(data["accounts"]["nodes"][0]["name"]);
-      setPhone(formatPhoneNumber(data["accounts"]["nodes"][0]["phone"]));
-      setPhoneHide(formatPhoneNumberCen(data["accounts"]["nodes"][0]["phone"]));
+      // setPhone(formatPhoneNumber(data["accounts"]["nodes"][0]["phone"]));
+      // setPhoneHide(formatPhoneNumberCen(data["accounts"]["nodes"][0]["phone"]));
+      setPhone(formatPhoneNumberCen(data["accounts"]["nodes"][0]["phone"]));
       let avt = data["accounts"]["nodes"][0]["avatarUrl"];
       let subAvt =
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
@@ -143,15 +179,13 @@ const TravelerProfilePage = () => {
               </Link>
             </div>
             <div className="return-title">
-              <div className="return-header">
-                Thông tin chi tiết nhà du lịch
-              </div>
+              <div className="return-header">Thông tin chi tiết phượt thủ</div>
               <div className="return-body">
                 <p>Danh sách kế hoạch</p>
                 <ArrowForwardIosIcon />
                 <p>Chi tiết kế hoạch</p>
                 <ArrowForwardIosIcon />
-                <p>Thông tin nhà du lịch</p>
+                <p>Thông tin phượt thủ</p>
               </div>
             </div>
           </div>
@@ -181,7 +215,7 @@ const TravelerProfilePage = () => {
               <div className="left">
                 <div className="detailItem">
                   <span className="itemKey">Số điện thoại:</span>
-                  {phoneVisibility === false ? (
+                  {/* {phoneVisibility === false ? (
                     <span className="itemValue">
                       {phoneHide}
                       <IconButton
@@ -203,7 +237,8 @@ const TravelerProfilePage = () => {
                         <VisibilityIcon />
                       </IconButton>
                     </span>
-                  )}
+                  )} */}
+                  <span className="itemValue">{phone}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Email:</span>
