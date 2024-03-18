@@ -117,7 +117,10 @@ const EmulatorPage = () => {
   return (
     <div className="emulator">
       <div className="sharedTitle">
-        <p>Giả lập hệ thống</p>
+        <div>
+          <p className="title">Giả lập</p>
+          <p className="sub-title">Giả lập hệ thống</p>
+        </div>
       </div>
       <div className="emulatorContainer">
         <div className="emulatorTitle">
