@@ -30,8 +30,8 @@ const PlanPage = () => {
     "READY",
     "VERIFIED",
   ];
-  const [selectedDiv, setSelectedDiv] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState(planStat[1]);
+  const [selectedDiv, setSelectedDiv] = useState(1);
+  const [selectedStatus, setSelectedStatus] = useState(planStat[4]);
   const [isHidden, setIsHidden] = useState(false);
   const [isReadyHidden, setIsReadyHidden] = useState(true);
   const [isVeriHidden, setIsVeriHidden] = useState(true);
@@ -195,7 +195,7 @@ const PlanPage = () => {
       </div>
       <div className="planContainer">
         <div className="icon-row">
-          {[0, 1, 2, 3, 4].map((index) => (
+          {[1, 2, 3, 4].map((index) => (
             <div
               key={index}
               className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
@@ -229,7 +229,7 @@ const PlanPage = () => {
               }}
             >
               {/* Replace with appropriate icons */}
-              {index === 0 && <AppRegistrationIcon sx={{ color: "#3498DB" }} />}
+              {/* {index === 0 && <AppRegistrationIcon sx={{ color: "#3498DB" }} />} */}
               {index === 1 && (
                 <PlaylistAddCheckIcon sx={{ color: "#3498DB" }} />
               )}
@@ -237,7 +237,7 @@ const PlanPage = () => {
               {index === 3 && <CheckCircleIcon color="success" />}
               {index === 4 && <LanguageIcon sx={{ color: "#3498DB" }} />}
               <span>
-                {index === 0 && "Chờ chốt"}
+                {/* {index === 0 && "Chờ chốt"} */}
                 {index === 1 && `Sẵn sàng (${readyPlans})`}
                 {index === 2 && `Đã hủy (${canceledPlans})`}
                 {index === 3 && `Đã xác nhận (${verifiedPlans})`}
@@ -246,7 +246,7 @@ const PlanPage = () => {
             </div>
           ))}
         </div>
-        <FormControl>
+        {/* <FormControl>
           <RadioGroup
             row
             aria-labelledby="demo-row-radio-buttons-group-label"
@@ -294,7 +294,7 @@ const PlanPage = () => {
               label={`Công khai (${publicPlans})`}
             />
           </RadioGroup>
-        </FormControl>
+        </FormControl> */}
 
         <FormControl>
           <RadioGroup

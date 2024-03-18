@@ -189,7 +189,7 @@ const TravelerProfilePage = () => {
                         color="info"
                         onClick={triggerPhone}
                       >
-                        <VisibilityIcon />
+                        <VisibilityOffIcon />
                       </IconButton>
                     </span>
                   ) : (
@@ -200,7 +200,7 @@ const TravelerProfilePage = () => {
                         color="info"
                         onClick={triggerPhone}
                       >
-                        <VisibilityOffIcon />
+                        <VisibilityIcon />
                       </IconButton>
                     </span>
                   )}
@@ -216,7 +216,7 @@ const TravelerProfilePage = () => {
                   <span className="itemValue">{isMale}</span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Điểm hàng hiệu:</span>
+                  <span className="itemKey">Điểm uy tín:</span>
                   <span className="itemValue">{prestigeScore}</span>
                 </div>
               </div>

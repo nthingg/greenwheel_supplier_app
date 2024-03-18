@@ -34,7 +34,7 @@ export const accountsColumn = [
         </div>
       );
     },
-    renderHeader: () => <span>Tên</span>,
+    renderHeader: () => <span>Tài khoản</span>,
   },
   {
     field: "phone",
@@ -115,14 +115,14 @@ export const accountsColumn = [
               <span className="itemValue">
                 {phoneHide}
                 <IconButton className="mapBtn" color="info" onClick={change}>
-                  <VisibilityIcon />
+                  <VisibilityOffIcon />
                 </IconButton>
               </span>
             ) : (
               <span className="itemValue">
                 {phone}
                 <IconButton className="mapBtn" color="info" onClick={change}>
-                  <VisibilityOffIcon />
+                  <VisibilityIcon />
                 </IconButton>
               </span>
             )}
@@ -152,6 +152,6 @@ export const accountsColumn = [
     renderCell: (params) => {
       return <div className="prestigePoint">{params.row.prestigeScore}</div>;
     },
-    renderHeader: () => <span>Điểm hàng hiệu</span>,
+    renderHeader: () => <span>Điểm uy tín</span>,
   },
 ];

@@ -312,7 +312,7 @@ const PlanDetailPage = () => {
                         color="info"
                         onClick={triggerPhone}
                       >
-                        <VisibilityIcon />
+                        <VisibilityOffIcon />
                       </IconButton>
                     </span>
                   ) : (
@@ -323,7 +323,7 @@ const PlanDetailPage = () => {
                         color="info"
                         onClick={triggerPhone}
                       >
-                        <VisibilityOffIcon />
+                        <VisibilityIcon />
                       </IconButton>
                     </span>
                   )}

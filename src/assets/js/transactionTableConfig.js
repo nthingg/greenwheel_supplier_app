@@ -1,3 +1,7 @@
+import { IconButton } from "@mui/material";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+
 export const transactionsColumns = [
   {
     field: "index",
@@ -68,37 +72,7 @@ export const transactionsColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      // function formatPhoneNumber(phoneNumber) {
-      //   // Replace leading "+84" with "0" (if present)
-      //   phoneNumber = phoneNumber.replace(/^\+84/, "0");
-
-      //   let part1, part2, part3;
-      //   switch (phoneNumber.length) {
-      //     case 9:
-      //       part1 = phoneNumber.slice(0, 3);
-      //       part2 = phoneNumber.slice(3, 6);
-      //       part3 = phoneNumber.slice(6);
-      //       break;
-      //     case 10:
-      //       part1 = phoneNumber.slice(0, 4);
-      //       part2 = phoneNumber.slice(4, 7);
-      //       part3 = phoneNumber.slice(7);
-      //       break;
-      //     case 11:
-      //       part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-      //       part2 = phoneNumber.slice(4, 7);
-      //       part3 = phoneNumber.slice(7);
-      //       break;
-      //     default:
-      //       // Handle invalid lengths (optional)
-      //       console.warn(`Invalid phone number length: ${phoneNumber}`);
-      //       return phoneNumber;
-      //   }
-
-      //   // Combine parts with spaces
-      //   return `${part1} ${part2} ${part3}`;
-      // }
-      function formatPhoneNumber(phoneNumber) {
+      function formatPhoneNumberCen(phoneNumber) {
         // Replace leading "+84" with "0" (if present)
         phoneNumber = phoneNumber.replace(/^\+84/, "0");
 
@@ -125,9 +99,70 @@ export const transactionsColumns = [
         return `${part1}${part2}`;
       }
 
-      return <div>{formatPhoneNumber(params.row.account.phone)}</div>;
+      function formatPhoneNumber(phoneNumber) {
+        // Replace leading "+84" with "0" (if present)
+        phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+        let part1, part2, part3;
+        switch (phoneNumber.length) {
+          case 9:
+            part1 = phoneNumber.slice(0, 3);
+            part2 = phoneNumber.slice(3, 6);
+            part3 = phoneNumber.slice(6);
+            break;
+          case 10:
+            part1 = phoneNumber.slice(0, 4);
+            part2 = phoneNumber.slice(4, 7);
+            part3 = phoneNumber.slice(7);
+            break;
+          case 11:
+            part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+            part2 = phoneNumber.slice(4, 7);
+            part3 = phoneNumber.slice(7);
+            break;
+          default:
+            // Handle invalid lengths (optional)
+            console.warn(`Invalid phone number length: ${phoneNumber}`);
+            return phoneNumber;
+        }
+
+        // Combine parts with spaces
+        return `${part1} ${part2} ${part3}`;
+      }
+
+      if (params.row.account.phone !== null) {
+        let phone = formatPhoneNumber(params.row.account.phone);
+        let phoneHide = formatPhoneNumberCen(params.row.account.phone);
+
+        let phoneVisibility = false;
+
+        function change() {
+          phoneVisibility = !phoneVisibility;
+        }
+        return (
+          <div>
+            {phoneVisibility === false ? (
+              <span className="itemValue">
+                {phoneHide}
+                <IconButton className="mapBtn" color="info" onClick={change}>
+                  <VisibilityOffIcon />
+                </IconButton>
+              </span>
+            ) : (
+              <span className="itemValue">
+                {phone}
+                <IconButton className="mapBtn" color="info" onClick={change}>
+                  <VisibilityIcon />
+                </IconButton>
+              </span>
+            )}
+          </div>
+        );
+      } else {
+        return <div>Không có</div>;
+      }
     },
-    renderHeader: () => <span>Điện thoại</span>,
+    renderHeader: () => <span>SĐT</span>,
   },
   // {
   //   field: "supplierName",

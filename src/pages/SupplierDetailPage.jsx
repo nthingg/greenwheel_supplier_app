@@ -26,6 +26,8 @@ import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Accordion,
   AccordionDetails,
@@ -59,6 +61,70 @@ const SupplierDetailPage = () => {
   const [address, setAddress] = useState(defaultAddress);
   const [showMap, setShowMap] = useState(false);
   const [phone, setPhone] = useState("");
+  const [phoneHide, setPhoneHide] = useState("");
+  const [phoneVisibility, setPhoneVisibility] = useState(false);
+
+  const triggerPhone = () => {
+    setPhoneVisibility(!phoneVisibility);
+  };
+
+  function formatPhoneNumber(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2, part3;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = phoneNumber.slice(0, 3);
+        part2 = phoneNumber.slice(3, 6);
+        part3 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = phoneNumber.slice(0, 4);
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
+        part2 = phoneNumber.slice(4, 7);
+        part3 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        console.warn(`Invalid phone number length: ${phoneNumber}`);
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1} ${part2} ${part3}`;
+  }
+
+  function formatPhoneNumberCen(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+
+    let part1, part2;
+    switch (phoneNumber.length) {
+      case 9:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(6);
+        break;
+      case 10:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      case 11:
+        part1 = "*".repeat(phoneNumber.length - 3);
+        part2 = phoneNumber.slice(7);
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        return phoneNumber;
+    }
+
+    // Combine parts with spaces
+    return `${part1}${part2}`;
+  }
 
   const handleClick = (index) => {
     setSelectedDiv(index);
@@ -92,7 +158,10 @@ const SupplierDetailPage = () => {
         lng: data["suppliers"]["nodes"][0].coordinate.coordinates[0],
       };
       setPosition(center);
-      setPhone(data["suppliers"]["nodes"][0].phone);
+      setPhone(formatPhoneNumber(data["suppliers"]["nodes"][0]["phone"]));
+      setPhoneHide(
+        formatPhoneNumberCen(data["suppliers"]["nodes"][0]["phone"])
+      );
     }
   }, [data, loading, error]);
 
@@ -208,7 +277,31 @@ const SupplierDetailPage = () => {
             <div className="details">
               <div className="detailItem">
                 <span className="itemKey">Số điện thoại:</span>
-                <span className="itemValue">{formatPhoneNumber(phone)}</span>
+                <span className="itemValue">
+                  {phoneVisibility === false ? (
+                    <span className="itemValue">
+                      {phoneHide}
+                      <IconButton
+                        className="mapBtn"
+                        color="info"
+                        onClick={triggerPhone}
+                      >
+                        <VisibilityOffIcon />
+                      </IconButton>
+                    </span>
+                  ) : (
+                    <span className="itemValue">
+                      {phone}
+                      <IconButton
+                        className="mapBtn"
+                        color="info"
+                        onClick={triggerPhone}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </span>
+                  )}
+                </span>
               </div>
               <div className="detailItem">
                 <span className="itemKey">Địa chỉ:</span>
@@ -219,12 +312,15 @@ const SupplierDetailPage = () => {
                   </IconButton>
                 </span>
               </div>
-              <div className="detailItem">
-                <span className="itemKey">Số dư:</span>
-                <span className="itemValue">
-                  {supplier?.balance.toLocaleString("vi-VN") + "đ"}
-                </span>
-              </div>
+              {supplier?.type !== "REPAIR_SHOP" &&
+                supplier?.type !== "GROCERY_STORE" && (
+                  <div className="detailItem">
+                    <span className="itemKey">Số dư:</span>
+                    <span className="itemValue">
+                      {supplier?.balance.toLocaleString("vi-VN") + "đ"}
+                    </span>
+                  </div>
+                )}
               <div className="detailItem">
                 <span className="itemKey">Danh mục:</span>
                 <span className="itemValue">
@@ -267,8 +363,8 @@ const SupplierDetailPage = () => {
                 </AccordionSummary>
               </Accordion>
             )} */}
-            {supplier?.type != "REPAIR_SHOP" &&
-              supplier?.type != "VEHICLE_RENTAL" && (
+            {supplier?.type !== "REPAIR_SHOP" &&
+              supplier?.type !== "GROCERY_STORE" && (
                 <Accordion>
                   <AccordionSummary
                     sx={{

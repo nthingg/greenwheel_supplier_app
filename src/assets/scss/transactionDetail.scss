@@ -19,6 +19,36 @@
     height: fit-content;
     min-height: 100vh;
 
+    .note-container {
+        margin-left: 50px;
+
+        .note-title {
+            font-size: 24px;
+        }
+
+        .note-body {
+            width: 400px;
+
+            .note-head {
+                background-color: #28b463;
+                color: white;
+                padding: 10px;
+                margin: 0;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .note-content {
+                height: 300px;
+                box-shadow:
+                    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+
     .dialogTitle {
         background-color: #239b56 !important;
         color: white;

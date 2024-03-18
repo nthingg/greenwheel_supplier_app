@@ -64,7 +64,6 @@ const TransactionDetailPage = () => {
   const [status, setStatus] = useState("");
   const [phone, setPhone] = useState("");
   const [finalCancellable, setFinalCancellable] = useState("");
-  const [finalServable, setFinalServable] = useState("");
 
   const [
     change,
@@ -152,12 +151,7 @@ const TransactionDetailPage = () => {
       );
 
       const start = new Date(data["orders"]["nodes"][0]["plan"]["startDate"]);
-      setServable(start > today);
-      setFinalServable(
-        start.toLocaleDateString("vi-VN", {
-          timeZone: "UTC",
-        })
-      );
+      setServable(start <= today);
 
       setHighlitedDays(newDatesList);
 
@@ -407,10 +401,6 @@ const TransactionDetailPage = () => {
                   <span className="itemKey">Hạn hủy đơn:</span>
                   <span className="itemValue">{finalCancellable}</span>
                 </div>
-                <div className="detailItem">
-                  <span className="itemKey">Hạn phục vụ:</span>
-                  <span className="itemValue">{finalServable}</span>
-                </div>
                 {/* <div className="detailItem">
                   <span className="itemKey">Tổng hóa đơn:</span>
                   <span className="itemValue">
@@ -463,7 +453,7 @@ const TransactionDetailPage = () => {
                 aria-controls="panel1-content"
                 id="panel1-header"
               >
-                Các dịch vụ đặt và ngày phục vụ
+                Thông tin thêm
               </AccordionSummary>
               <AccordionDetails
                 sx={{
@@ -515,81 +505,17 @@ const TransactionDetailPage = () => {
                     </div>
                   </div>
                 </div>
-              </AccordionDetails>
-            </Accordion>
-          </div>
-          {/* <div className="bottom">
-            <Accordion>
-              <AccordionSummary
-                sx={{
-                  fontSize: 24,
-                }}
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                Các ngày phục vụ
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  minWidth: 1400,
-                }}
-              >
-                <div className="calendar">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <p>
-                      {(() => {
-                        switch (order?.period) {
-                          case "MORNING":
-                            return "Phục vụ vào buổi sáng";
-                          case "NOON":
-                            return "Phục vụ vào buổi trưa";
-                          case "AFTERNOON":
-                            return "Phục vụ vào buổi chiều";
-                          case "EVENING":
-                            return "Phục vụ vào buổi tối";
-                          default:
-                            return `Check-in vào ${order?.period}`;
-                        }
-                      })()}
-                    </p>
-                    <DateCalendar
-                      value={
-                        highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
-                      }
-                      readOnly
-                      slots={{
-                        day: ServerDay,
-                      }}
-                      slotProps={{
-                        day: {
-                          highlightedDays,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
+                <div className="note-container">
+                  <p className="note-title">Ghi chú khách hàng</p>
+                  <div className="note-body">
+                    <p className="note-head">Chi tiết ghi chú</p>
+                    <div className="note-content">
+                      <p>
+                        {order?.note === "" ? "Không có ghi chú" : order?.note}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </AccordionDetails>
-            </Accordion>
-          </div> */}
-          <div className="bottom">
-            <Accordion>
-              <AccordionSummary
-                sx={{
-                  fontSize: 24,
-                }}
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                Ghi chú
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  minWidth: 1400,
-                }}
-              >
-                <p>{order?.note === "" ? "Không có ghi chú" : order?.note}</p>
               </AccordionDetails>
             </Accordion>
           </div>

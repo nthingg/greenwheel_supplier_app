@@ -84,8 +84,9 @@ const PlanTable = ({ plans, accountPlans }) => {
             columns={plansColumns.concat(actionColumn)}
             rowSelection={false}
             pagination
-            pageSizeOptions={8}
-            autoHeight={true}
+            autoPageSize
+            // pageSizeOptions={8}
+            // autoHeight={true}
             showColumnVerticalBorder={true}
             sx={{
               "& .MuiDataGrid-columnHeader": {

@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const LOAD_PLANS_FILTER = gql`
   query LoadPlans($status: [PlanStatus!]) {
-    plans(first: 100, order: { id: ASC }, where: { status: { in: $status } }) {
+    plans(first: 100, order: { id: DESC }, where: { status: { in: $status } }) {
       nodes {
         id
         name
