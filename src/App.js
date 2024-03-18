@@ -35,7 +35,11 @@ function App() {
       >
         <div className="app">
           <SideBar />
-          <main className={TOKEN ? "content" : "loginContent"}>
+          <main
+            className={
+              (TOKEN && "content") || (TOKEN === null && "loginContent")
+            }
+          >
             {/* <main className={"content"}> */}
             <Routes>
               <Route

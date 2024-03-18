@@ -36,88 +36,45 @@ export const suppliersColumns = [
     renderCell: (params) => {
       function formatPhoneNumberCen(phoneNumber) {
         // Replace leading "+84" with "0" (if present)
-        phoneNumber = phoneNumber.replace(/^\+84/, "0");
+        phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
 
-        let part1, part2;
+        let formattedParts;
         switch (phoneNumber.length) {
           case 9:
-            part1 = "*".repeat(phoneNumber.length - 3);
-            part2 = phoneNumber.slice(6);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(4),
+              phoneNumber.slice(6),
+            ];
             break;
           case 10:
-            part1 = "*".repeat(phoneNumber.length - 3);
-            part2 = phoneNumber.slice(7);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(4),
+              phoneNumber.slice(7),
+            ];
             break;
           case 11:
-            part1 = "*".repeat(phoneNumber.length - 3);
-            part2 = phoneNumber.slice(7);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(4),
+              phoneNumber.slice(8),
+            ];
             break;
           default:
             // Handle invalid lengths (optional)
             return phoneNumber;
         }
 
-        // Combine parts with spaces
-        return `${part1}${part2}`;
-      }
-
-      function formatPhoneNumber(phoneNumber) {
-        // Replace leading "+84" with "0" (if present)
-        phoneNumber = phoneNumber.replace(/^\+84/, "0");
-
-        let part1, part2, part3;
-        switch (phoneNumber.length) {
-          case 9:
-            part1 = phoneNumber.slice(0, 3);
-            part2 = phoneNumber.slice(3, 6);
-            part3 = phoneNumber.slice(6);
-            break;
-          case 10:
-            part1 = phoneNumber.slice(0, 4);
-            part2 = phoneNumber.slice(4, 7);
-            part3 = phoneNumber.slice(7);
-            break;
-          case 11:
-            part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-            part2 = phoneNumber.slice(4, 7);
-            part3 = phoneNumber.slice(7);
-            break;
-          default:
-            // Handle invalid lengths (optional)
-            console.warn(`Invalid phone number length: ${phoneNumber}`);
-            return phoneNumber;
-        }
-
-        // Combine parts with spaces
-        return `${part1} ${part2} ${part3}`;
+        return formattedParts.join("");
       }
 
       if (params.row.phone !== null) {
-        let phone = formatPhoneNumber(params.row.phone);
-        let phoneHide = formatPhoneNumberCen(params.row.phone);
-
-        let phoneVisibility = false;
-
-        function change() {
-          phoneVisibility = !phoneVisibility;
-        }
         return (
           <div>
-            {phoneVisibility === false ? (
-              <span className="itemValue">
-                {phoneHide}
-                <IconButton className="mapBtn" color="info" onClick={change}>
-                  <VisibilityOffIcon />
-                </IconButton>
-              </span>
-            ) : (
-              <span className="itemValue">
-                {phone}
-                <IconButton className="mapBtn" color="info" onClick={change}>
-                  <VisibilityIcon />
-                </IconButton>
-              </span>
-            )}
+            <span className="itemValue">
+              {formatPhoneNumberCen(params.row.phone)}
+            </span>
           </div>
         );
       } else {

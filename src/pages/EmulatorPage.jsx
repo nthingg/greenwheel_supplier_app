@@ -3,10 +3,16 @@ import "../assets/scss/emulator.scss";
 import "../assets/scss/shared.scss";
 import Select from "react-select";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { FILTER_AVAILABLE_TRAVELER, LOAD_PLANS } from "../services/queries";
+import { FILTER_AVAILABLE_TRAVELER } from "../services/queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { TextField } from "@mui/material";
-import { JOIN_PLAN_SIMULATOR } from "../services/mutations";
+import { Alert, Snackbar, TextField } from "@mui/material";
+import {
+  GEN_MEM_SIMULATOR,
+  JOIN_PLAN_SIMULATOR,
+  LOAD_PLANS_SIMULATOR,
+} from "../services/graphql/simulator";
+import { GraphQLError } from "graphql";
+import { onError } from "@apollo/client/link/error";
 
 const EmulatorPage = () => {
   const [plansOptions, setPlansOptions] = useState([]);
@@ -20,53 +26,74 @@ const EmulatorPage = () => {
   const [currentPlan, setCurrentPlan] = useState(null);
   const [listMember, setListMember] = useState([]);
   const [listAvailable, setListAvailable] = useState([]);
+  const [planId, setPlanId] = useState(0);
+  const [vertical, setVertical] = useState("top");
+  const [horizontal, setHorizontal] = useState("right");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [errorMsg, setErrMsg] = useState(false);
 
   const emulatorOptions = [
-    { value: 1, label: "Thêm 10 traveler vào plan chỉ định." },
-    { value: 2, label: "Thêm 10 plan với địa chỉ chỉ định." },
+    { value: 1, label: "Thêm thành viên vào kế hoạch." },
+    // { value: 2, label: "Thêm 10 plan với địa chỉ chỉ định." },
   ];
+
+  const handleClick = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const {
     error: plansError,
     loading: plansLoading,
     data: plansData,
     refetch: plansRefect,
-  } = useQuery(LOAD_PLANS);
+  } = useQuery(LOAD_PLANS_SIMULATOR);
 
-  const [join, { data, loading }] = useMutation(JOIN_PLAN_SIMULATOR, {
-    onError: (error) => {
-      console.error("Mutation error:", error);
-      const errorMessage =
-        error?.graphQLErrors?.[0]?.message || "Something went wrong.";
-      console.log(errorMessage);
-      let list = listResponse.slice(); // Create a shallow copy of the array
-      list.push(currentTraveler.account.name + " tham gia kế hoạch thất bại!");
-      setListResponse(list);
-      // Handle the error as needed
-    },
-  });
+  const [join, { data, error }] = useMutation(GEN_MEM_SIMULATOR);
 
-  const {
-    error: filterError,
-    loading: filterLoading,
-    data: filterData,
-    refetch: filterRefect,
-  } = useQuery(FILTER_AVAILABLE_TRAVELER, {
-    variables: {
-      ids: listMember,
-    },
-  });
+  const [joinSpec, { data: dataJoin, error: errorJoin }] =
+    useMutation(JOIN_PLAN_SIMULATOR);
 
-  useEffect(() => {
-    if (!loading && data) {
-      let list = listResponse.slice(); // Create a shallow copy of the array
-      list.push(
-        currentTraveler.account.name + " tham gia kế hoạch thành công!"
-      );
-      setListResponse(list);
-      console.log(listResponse);
+  const handleGenMem = async (id, numberJoin) => {
+    try {
+      const { data } = await join({
+        variables: {
+          dto: {
+            planId: parseInt(id, 10),
+            quantity: parseInt(numberJoin, 10),
+          },
+        },
+      });
+      return data["joinPlanSimulate"];
+    } catch (e) {
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      return null;
     }
-  }, [data, loading]);
+  };
+
+  const handleAddMem = async (id) => {
+    try {
+      const { data } = await join({
+        variables: {
+          dto: {
+            planId: parseInt(id, 10),
+            quantity: parseInt(numberJoin, 10),
+          },
+        },
+      });
+      return data["joinPlanSimulate"];
+    } catch (e) {
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      return null;
+    }
+  };
 
   useEffect(() => {
     if (
@@ -77,30 +104,15 @@ const EmulatorPage = () => {
       plansData["plans"]["nodes"]
     ) {
       const options = plansData["plans"]["nodes"].map(
-        ({ id, status, memberLimit, joinMethod, members }) => ({
+        ({ id, status, maxMember, memberCount, account }) => ({
           value: id,
-          label: `ID: ${id}, ${status}, limit: ${memberLimit}, ${joinMethod}, current: ${members.length}`,
+          label: `ID: ${id}, host: ${account.name}, status: ${status}, member: ${memberCount}/${maxMember}`,
         })
       );
       setPlansOptions(options);
       setListPlan(plansData["plans"]["nodes"]);
     }
   }, [plansData, plansLoading, plansError]);
-
-  useEffect(() => {
-    if (
-      !filterLoading &&
-      !filterError &&
-      filterData &&
-      filterData["travelers"] &&
-      filterData["travelers"]["nodes"]
-    ) {
-      //   console.log(filterData["travelers"]["nodes"]);
-      setListAvailable(filterData["travelers"]["nodes"]);
-    }
-  }, [filterData, filterLoading, filterError]);
-
-  //   console.log(listResponse);
 
   return (
     <div className="emulator">
@@ -190,46 +202,11 @@ const EmulatorPage = () => {
           </div>
           <button
             className={emulatorStatus ? "link" : "linkDisabled"}
-            onClick={() => {
+            onClick={async () => {
               const plan = listPlan.find((plan) => plan.id == currentPlan);
-              const listTravelerId = plan.members.map(
-                ({ travelerId }) => travelerId
-              );
-              setListMember(listTravelerId);
-              filterRefect();
-              if (!filterLoading) {
-                if (numberJoin <= filterData["travelers"]["nodes"].length) {
-                  filterData["travelers"]["nodes"]
-                    .slice(0, numberJoin)
-                    .forEach((traveler) => {
-                      setCurrentTraveler(traveler);
-                      console.log(traveler.id);
-                      console.log(currentPlan);
-                      console.log(numberJoin);
-                      try {
-                        join({
-                          variables: {
-                            plan: parseInt(currentPlan),
-                            traveler: parseInt(traveler.id),
-                          },
-                        });
-                      } catch (e) {
-                        console.log(e);
-                      }
-                    });
-                } else {
-                  filterData["travelers"]["nodes"].forEach((traveler) => {
-                    setCurrentTraveler(traveler);
-                    join({
-                      variables: {
-                        input: {
-                          plan: parseInt(currentPlan),
-                          traveler: parseInt(traveler.id),
-                        },
-                      },
-                    });
-                  });
-                }
+              const data = await handleGenMem(plan.id, numberJoin);
+              if (data !== null) {
+                console.log(data);
               }
             }}
             disabled={false}
@@ -246,6 +223,22 @@ const EmulatorPage = () => {
           </div>
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={snackbarOpen}
+        onClose={handleClose}
+        autoHideDuration={2000}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {errorMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -9,13 +9,16 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import TOKEN from "./constant";
 
-const errorLink = onError(({ graphqlErrors, networkError }) => {
-  if (graphqlErrors) {
-    graphqlErrors.map(({ message, location, path }) => {
-      alert(`Graphql error: ${message}`);
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) => {
+      console.log(`Lỗi: ${message}`);
+      localStorage.setItem("errorMsg", `Lỗi: ${message}`);
     });
-  }
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
 });
+
 const link = from([
   errorLink,
   new HttpLink({

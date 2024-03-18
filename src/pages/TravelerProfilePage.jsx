@@ -1,5 +1,6 @@
 import "../assets/scss/travelerProfile.scss";
 import "../assets/scss/traceTable.scss";
+import "../assets/scss/loading.scss";
 import "../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import { IconButton, styled } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import { LOAD_DETAIL_ACCOUNT } from "../services/graphql/account";
 import PlanTable from "../components/PlanTable";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 const TravelerProfilePage = () => {
   const { travelerId } = useParams();
@@ -168,54 +170,68 @@ const TravelerProfilePage = () => {
   }, [data, loading, error]);
 
   return (
-    <div className="travelerProfile">
-      <div className="sharedTitle">
-        <div className="navigation">
-          <div className="left">
-            <div className="return-btn">
-              <Link to="/plans" className="navigateButton">
-                <ArrowCircleLeftIcon />
-                <p>Trở về</p>
-              </Link>
-            </div>
-            <div className="return-title">
-              <div className="return-header">Thông tin chi tiết phượt thủ</div>
-              <div className="return-body">
-                <p>Danh sách kế hoạch</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết kế hoạch</p>
-                <ArrowForwardIosIcon />
-                <p>Thông tin phượt thủ</p>
+    <div>
+      {name === "" && (
+        <div className="loading">
+          <RestartAltIcon
+            sx={{
+              fontSize: 80,
+              color: "#2ECC71",
+            }}
+          />
+        </div>
+      )}
+      {name !== "" && (
+        <div className="travelerProfile">
+          <div className="sharedTitle">
+            <div className="navigation">
+              <div className="left">
+                <div className="return-btn">
+                  <Link to="/plans" className="navigateButton">
+                    <ArrowCircleLeftIcon />
+                    <p>Trở về</p>
+                  </Link>
+                </div>
+                <div className="return-title">
+                  <div className="return-header">
+                    Thông tin chi tiết phượt thủ
+                  </div>
+                  <div className="return-body">
+                    <p>Danh sách kế hoạch</p>
+                    <ArrowForwardIosIcon />
+                    <p>Chi tiết kế hoạch</p>
+                    <ArrowForwardIosIcon />
+                    <p>Thông tin phượt thủ</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="planDetailContainer">
-        <div className="top">
-          <div className="profile-header">
-            <div className="profile-name">
-              <img className="cellImg" src={avatarUrl} alt="avatar" />
-              <p>{name}</p>
+          <div className="planDetailContainer">
+            <div className="top">
+              <div className="profile-header">
+                <div className="profile-name">
+                  <img className="cellImg" src={avatarUrl} alt="avatar" />
+                  <p>{name}</p>
+                </div>
+                <div className="profile-status">
+                  {isActive === false && (
+                    <p className="status cancelled">Ngưng hoạt động</p>
+                  )}
+                  {isActive === true && (
+                    <p className="status confirmed">Đang hoạt động</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="profile-status">
-              {isActive === false && (
-                <p className="status cancelled">Ngưng hoạt động</p>
-              )}
-              {isActive === true && (
-                <p className="status confirmed">Đang hoạt động</p>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="center">
-          <div className="item">
-            <h1 className="itemTitle">Thông tin chi tiết</h1>
-            <div className="details">
-              <div className="left">
-                <div className="detailItem">
-                  <span className="itemKey">Số điện thoại:</span>
-                  {/* {phoneVisibility === false ? (
+            <div className="center">
+              <div className="item">
+                <h1 className="itemTitle">Thông tin chi tiết</h1>
+                <div className="details">
+                  <div className="left">
+                    <div className="detailItem">
+                      <span className="itemKey">Số điện thoại:</span>
+                      {/* {phoneVisibility === false ? (
                     <span className="itemValue">
                       {phoneHide}
                       <IconButton
@@ -238,33 +254,35 @@ const TravelerProfilePage = () => {
                       </IconButton>
                     </span>
                   )} */}
-                  <span className="itemValue">{phone}</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Email:</span>
-                  <span className="itemValue">{email}</span>
+                      <span className="itemValue">{phone}</span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Email:</span>
+                      <span className="itemValue">{email}</span>
+                    </div>
+                  </div>
+                  <div className="right">
+                    <div className="detailItem">
+                      <span className="itemKey">Giới tính:</span>
+                      <span className="itemValue">{isMale}</span>
+                    </div>
+                    <div className="detailItem">
+                      <span className="itemKey">Điểm uy tín:</span>
+                      <span className="itemValue">{prestigeScore}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="right">
-                <div className="detailItem">
-                  <span className="itemKey">Giới tính:</span>
-                  <span className="itemValue">{isMale}</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Điểm uy tín:</span>
-                  <span className="itemValue">{prestigeScore}</span>
+              <div className="bottom">
+                <div className="item">
+                  <h1 className="itemTitle">Danh sách kế hoạch</h1>
+                  <PlanTable accountPlans={plans} />
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="bottom">
-            <div className="item">
-              <h1 className="itemTitle">Danh sách kế hoạch</h1>
-              <PlanTable accountPlans={plans} />
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

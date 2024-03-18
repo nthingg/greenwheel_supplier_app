@@ -211,24 +211,6 @@ export const LOAD_DETAIL_DESTINATION = gql`
   }
 `;
 
-export const LOAD_PLANS = gql`
-  {
-    plans(first: 100, order: { id: DESC }) {
-      nodes {
-        id
-        members(where: { status: { eq: JOINED } }) {
-          travelerId
-        }
-        status
-        memberLimit
-        joinMethod
-        startDate
-        endDate
-      }
-    }
-  }
-`;
-
 export const FILTER_AVAILABLE_TRAVELER = gql`
   query FilterTraveler($ids: [Int]!) {
     travelers(first: 100, order: { id: DESC }, where: { id: { nin: $ids } }) {
