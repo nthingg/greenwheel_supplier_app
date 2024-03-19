@@ -31,6 +31,7 @@ const EmulatorPage = () => {
   const [horizontal, setHorizontal] = useState("right");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
+  const [accounts, setAccounts] = useState([]);
 
   const emulatorOptions = [
     { value: 1, label: "Thêm thành viên vào kế hoạch." },
@@ -52,22 +53,56 @@ const EmulatorPage = () => {
     refetch: plansRefect,
   } = useQuery(LOAD_PLANS_SIMULATOR);
 
-  const [join, { data, error }] = useMutation(GEN_MEM_SIMULATOR);
+  const { error, loading, data, refetch } = useQuery(GEN_MEM_SIMULATOR);
 
-  const [joinSpec, { data: dataJoin, error: errorJoin }] =
+  const [join, { data: dataJoin, error: errorJoin }] =
     useMutation(JOIN_PLAN_SIMULATOR);
 
-  const handleGenMem = async (id, numberJoin) => {
+  // const handleGenMem = async (id, numberJoin) => {
+  //   try {
+  //     const { data } = await join({
+  //       variables: {
+  //         dto: {
+  //           planId: parseInt(id, 10),
+  //           quantity: parseInt(numberJoin, 10),
+  //         },
+  //       },
+  //     });
+  //     return data["joinPlanSimulate"];
+  //   } catch (e) {
+  //     const msg = localStorage.getItem("errorMsg");
+  //     setErrMsg(msg);
+  //     handleClick();
+  //     return null;
+  //   }
+  // };
+
+  const handleAddMem = async (planId) => {
     try {
-      const { data } = await join({
-        variables: {
-          dto: {
-            planId: parseInt(id, 10),
-            quantity: parseInt(numberJoin, 10),
+      let response = "";
+      if (accounts.length < numberJoin) {
+        const msg = "Số lượng account test không đủ.";
+        setErrMsg(msg);
+        handleClick();
+        return null;
+      }
+      for (let index = 0; index < numberJoin; index++) {
+        const element = accounts[index];
+        const { data } = await join({
+          variables: {
+            dto: {
+              accountId: parseInt(element["id"], 10),
+              planId: parseInt(planId, 10),
+            },
           },
-        },
-      });
-      return data["joinPlanSimulate"];
+        });
+
+        if (data != null) {
+          response += `${data["account"]["name"]} tham gia thành công`;
+        }
+      }
+
+      return response;
     } catch (e) {
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
@@ -76,24 +111,17 @@ const EmulatorPage = () => {
     }
   };
 
-  const handleAddMem = async (id) => {
-    try {
-      const { data } = await join({
-        variables: {
-          dto: {
-            planId: parseInt(id, 10),
-            quantity: parseInt(numberJoin, 10),
-          },
-        },
-      });
-      return data["joinPlanSimulate"];
-    } catch (e) {
-      const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
-      return null;
+  useEffect(() => {
+    if (
+      !loading &&
+      !error &&
+      data &&
+      data["testAccounts"] &&
+      data["testAccounts"]["nodes"]
+    ) {
+      setAccounts(data["testAccounts"]["nodes"]);
     }
-  };
+  }, [data, loading, error]);
 
   useEffect(() => {
     if (
@@ -207,10 +235,13 @@ const EmulatorPage = () => {
             className={emulatorStatus ? "link" : "linkDisabled"}
             onClick={async () => {
               const plan = listPlan.find((plan) => plan.id == currentPlan);
-              const data = await handleGenMem(plan.id, numberJoin);
-              if (data !== null) {
-                console.log(data);
-              }
+              // const data = await handleGenMem(plan.id, numberJoin);
+              // if (data !== null) {
+              //   console.log(data);
+              // }
+              refetch();
+              const data = await handleAddMem(plan.id);
+              console.log(data);
             }}
             disabled={false}
           >
