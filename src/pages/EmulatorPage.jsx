@@ -7,35 +7,47 @@ import { FILTER_AVAILABLE_TRAVELER } from "../services/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { Alert, Snackbar, TextField } from "@mui/material";
 import {
+  CREATE_PLAN_SIMULATOR,
   GEN_MEM_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
   LOAD_PLANS_SIMULATOR,
 } from "../services/graphql/simulator";
 import { GraphQLError } from "graphql";
 import { onError } from "@apollo/client/link/error";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../services/firebase/setup";
 
 const EmulatorPage = () => {
-  const [plansOptions, setPlansOptions] = useState([]);
-  const [listResponse, setListResponse] = useState([]);
-  const [listPlan, setListPlan] = useState([]);
-  const [numberJoin, setNumberJoin] = useState(0);
-  const [isNumberDisabled, setIsNumberDisabled] = useState(true);
-  const [isPlanDisabled, setIsPlanDisabled] = useState(true);
-  const [emulatorStatus, setEmulatorStatus] = useState(false);
-  const [currentTraveler, setCurrentTraveler] = useState(null);
-  const [currentPlan, setCurrentPlan] = useState(null);
-  const [listMember, setListMember] = useState([]);
-  const [listAvailable, setListAvailable] = useState([]);
-  const [planId, setPlanId] = useState(0);
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("right");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
   const [accounts, setAccounts] = useState([]);
+  const [responseMsg, setResponseMsg] = useState("");
+  const [user, setUser] = useState(null);
 
   const emulatorOptions = [
-    { value: 1, label: "Thêm thành viên vào kế hoạch." },
-    // { value: 2, label: "Thêm 10 plan với địa chỉ chỉ định." },
+    { value: 1, label: "Giả lập tạo 50 kế hoạch." },
+    {
+      value: 2,
+      label: "Giả lập 50 trưởng nhóm tham gia kế hoạch của bản thân.",
+    },
+    {
+      value: 3,
+      label: "Giả lập 50 trưởng nhóm tham gia kế hoạch của bản thân.",
+    },
+    {
+      value: 4,
+      label: "Giả lập người được mời tham gia 40 kế hoạch.",
+    },
+    {
+      value: 5,
+      label: "Giả lập chốt 30 kế hoạch.",
+    },
+    {
+      value: 6,
+      label: "Giả lập đặt đồ cho 30 kế hoạch.",
+    },
   ];
 
   const handleClick = () => {
@@ -58,51 +70,33 @@ const EmulatorPage = () => {
   const [join, { data: dataJoin, error: errorJoin }] =
     useMutation(JOIN_PLAN_SIMULATOR);
 
-  // const handleGenMem = async (id, numberJoin) => {
-  //   try {
-  //     const { data } = await join({
-  //       variables: {
-  //         dto: {
-  //           planId: parseInt(id, 10),
-  //           quantity: parseInt(numberJoin, 10),
-  //         },
-  //       },
-  //     });
-  //     return data["joinPlanSimulate"];
-  //   } catch (e) {
-  //     const msg = localStorage.getItem("errorMsg");
-  //     setErrMsg(msg);
-  //     handleClick();
-  //     return null;
-  //   }
-  // };
+  const [create, { data: dataCreate, error: errorCreate }] = useMutation(
+    CREATE_PLAN_SIMULATOR
+  );
 
-  const handleAddMem = async (planId) => {
+  const handleCreatePlan = async (plan) => {
     try {
-      let response = "";
-      if (accounts.length < numberJoin) {
-        const msg = "Số lượng account test không đủ.";
-        setErrMsg(msg);
-        handleClick();
-        return null;
-      }
-      for (let index = 0; index < numberJoin; index++) {
-        const element = accounts[index];
-        const { data } = await join({
-          variables: {
-            dto: {
-              accountId: parseInt(element["id"], 10),
-              planId: parseInt(planId, 10),
-            },
+      const { data } = await create({
+        variables: {
+          dto: {
+            departAt: plan.departAt,
+            departure: plan.departure,
+            destinationId: plan.destinationId,
+            gcoinBudgetPerCapita: plan.gcoinBudgetPerCapita,
+            memberLimit: plan.memberLimit,
+            name: plan.name,
+            note: plan.note,
+            periodCount: plan.periodCount,
+            savedContacts: plan.savedContacts,
+            schedule: plan.schedule,
+            surcharges: plan.surcharges,
+            tempOrders: plan.tempOrders,
+            travelDuration: plan.travelDuration,
           },
-        });
+        },
+      });
 
-        if (data != null) {
-          response += `${data["account"]["name"]} tham gia thành công`;
-        }
-      }
-
-      return response;
+      return `${data["createPlan"]["accounts"]["name"]} tham gia thành công`;
     } catch (e) {
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
@@ -123,24 +117,72 @@ const EmulatorPage = () => {
     }
   }, [data, loading, error]);
 
-  useEffect(() => {
-    if (
-      !plansLoading &&
-      !plansError &&
-      plansData &&
-      plansData["plans"] &&
-      plansData["plans"]["nodes"]
-    ) {
-      const options = plansData["plans"]["nodes"].map(
-        ({ id, status, maxMember, memberCount, account }) => ({
-          value: id,
-          label: `ID: ${id}, host: ${account.name}, status: ${status}, member: ${memberCount}/${maxMember}`,
-        })
+  // useEffect(() => {
+  //   if (
+  //     !plansLoading &&
+  //     !plansError &&
+  //     plansData &&
+  //     plansData["plans"] &&
+  //     plansData["plans"]["nodes"]
+  //   ) {
+  //     const options = plansData["plans"]["nodes"].map(
+  //       ({ id, status, maxMember, memberCount, account }) => ({
+  //         value: id,
+  //         label: `ID: ${id}, host: ${account.name}, status: ${status}, member: ${memberCount}/${maxMember}`,
+  //       })
+  //     );
+  //     setPlansOptions(options);
+  //     setListPlan(plansData["plans"]["nodes"]);
+  //   }
+  // }, [plansData, plansLoading, plansError]);
+
+  const onCaptchaVerify = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            onSignIn();
+          },
+          "expired-callback": () => {},
+        }
       );
-      setPlansOptions(options);
-      setListPlan(plansData["plans"]["nodes"]);
     }
-  }, [plansData, plansLoading, plansError]);
+  };
+
+  const onSignIn = (phone) => {
+    onCaptchaVerify();
+
+    let userToken = "";
+    const appVerifier = window.recaptchaVerifier;
+    signInWithPhoneNumber(auth, phone, appVerifier)
+      .then(async (confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        console.log("OTP sended successfully!");
+        userToken = await onOTPVerified();
+        return userToken;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  };
+
+  const onOTPVerified = () => {
+    window.confirmationResult
+      .confirm("123123")
+      .then(async (res) => {
+        console.log(res);
+        console.log(res.user);
+        console.log(res.user["accessToken"]);
+        return res.user["accessToken"];
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className="emulator">
@@ -155,6 +197,7 @@ const EmulatorPage = () => {
           <p>Chi tiết</p>
         </div>
         <div className="details">
+          <div id="recaptcha-container"></div>
           <Select
             placeholder={"Chọn loại giả lập"}
             className="basic-single"
@@ -164,10 +207,8 @@ const EmulatorPage = () => {
             options={emulatorOptions}
             onChange={(e) => {
               if (e != null) {
-                plansRefect();
-                setIsPlanDisabled(false);
+                console.log(e.value);
               } else {
-                setIsPlanDisabled(true);
               }
             }}
             theme={(theme) => ({
@@ -179,69 +220,38 @@ const EmulatorPage = () => {
               },
             })}
           />
-          <div className="option">
-            <div className="left">
-              <Select
-                placeholder={"Chọn plan có sẵn"}
-                className="basic-single"
-                classNamePrefix="select"
-                isDisabled={isPlanDisabled}
-                isClearable={true}
-                name="color"
-                options={plansOptions}
-                onChange={(e) => {
-                  if (e != null) {
-                    setCurrentPlan(e.value);
-                    setIsNumberDisabled(false);
-                    setEmulatorStatus(true);
-                    setNumberJoin(10);
-                  } else {
-                    setIsNumberDisabled(true);
-                    setEmulatorStatus(false);
-                    setNumberJoin(0);
-                  }
-                }}
-                theme={(theme) => ({
-                  ...theme,
-                  colors: {
-                    ...theme.colors,
-                    primary25: "#58D68D",
-                    primary: "#28B463",
-                  },
-                })}
-              />
-            </div>
-            <div className="right">
-              <TextField
-                disabled={isNumberDisabled}
-                id="outlined-disabled"
-                label="Số người"
-                type="number"
-                defaultValue={10}
-                placeholder="Nhập số người tham gia"
-                size="small"
-                onChange={(e) => {
-                  if (e.target.value <= 0) {
-                    setEmulatorStatus(false);
-                  } else {
-                    setNumberJoin(e.target.value);
-                    setEmulatorStatus(true);
-                  }
-                }}
-              />
-            </div>
-          </div>
           <button
-            className={emulatorStatus ? "link" : "linkDisabled"}
+            // className={emulatorStatus ? "link" : "linkDisabled"}
+            className="link"
             onClick={async () => {
-              const plan = listPlan.find((plan) => plan.id == currentPlan);
-              // const data = await handleGenMem(plan.id, numberJoin);
-              // if (data !== null) {
-              //   console.log(data);
+              // const plan = listPlan.find((plan) => plan.id == currentPlan);
+              // // const data = await handleGenMem(plan.id, numberJoin);
+              // // if (data !== null) {
+              // //   console.log(data);
+              // // }
+              // refetch();
+              // if (accounts.length < numberJoin) {
+              //   const msg = "Số lượng account test không đủ.";
+              //   setErrMsg(msg);
+              //   handleClick();
+              //   return null;
+              // } else {
+              //   let response = "";
+              //   for (let index = 0; index < numberJoin; index++) {
+              //     console.log(accounts[index]);
+              //     const data = await handleAddMem(plan.id, accounts[index].id);
+              //     // setResponseMsg(data);
+              //     response += data + "\n";
+              //   }
+              //   setResponseMsg(response);
               // }
-              refetch();
-              const data = await handleAddMem(plan.id);
-              console.log(data);
+              let res = accounts.map(async (account) => {
+                const { __typename, ...rest } = account;
+                const userToken = await onSignIn(account.phone);
+                return { ...rest, token: userToken };
+              });
+              console.log(res);
+              // onSignIn("+841231098769");
             }}
             disabled={false}
           >
@@ -249,11 +259,7 @@ const EmulatorPage = () => {
           </button>
           <div className="resultTable">
             <p className="title">Kết quả</p>
-            <div className="body">
-              {listResponse.map((response, index) => (
-                <p key={index}>{response}</p>
-              ))}
-            </div>
+            <div className="body">{responseMsg}</div>
           </div>
         </div>
       </div>

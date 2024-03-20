@@ -5,6 +5,8 @@ export const GEN_MEM_SIMULATOR = gql`
     testAccounts(first: 100, order: { id: DESC }) {
       nodes {
         id
+        name
+        phone
       }
     }
   }
@@ -33,6 +35,17 @@ export const LOAD_PLANS_SIMULATOR = gql`
         status
         memberCount
         maxMember
+      }
+    }
+  }
+`;
+
+export const CREATE_PLAN_SIMULATOR = gql`
+  mutation createPlan($dto: PlanCreateInput!) {
+    createPlan(dto: $dto) {
+      id
+      account {
+        name
       }
     }
   }
