@@ -16,6 +16,7 @@ import { GraphQLError } from "graphql";
 import { onError } from "@apollo/client/link/error";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../services/firebase/setup";
+import { jwtDecode } from "jwt-decode";
 
 const EmulatorPage = () => {
   const [vertical, setVertical] = useState("top");
@@ -113,7 +114,13 @@ const EmulatorPage = () => {
       data["testAccounts"] &&
       data["testAccounts"]["nodes"]
     ) {
-      setAccounts(data["testAccounts"]["nodes"]);
+      let res = data["testAccounts"]["nodes"].map((account) => {
+        const { __typename, ...rest } = account;
+        return { ...rest, token: "" };
+      });
+      // setAccounts(data["testAccounts"]["nodes"]);
+      setAccounts(res);
+      console.log(res);
     }
   }, [data, loading, error]);
 
@@ -155,18 +162,15 @@ const EmulatorPage = () => {
   const onSignIn = (phone) => {
     onCaptchaVerify();
 
-    let userToken = "";
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then(async (confirmationResult) => {
         window.confirmationResult = confirmationResult;
         console.log("OTP sended successfully!");
-        userToken = await onOTPVerified();
-        return userToken;
+        await onOTPVerified();
       })
       .catch((error) => {
         console.log(error);
-        return null;
       });
   };
 
@@ -174,10 +178,14 @@ const EmulatorPage = () => {
     window.confirmationResult
       .confirm("123123")
       .then(async (res) => {
-        console.log(res);
-        console.log(res.user);
         console.log(res.user["accessToken"]);
-        return res.user["accessToken"];
+        const decoded = jwtDecode(res.user["accessToken"]);
+        accounts.map((account) => {
+          if (account.phone === decoded["phone_number"]) {
+            account.token = res.user["accessToken"];
+          }
+        });
+        console.log(accounts);
       })
       .catch((error) => {
         console.log(error);
@@ -245,13 +253,9 @@ const EmulatorPage = () => {
               //   }
               //   setResponseMsg(response);
               // }
-              let res = accounts.map(async (account) => {
-                const { __typename, ...rest } = account;
-                const userToken = await onSignIn(account.phone);
-                return { ...rest, token: userToken };
+              accounts.map((account) => {
+                onSignIn(account.phone);
               });
-              console.log(res);
-              // onSignIn("+841231098769");
             }}
             disabled={false}
           >

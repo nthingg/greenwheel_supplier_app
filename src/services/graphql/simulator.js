@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GEN_MEM_SIMULATOR = gql`
   {
-    testAccounts(first: 100, order: { id: DESC }) {
+    testAccounts(last: 3, order: { id: DESC }) {
       nodes {
         id
         name
