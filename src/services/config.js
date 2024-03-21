@@ -7,7 +7,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { TOKEN, USER_TOKEN } from "./constant";
+import { TOKEN } from "./constant";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
@@ -29,11 +29,15 @@ const link = from([
 const authLink = setContext((_, { headers }) => {
   // return the headers to the context so httpLink can read them
   let checkIsUserCall = localStorage.getItem("isUserCall");
+  let userToken = localStorage.getItem("userToken");
+  console.log(checkIsUserCall
+    ? `Bearer ${userToken}`
+    : `Bearer ${TOKEN}`)
   return {
     headers: {
       ...headers,
       authorization: checkIsUserCall
-        ? `Bearer ${USER_TOKEN}`
+        ? `Bearer ${userToken}`
         : `Bearer ${TOKEN}`,
     },
   };

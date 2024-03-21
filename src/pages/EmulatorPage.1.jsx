@@ -1,29 +1,20 @@
 import { useEffect, useState } from "react";
-import "../assets/scss/emulator.scss";
-import "../assets/scss/shared.scss";
 import Select from "react-select";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useMutation, useQuery } from "@apollo/client";
-import { Alert, Snackbar, TextField } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 import {
   CREATE_PLAN_SIMULATOR,
   GEN_MEM_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
   LOAD_PLANS_SIMULATOR,
 } from "../services/graphql/simulator";
-import { GraphQLError } from "graphql";
-import { onError } from "@apollo/client/link/error";
-import {
-  PhoneAuthProvider,
-  RecaptchaVerifier,
-  signInWithCredential,
-  signInWithPhoneNumber,
-} from "firebase/auth";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../services/firebase/setup";
 import { jwtDecode } from "jwt-decode";
 import { planData } from "../services/constant/plans";
 
-const EmulatorPage = () => {
+export const EmulatorPage = () => {
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("right");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -104,14 +95,12 @@ const EmulatorPage = () => {
           },
         },
       });
-      console.log();
-      return `Người dùng [${data["createPlan"]["account"]["name"]}] tạo kế hoạch thành công`;
-    } catch (error) {
-      console.log(error);
+
+      return `${data["createPlan"]["accounts"]["name"]} tạo kế hoạch thành công`;
+    } catch (e) {
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
       handleClick();
-      localStorage.removeItem("errorMsg");
       return "Tạo kế hoạch thất bại";
     }
   };
@@ -152,7 +141,6 @@ const EmulatorPage = () => {
   //     setListPlan(plansData["plans"]["nodes"]);
   //   }
   // }, [plansData, plansLoading, plansError]);
-
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
       auth.settings.appVerificationDisabledForTesting = true;
@@ -190,21 +178,63 @@ const EmulatorPage = () => {
     window.confirmationResult
       .confirm("123123")
       .then((res) => {
-        const decoded = jwtDecode(res.user["accessToken"]);
+        let userToken = "";
+        auth.currentUser
+          .getIdToken(/* forceRefresh */ true)
+          .then(function (idToken) {
+            // Send token to your backend via HTTPS
+            // ...
+            userToken = idToken;
+          })
+          .catch(function (error) {
+            // Handle error
+          });
+        const decoded = jwtDecode(userToken);
         for (let i = 0; i < accounts.length; i++) {
           if (accounts[i].phone === decoded["phone_number"]) {
-            accounts[i].token = res.user["accessToken"];
+            accounts[i].token = userToken;
             if (accounts[i].phone === accounts[accounts.length - 1].phone) {
               setLoading(false);
             }
             break;
           }
         }
+        // const decoded = jwtDecode(res.user["accessToken"]);
+        // for (let i = 0; i < accounts.length; i++) {
+        //   if (accounts[i].phone === decoded["phone_number"]) {
+        //     accounts[i].token = res.user["accessToken"];
+        //     if (accounts[i].phone === accounts[accounts.length - 1].phone) {
+        //       setLoading(false);
+        //     }
+        //     break;
+        //   }
+        // }
         setAccounts(accounts);
       })
       .catch((error) => {
         console.log(error);
       });
+    // var credential = PhoneAuthProvider.credential(
+    //   window.confirmationResult.verificationId,
+    //   "123123"
+    // );
+    // signInWithCredential(auth, credential)
+    //   .then((value) => {
+    //     console.log(value);
+    //     auth.currentUser
+    //       .getIdTokenResult()
+    //       .then((value) => {
+    //         // Send token to your backend via HTTPS
+    //         // ...
+    //         console.log("TOKEN: " + value.token);
+    //       })
+    //       .catch(function (error) {
+    //         // Handle error
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   const simulateCreatePlans = async () => {
@@ -214,16 +244,10 @@ const EmulatorPage = () => {
       localStorage.setItem("userToken", accounts[i].token);
       for (let i = 0; i < 10; i++) {
         const res = await handleCreatePlan(planData[0]);
-        response += `${res}\n`;
+        response += "\n" + res;
       }
       setResponseMsg(response);
     }
-    // for (let i = 0; i < 2; i++) {
-    //   localStorage.setItem("userToken", accounts[0].token);
-    //   const res = await handleCreatePlan(planData[0]);
-    //   response += `${res}\n`;
-    //   setResponseMsg(response);
-    // }
     localStorage.removeItem("isUserCall");
   };
 
@@ -278,8 +302,7 @@ const EmulatorPage = () => {
               // className={"link"}
               onClick={async () => {
                 if (selectedSimulator === 1) {
-                  simulateCreatePlans();
-                  MassLogin();
+                  // simulateCreatePlans();
                 } else if (selectedSimulator === 2) {
                 }
               }}
@@ -289,9 +312,7 @@ const EmulatorPage = () => {
             </button>
             <div className="resultTable">
               <p className="title">Kết quả</p>
-              <div className="body">
-                <span className="response">{responseMsg}</span>
-              </div>
+              <div className="body">{responseMsg}</div>
             </div>
           </div>
         </div>
@@ -315,5 +336,3 @@ const EmulatorPage = () => {
     </div>
   );
 };
-
-export default EmulatorPage;

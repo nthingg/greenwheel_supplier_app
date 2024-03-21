@@ -1,158 +1,183 @@
-export const plan = [
+export const planData = [
   {
-    departAt: "2024-03-27 15:55:46.056501+00",
-    departure: "0101000020E61000003BBD7BD3D5B35A40F97F6B84C2AE2540",
+    departAt: "2024-03-30 15:55:46.056501+00",
+    departure: [106.80992590984253, 10.841327798960252],
     destinationId: 1,
     gcoinBudgetPerCapita: 700000,
-    memberLimit: 1,
+    maxMember: 10,
+    maxMemberWeight: 1,
+    departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
     name: "test-plan-1",
     note: "",
     periodCount: 4,
     savedContacts: [
       {
-        Name: "Cứu hộ Phường Nhà Bàng",
-        Type: 0,
-        Phone: "+842963875087",
-        Address:
+        name: "Cứu hộ Phường Nhà Bàng",
+        type: "RESCUE",
+        phone: "+842963875087",
+        address:
           "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        ImageUrl: null,
+        imageUrl: null,
       },
       {
-        Name: "Trạm xá Phường Nhà Bàng",
-        Type: 1,
-        Phone: "+842963875087",
-        Address:
+        name: "Trạm xá Phường Nhà Bàng",
+        type: "MEDICAL",
+        phone: "+842963875087",
+        address:
           "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        ImageUrl: null,
+        imageUrl: null,
       },
       {
-        Name: "Tổng đài cứu hộ khẩn cấp khóm Sơn Đông",
-        Type: 0,
-        Phone: "+842963875087",
-        Address:
+        name: "Tổng đài cứu hộ khẩn cấp khóm Sơn Đông",
+        type: "RESCUE",
+        phone: "+842963875087",
+        address:
           "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        ImageUrl: null,
+        imageUrl: null,
       },
     ],
     schedule: [
       {
-        Events: [
+        events: [
           {
-            Type: 3,
-            Duration: "00:30:00",
-            IsStarred: false,
-            Description: "Check-in và nhận phòng",
-            ShortDescription:
-              "Mọi người cùng đến nơi check-in và nhận phòng tại Nhà nghỉ Thiên Định.",
+            type: "CHECKIN",
+            duration: "00:30:00",
+            isStarred: false,
+            description: "Check-in và nhận phòng",
+            shortDescription:
+              "Check-in Nhà nghỉ Thiên Định.",
           },
           {
-            Type: 2,
-            Duration: "01:00:00",
-            IsStarred: true,
-            Description: "Dùng bữa tại nhà hàng",
-            ShortDescription: "Cùng nhau dùng bữa tại nhà hàng 3*.",
+            type: "EAT",
+            duration: "01:00:00",
+            isStarred: true,
+            description: "Dùng bữa tại nhà hàng",
+            shortDescription: "Dùng bữa tại nhà hàng 3*.",
           },
           {
-            Type: 5,
-            Duration: "01:00:00",
-            IsStarred: false,
-            Description: "Tham quan, giải trí",
-            ShortDescription:
-              "Đến bìa rừng Trà Sư và di chuyển bằng 'tắc rang' xuyên rừng.",
+            type: "VISIT",
+            duration: "01:00:00",
+            isStarred: false,
+            description: "Tham quan, giải trí",
+            shortDescription:
+              "Đến bìa rừng Trà Sư và di chuyển.",
           },
           {
-            Type: 5,
-            Duration: "00:30:00",
-            IsStarred: false,
-            Description: "Ngắm cảnh",
-            ShortDescription: "Đến vọng Lâm Đài, ngắm toàn cảnh rừng.",
+            type: "VISIT",
+            duration: "00:30:00",
+            isStarred: false,
+            description: "Ngắm cảnh",
+            shortDescription: "Đến vọng Lâm Đài, ngắm toàn cảnh rừng.",
           },
           {
-            Type: 2,
-            Duration: "00:30:00",
-            IsStarred: true,
-            Description: "Dùng bữa tại nhà hàng",
-            ShortDescription: "Cùng nhau dùng bữa tại nhà hàng 3*",
+            type: "EAT",
+            duration: "00:30:00",
+            isStarred: true,
+            description: "Dùng bữa tại nhà hàng",
+            shortDescription: "Dùng bữa tại nhà hàng 3*",
           },
           {
-            Type: 0,
-            Duration: "00:15:00",
-            IsStarred: false,
-            Description: "Nghỉ ngơi",
-            ShortDescription:
-              "Quay về nhà nghỉ và nghỉ ngơi với buổi tối tự túc.",
+            type: "FREE",
+            duration: "00:15:00",
+            isStarred: false,
+            description: "Nghỉ ngơi",
+            shortDescription:
+              "Nghỉ ngơi với buổi tối tự túc.",
           },
         ],
       },
       {
-        Events: [
+        events: [
           {
-            Type: 0,
-            Duration: "01:00:00",
-            IsStarred: true,
-            Description: "Tập trung và dùng bữa tại nhà hàng",
-            ShortDescription: "Tập trung và dùng bữa sáng tại nhà hàng.",
+            type: "EAT",
+            duration: "01:00:00",
+            isStarred: true,
+            description: "Tập trung và dùng bữa tại nhà hàng",
+            shortDescription: "Dùng bữa sáng tại nhà hàng.",
           },
           {
-            Type: 5,
-            Duration: "02:00:00",
-            IsStarred: false,
-            Description: "Tham quan và giải trí",
-            ShortDescription:
-              "Cùng tham quan và vui chơi tại cầu tre dài nhất Việt Nam.",
+            type: "VISIT",
+            duration: "02:00:00",
+            isStarred: false,
+            description: "Tham quan và giải trí",
+            shortDescription:
+              "Vui chơi tại cầu tre dài nhất Việt Nam.",
           },
           {
-            Type: 5,
-            Duration: "00:30:00",
-            IsStarred: false,
-            Description: "Tham quan, giải trí",
-            ShortDescription:
-              "Chụp hình và check-in tại Thành phố Bố Câu - nơi có 400 con chim được nuôi thả tạo nên khung cảnh sân lãng man.",
+            type: "VISIT",
+            duration: "00:30:00",
+            isStarred: false,
+            description: "Tham quan, giải trí",
+            shortDescription:
+              "Chụp hình tại Thành phố Bố Câu.",
           },
           {
-            Type: 2,
-            Duration: "01:00:00",
-            IsStarred: true,
-            Description: "Dùng bữa tại nhà hàng",
-            ShortDescription: "Dùng bữa trưa tại nhà hàng 3*",
+            type: "EAT",
+            duration: "01:00:00",
+            isStarred: true,
+            description: "Dùng bữa tại nhà hàng",
+            shortDescription: "Dùng bữa trưa tại nhà hàng 3*",
           },
           {
-            Type: 4,
-            Duration: "00:30:00",
-            IsStarred: false,
-            Description: "Check-out và đi về",
-            ShortDescription: "Mọi người cùng trả phòng và kết thúc chuyến đi.",
+            type: "CHECKOUT",
+            duration: "00:30:00",
+            isStarred: false,
+            description: "Check-out và đi về",
+            shortDescription: "Trả phòng và kết thúc chuyến đi.",
           },
         ],
       },
     ],
-    surcharges: [{ Note: "Phụ phí­ test", GcoinAmount: 10000 }],
+    surcharges: [{ note: "Phụ phí­ test", gcoinAmount: 10000 }],
     tempOrders: [
       {
-        Cart: '{"4":5}',
-        Note: null,
-        Type: 1,
-        Period: 1,
-        ServeDates: ["4047-06-23", "4047-06-24"],
-        SupplierId: 2,
+        cart: [
+          {
+            "key": 4,
+            "value": 5
+          }
+        ],
+        note: null,
+        type: "LODGING",
+        period: "NOON",
+        serveDates: ["2024-03-28", "2024-03-29"],
+        supplierId: 2,
       },
       {
-        Cart: '{"1":1,"2":1,"5":1}',
-        Note: null,
-        Type: 0,
-        Period: 3,
-        ServeDates: ["4047-06-23", "4047-06-24"],
-        SupplierId: 3,
+        cart: [{
+          "key": 1,
+          "value": 1
+        }, {
+          "key": 2,
+          "value": 1
+        }, {
+          "key": 5,
+          "value": 1
+        }],
+        note: null,
+        type: "MEAL",
+        period: "AFTERNOON",
+        serveDates: ["2024-03-28", "2024-03-29"],
+        supplierId: 3,
       },
       {
-        Cart: '{"3":1,"7":1,"8":1}',
-        Note: null,
-        Type: 0,
-        Period: 1,
-        ServeDates: ["4047-06-23", "4047-06-24"],
-        SupplierId: 4,
+        cart: [{
+          "key": 3,
+          "value": 1
+        }, {
+          "key": 7,
+          "value": 1
+        }, {
+          "key": 8,
+          "value": 1
+        }],
+        note: null,
+        type: "MEAL",
+        period: "NOON",
+        serveDates: ["2024-03-28", "2024-03-29"],
+        supplierId: 4,
       },
     ],
-    travelDuration: "5:00:00 AM",
+    travelDuration: "05:42:10",
   },
 ];
