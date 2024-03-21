@@ -13,9 +13,12 @@ export const GEN_MEM_SIMULATOR = gql`
 `;
 
 export const JOIN_PLAN_SIMULATOR = gql`
-  mutation joinPlanSimulator($dto: PlanJoinSimulateInput!) {
-    simulateJoinPlan(dto: $dto) {
+ mutation joinPlanSimulator($dto: PlanJoinInput!) {
+    joinPlan(dto: $dto) {
       id
+      plan {
+        name
+      }
       account {
         name
       }
@@ -24,13 +27,20 @@ export const JOIN_PLAN_SIMULATOR = gql`
 `;
 
 export const LOAD_PLANS_SIMULATOR = gql`
-  {
-    plans(first: 100, order: { id: DESC }) {
+  query LoadPlans($id: Int!) {
+    plans(first: 20, order: { id: DESC }, where: {account: {id: {eq: $id}}}) {
       nodes {
         id
         name
         account {
           name
+        }
+        members {
+          id 
+          status
+          account {
+            name
+          }
         }
         status
         memberCount
@@ -44,9 +54,20 @@ export const CREATE_PLAN_SIMULATOR = gql`
   mutation createPlan($dto: PlanCreateInput!) {
     createPlan(dto: $dto) {
       id
+      name
       account {
         name
       }
+    }
+  }
+`;
+
+export const CHANGE_JOIN_METHOD_SIMULATOR = gql`
+  mutation updateJoinMethodSimulator($dto: JoinMethodUpdateInput!) {
+    changePlanJoinMethod(dto: $dto) {
+      id
+      name
+      joinMethod
     }
   }
 `;

@@ -13,6 +13,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.log(`Lỗi: ${message}`);
+      // localStorage.setItem("checkIsUserCall", "no");
       localStorage.setItem("errorMsg", `Lỗi: ${message}`);
     });
 
@@ -28,19 +29,30 @@ const link = from([
 
 const authLink = setContext((_, { headers }) => {
   // return the headers to the context so httpLink can read them
-  let checkIsUserCall = localStorage.getItem("isUserCall");
+  let checkIsUserCall = localStorage.getItem("checkIsUserCall");
   let userToken = localStorage.getItem("userToken");
-  console.log(checkIsUserCall
-    ? `Bearer ${userToken}`
-    : `Bearer ${TOKEN}`)
-  return {
-    headers: {
-      ...headers,
-      authorization: checkIsUserCall
-        ? `Bearer ${userToken}`
-        : `Bearer ${TOKEN}`,
-    },
-  };
+  let token = localStorage.getItem("token");
+  // console.log("ADMIN " + token)
+  // console.log("USER " + token)
+  console.log(checkIsUserCall)
+  if (checkIsUserCall === "yes") {
+    console.log("USER IS CALLING")
+    return {
+      headers: {
+        ...headers,
+        authorization: `Bearer ${userToken}`,
+      },
+    };
+  } else {
+    console.log("ADMIN IS CALLING")
+    return {
+      headers: {
+        ...headers,
+        authorization: `Bearer ${token}`,
+      },
+    };
+  }
+
 });
 
 const client = new ApolloClient({

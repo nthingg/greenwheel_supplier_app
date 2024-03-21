@@ -17,8 +17,6 @@ const LoginPage = () => {
   useEffect(() => {
     if (!loading && !error && data && data.authorize) {
       const newToken = data.authorize.accessToken;
-      setToken(newToken);
-      console.log(newToken);
       const decoded = jwtDecode(newToken);
       console.log(
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
@@ -27,15 +25,15 @@ const LoginPage = () => {
         "role",
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
       );
-      localStorage.setItem("token", newToken);
-      if (token !== undefined) {
-        navigate("/");
-        navigate(0);
-      }
+      localStorage.setItem("token", data.authorize.accessToken);
+      localStorage.setItem("checkIsUserCall", "no");
+      navigate("/");
+      navigate(0);
     }
   }, [data, loading, error]);
 
-  function login() {
+  function login(e) {
+    e.preventDefault();
     authorize({
       variables: {
         input: {

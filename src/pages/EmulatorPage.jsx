@@ -6,6 +6,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useMutation, useQuery } from "@apollo/client";
 import { Alert, Snackbar, TextField } from "@mui/material";
 import {
+  CHANGE_JOIN_METHOD_SIMULATOR,
   CREATE_PLAN_SIMULATOR,
   GEN_MEM_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
@@ -74,8 +75,22 @@ const EmulatorPage = () => {
 
   const { error, loading, data, refetch } = useQuery(GEN_MEM_SIMULATOR);
 
+  const {
+    error: errorLoadPlans,
+    loading: loadingLoadPlans,
+    data: dataLoadPlans,
+    refetch: refetchLoadPlans,
+  } = useQuery(LOAD_PLANS_SIMULATOR, {
+    variables: {
+      id: 0,
+    },
+  });
+
   const [join, { data: dataJoin, error: errorJoin }] =
     useMutation(JOIN_PLAN_SIMULATOR);
+
+  const [changeJoinMethod, { data: dataJoinMethod, error: errorJoinMethod }] =
+    useMutation(CHANGE_JOIN_METHOD_SIMULATOR);
 
   const [create, { data: dataCreate, error: errorCreate }] = useMutation(
     CREATE_PLAN_SIMULATOR
@@ -104,8 +119,7 @@ const EmulatorPage = () => {
           },
         },
       });
-      console.log();
-      return `Người dùng [${data["createPlan"]["account"]["name"]}] tạo kế hoạch thành công`;
+      return `Người dùng [${data["createPlan"]["account"]["name"]}] tạo kế hoạch [${data["createPlan"]["name"]}] thành công`;
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
@@ -129,29 +143,9 @@ const EmulatorPage = () => {
         return { ...rest, token: "" };
       });
 
-      // setAccounts(data["testAccounts"]["nodes"]);
       setAccounts(res);
     }
   }, [data, loading, error]);
-
-  // useEffect(() => {
-  //   if (
-  //     !plansLoading &&
-  //     !plansError &&
-  //     plansData &&
-  //     plansData["plans"] &&
-  //     plansData["plans"]["nodes"]
-  //   ) {
-  //     const options = plansData["plans"]["nodes"].map(
-  //       ({ id, status, maxMember, memberCount, account }) => ({
-  //         value: id,
-  //         label: `ID: ${id}, host: ${account.name}, status: ${status}, member: ${memberCount}/${maxMember}`,
-  //       })
-  //     );
-  //     setPlansOptions(options);
-  //     setListPlan(plansData["plans"]["nodes"]);
-  //   }
-  // }, [plansData, plansLoading, plansError]);
 
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
@@ -208,30 +202,109 @@ const EmulatorPage = () => {
   };
 
   const simulateCreatePlans = async () => {
-    localStorage.setItem("isUserCall", true);
+    localStorage.setItem("checkIsUserCall", "yes");
     let response = "";
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
-      for (let i = 0; i < 10; i++) {
-        const res = await handleCreatePlan(planData[0]);
-        response += `${res}\n`;
-      }
-      setResponseMsg(response);
-    }
-    // for (let i = 0; i < 2; i++) {
-    //   localStorage.setItem("userToken", accounts[0].token);
-    //   const res = await handleCreatePlan(planData[0]);
-    //   response += `${res}\n`;
+    // for (let i = 0; i < accounts?.length; i++) {
+    //   localStorage.setItem("userToken", accounts[i].token);
+    //   for (let i = 0; i < 10; i++) {
+    //     const res = await handleCreatePlan(planData[0]);
+    //     response += `${res}\n`;
+    //   }
     //   setResponseMsg(response);
     // }
-    localStorage.removeItem("isUserCall");
+    for (let i = 0; i < 2; i++) {
+      localStorage.setItem("userToken", accounts[0].token);
+      const res = await handleCreatePlan(planData[0]);
+      response += `${res}\n`;
+      setResponseMsg(response);
+    }
+    localStorage.setItem("checkIsUserCall", "no");
+  };
+
+  const handleJoinPlan = async (dto) => {
+    try {
+      const { data } = await join({
+        variables: {
+          dto: {
+            companions: dto.companions,
+            planId: dto.planId,
+            weight: dto.weight,
+          },
+        },
+      });
+      return `Người dùng [${data["joinPlan"]["account"]["name"]}] tham gia kế hoạch [${data["joinPlan"]["plan"]["name"]}] thành công`;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+      return "Tham gia kế hoạch thất bại";
+    }
+  };
+
+  const handleChangeJoinMethod = async (dto) => {
+    try {
+      const { data } = await changeJoinMethod({
+        variables: {
+          dto: {
+            planId: dto.planId,
+            joinMethod: dto.joinMethod,
+          },
+        },
+      });
+      // return `Người dùng [${data["changePlanJoinMethod"]["account"]["name"]}] thay đổi phương thức mời của kế hoạch [${data["changePlanJoinMethod"]["name"]}] thành [${data["changePlanJoinMethod"]["joinMethod"]}] thành công`;
+      return `Người dùng thay đổi phương thức mời của kế hoạch [${data["changePlanJoinMethod"]["name"]}] thành [${data["changePlanJoinMethod"]["joinMethod"]}] thành công`;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+      return "Thay đổi phương thức mời của kế hoạch thất bại";
+    }
+  };
+
+  const simulateJoinPlan = async () => {
+    localStorage.setItem("checkIsUserCall", "yes");
+    let response = "";
+    for (let i = 0; i < accounts?.length; i++) {
+      console.log(accounts[i].token);
+      localStorage.setItem("userToken", accounts[i].token);
+      const { data } = await refetchLoadPlans({
+        id: accounts[i].id, // Always refetches a new list
+      });
+      let currentPlans = data["plans"]["nodes"];
+      if (currentPlans.length > 0) {
+        for (let j = 0; j < currentPlans?.length; j++) {
+          const joinData = {
+            companions: null,
+            planId: currentPlans[j].id,
+            weight: 1,
+          };
+          let currentJoinMethod = "SCAN";
+          // if (accounts[i].id !== 44 || accounts[i].id !== 45) {
+          //   currentJoinMethod = "INVITE";
+          // }
+          const changeData = {
+            joinMethod: currentJoinMethod,
+            planId: currentPlans[j].id,
+          };
+          const resJoin = await handleJoinPlan(joinData);
+          const resChange = await handleChangeJoinMethod(changeData);
+          response += `${resJoin}\n`;
+          response += `${resChange}\n`;
+        }
+        setResponseMsg(response);
+      }
+    }
+    localStorage.setItem("checkIsUserCall", "no");
   };
 
   const MassLogin = () => {
     for (let i = 0; i < accounts?.length; i++) {
       onSignIn(accounts[i].phone);
     }
-    console.log(accounts);
   };
 
   MassLogin();
@@ -279,8 +352,8 @@ const EmulatorPage = () => {
               onClick={async () => {
                 if (selectedSimulator === 1) {
                   simulateCreatePlans();
-                  MassLogin();
                 } else if (selectedSimulator === 2) {
+                  simulateJoinPlan();
                 }
               }}
               disabled={false}
