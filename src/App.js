@@ -9,7 +9,7 @@ import TransactionPage from "./pages/TransactionPage";
 import LoginPage from "./pages/LoginPage";
 import client from "./services/config";
 import TransactionDetailPage from "./pages/TransactionDetailPage";
-import TOKEN from "./services/constant";
+import { TOKEN } from "./services/constant";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import EmulatorPage from "./pages/EmulatorPage";
 import ProductEditPage from "./pages/ProductEditPage";

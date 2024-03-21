@@ -3,7 +3,6 @@ import "../assets/scss/emulator.scss";
 import "../assets/scss/shared.scss";
 import Select from "react-select";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { FILTER_AVAILABLE_TRAVELER } from "../services/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { Alert, Snackbar, TextField } from "@mui/material";
 import {
@@ -25,7 +24,7 @@ const EmulatorPage = () => {
   const [errorMsg, setErrMsg] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [responseMsg, setResponseMsg] = useState("");
-  const [user, setUser] = useState(null);
+  const [loadingState, setLoading] = useState(true);
 
   const emulatorOptions = [
     { value: 1, label: "Giả lập tạo 50 kế hoạch." },
@@ -121,7 +120,6 @@ const EmulatorPage = () => {
 
       // setAccounts(data["testAccounts"]["nodes"]);
       setAccounts(res);
-      console.log(res);
     }
   }, [data, loading, error]);
 
@@ -166,7 +164,6 @@ const EmulatorPage = () => {
     onCaptchaVerify();
 
     const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier);
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
@@ -182,13 +179,17 @@ const EmulatorPage = () => {
     window.confirmationResult
       .confirm("123123")
       .then((res) => {
-        console.log(res.user["accessToken"]);
         const decoded = jwtDecode(res.user["accessToken"]);
-        accounts.map((account) => {
-          if (account.phone === decoded["phone_number"]) {
-            account.token = res.user["accessToken"];
+        for (let i = 0; i < accounts.length; i++) {
+          if (accounts[i].phone === decoded["phone_number"]) {
+            accounts[i].token = res.user["accessToken"];
+            if (accounts[i].phone === accounts[accounts.length - 1].phone) {
+              setLoading(false);
+              console.log(accounts[i].phone);
+            }
+            break;
           }
-        });
+        }
         setAccounts(accounts);
       })
       .catch((error) => {
@@ -196,99 +197,82 @@ const EmulatorPage = () => {
       });
   };
 
-  return (
-    <div className="emulator">
-      <div className="sharedTitle">
-        <div>
-          <p className="title">Giả lập</p>
-          <p className="sub-title">Giả lập hệ thống</p>
-        </div>
-      </div>
-      <div className="emulatorContainer">
-        <div className="emulatorTitle">
-          <p>Chi tiết</p>
-        </div>
-        <div className="details">
-          <div id="recaptcha-container"></div>
-          <Select
-            placeholder={"Chọn loại giả lập"}
-            className="basic-single"
-            classNamePrefix="select"
-            isClearable={true}
-            name="color"
-            options={emulatorOptions}
-            onChange={(e) => {
-              if (e != null) {
-                console.log(e.value);
-              } else {
-              }
-            }}
-            theme={(theme) => ({
-              ...theme,
-              colors: {
-                ...theme.colors,
-                primary25: "#58D68D",
-                primary: "#28B463",
-              },
-            })}
-          />
-          <button
-            // className={emulatorStatus ? "link" : "linkDisabled"}
-            className="link"
-            onClick={async () => {
-              // const plan = listPlan.find((plan) => plan.id == currentPlan);
-              // // const data = await handleGenMem(plan.id, numberJoin);
-              // // if (data !== null) {
-              // //   console.log(data);
-              // // }
-              // refetch();
-              // if (accounts.length < numberJoin) {
-              //   const msg = "Số lượng account test không đủ.";
-              //   setErrMsg(msg);
-              //   handleClick();
-              //   return null;
-              // } else {
-              //   let response = "";
-              //   for (let index = 0; index < numberJoin; index++) {
-              //     console.log(accounts[index]);
-              //     const data = await handleAddMem(plan.id, accounts[index].id);
-              //     // setResponseMsg(data);
-              //     response += data + "\n";
-              //   }
-              //   setResponseMsg(response);
-              // }
-              accounts.map((account) => {
-                onSignIn(account.phone);
-              });
+  const MassLogin = () => {
+    for (let i = 0; i < accounts?.length; i++) {
+      onSignIn(accounts[i].phone);
+    }
+    console.log(accounts);
+  };
 
-              console.log(accounts);
-            }}
-            disabled={false}
-          >
-            <PlayArrowIcon /> <span>Chạy giả lập</span>
-          </button>
-          <div className="resultTable">
-            <p className="title">Kết quả</p>
-            <div className="body">{responseMsg}</div>
+  MassLogin();
+
+  return (
+    <div>
+      <div className="emulator">
+        <div className="sharedTitle">
+          <div>
+            <p className="title">Giả lập</p>
+            <p className="sub-title">Giả lập hệ thống</p>
           </div>
         </div>
-      </div>
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={snackbarOpen}
-        onClose={handleClose}
-        autoHideDuration={2000}
-        key={vertical + horizontal}
-      >
-        <Alert
+        <div className="emulatorContainer">
+          <div className="emulatorTitle">
+            <p>Chi tiết</p>
+          </div>
+          <div className="details">
+            <div id="recaptcha-container"></div>
+            <Select
+              placeholder={"Chọn loại giả lập"}
+              className="basic-single"
+              classNamePrefix="select"
+              isClearable={true}
+              name="color"
+              options={emulatorOptions}
+              onChange={(e) => {
+                if (e != null) {
+                  console.log(e.value);
+                } else {
+                }
+              }}
+              theme={(theme) => ({
+                ...theme,
+                colors: {
+                  ...theme.colors,
+                  primary25: "#58D68D",
+                  primary: "#28B463",
+                },
+              })}
+            />
+            <button
+              className={loadingState ? "linkDisabled" : "link"}
+              onClick={() => {}}
+              disabled={false}
+            >
+              <PlayArrowIcon /> <span>Chạy giả lập</span>
+            </button>
+            <div className="resultTable">
+              <p className="title">Kết quả</p>
+              <div className="body">{responseMsg}</div>
+            </div>
+          </div>
+        </div>
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={snackbarOpen}
           onClose={handleClose}
-          severity="error"
-          variant="filled"
-          sx={{ width: "100%" }}
+          autoHideDuration={2000}
+          key={vertical + horizontal}
         >
-          {errorMsg}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={handleClose}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {errorMsg}
+          </Alert>
+        </Snackbar>
+      </div>
     </div>
   );
 };
