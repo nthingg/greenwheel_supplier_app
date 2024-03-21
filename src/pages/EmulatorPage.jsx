@@ -118,6 +118,7 @@ const EmulatorPage = () => {
         const { __typename, ...rest } = account;
         return { ...rest, token: "" };
       });
+
       // setAccounts(data["testAccounts"]["nodes"]);
       setAccounts(res);
       console.log(res);
@@ -145,6 +146,8 @@ const EmulatorPage = () => {
 
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
+      auth.settings.appVerificationDisabledForTesting = true;
+
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
@@ -163,11 +166,12 @@ const EmulatorPage = () => {
     onCaptchaVerify();
 
     const appVerifier = window.recaptchaVerifier;
+    console.log(appVerifier);
     signInWithPhoneNumber(auth, phone, appVerifier)
-      .then(async (confirmationResult) => {
+      .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
         console.log("OTP sended successfully!");
-        await onOTPVerified();
+        onOTPVerified();
       })
       .catch((error) => {
         console.log(error);
@@ -177,7 +181,7 @@ const EmulatorPage = () => {
   const onOTPVerified = () => {
     window.confirmationResult
       .confirm("123123")
-      .then(async (res) => {
+      .then((res) => {
         console.log(res.user["accessToken"]);
         const decoded = jwtDecode(res.user["accessToken"]);
         accounts.map((account) => {
@@ -185,7 +189,7 @@ const EmulatorPage = () => {
             account.token = res.user["accessToken"];
           }
         });
-        console.log(accounts);
+        setAccounts(accounts);
       })
       .catch((error) => {
         console.log(error);
@@ -256,6 +260,8 @@ const EmulatorPage = () => {
               accounts.map((account) => {
                 onSignIn(account.phone);
               });
+
+              console.log(accounts);
             }}
             disabled={false}
           >
