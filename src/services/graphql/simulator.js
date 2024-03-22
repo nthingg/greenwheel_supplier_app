@@ -72,3 +72,30 @@ export const CHANGE_JOIN_METHOD_SIMULATOR = gql`
     }
   }
 `;
+
+export const CONFIRM_PLAN_SIMULATOR = gql`
+ mutation confirmMembers($dto: Int!) {
+    confirmMembers(planId: $dto) {
+      id
+      name
+    }
+  }
+`;
+
+export const LOAD_REGISTERING_PLANS_SIMULATOR =
+  `query plan($id: Int!) {
+    plans(first: 10, where: {
+      accountId: {
+        eq: $id
+      }
+      status: {
+        eq: REGISTERING
+      }
+    })
+    {
+      nodes {
+        id
+      }
+    }
+  }
+`;

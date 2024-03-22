@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { Alert, Snackbar, TextField } from "@mui/material";
 import {
   CHANGE_JOIN_METHOD_SIMULATOR,
+  CONFIRM_PLAN_SIMULATOR,
   CREATE_PLAN_SIMULATOR,
   GEN_MEM_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
@@ -46,15 +47,7 @@ const EmulatorPage = () => {
     },
     {
       value: 4,
-      label: "Giả lập phượt thủ được mời tham gia kế hoạch.",
-    },
-    {
-      value: 5,
       label: "Giả lập chốt kế hoạch.",
-    },
-    {
-      value: 6,
-      label: "Giả lập đặt hàng cho kế hoạch.",
     },
   ];
 
@@ -312,6 +305,7 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = "";
     for (let i = 0; i < accounts?.length; i++) {
+      localStorage.setItem("userToken", accounts[i].token);
       console.log(accounts[i].token);
       const { data } = await refetchLoadPlans({
         id: accounts[i].id, // Always refetches a new list
@@ -334,6 +328,50 @@ const EmulatorPage = () => {
               }
             }
           }
+        }
+        setResponseMsg(response);
+      }
+    }
+    localStorage.setItem("checkIsUserCall", "no");
+  };
+
+  const [planConfirm, { data: dataConfirm, error: errorConfirm }] = useMutation(
+    CONFIRM_PLAN_SIMULATOR
+  );
+
+  const handleConfirmMember = async (planId) => {
+    try {
+      const { data } = await planConfirm({
+        variables: {
+          dto: planId,
+        },
+      });
+      return `Kế hoạch [${data["confirmMembers"]["name"]}] chốt thành công.`;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+      return `Chốt kế hoạch ${planId} thất bại`;
+    }
+  };
+
+  const simulateConfirmPlan = async () => {
+    localStorage.setItem("checkIsUserCall", "yes");
+    let response = "";
+    for (let i = 0; i < accounts?.length; i++) {
+      console.log(accounts[i].token);
+      localStorage.setItem("userToken", accounts[i].token);
+      const { data } = await refetchLoadPlans({
+        id: accounts[i].id, // Always refetches a new list
+      });
+      let currentPlans = data["plans"]["nodes"];
+      console.log(currentPlans);
+      if (currentPlans.length > 0) {
+        for (let j = 0; j < currentPlans?.length; j++) {
+          const res = await handleConfirmMember(currentPlans[j].id);
+          response += `${res}\n`;
         }
         setResponseMsg(response);
       }
@@ -396,6 +434,8 @@ const EmulatorPage = () => {
                   simulateJoinAndChangeMethodPlan();
                 } else if (selectedSimulator === 3) {
                   simulateMassJoinPlan();
+                } else if (selectedSimulator === 4) {
+                  simulateConfirmPlan();
                 }
               }}
               disabled={false}
