@@ -35,26 +35,26 @@ const EmulatorPage = () => {
   const [selectedSimulator, setSelectedSimulator] = useState(0);
 
   const emulatorOptions = [
-    { value: 1, label: "Giả lập tạo 50 kế hoạch." },
+    { value: 1, label: "Giả lập tạo kế hoạch." },
     {
       value: 2,
-      label: "Giả lập 50 trưởng nhóm tham gia kế hoạch của bản thân.",
+      label: "Giả lập trưởng nhóm tham gia kế hoạch của bản thân.",
     },
     {
       value: 3,
-      label: "Giả lập 50 trưởng nhóm tham gia kế hoạch của bản thân.",
+      label: "Giả lập phượt thủ tham gia kế hoạch.",
     },
     {
       value: 4,
-      label: "Giả lập người được mời tham gia 40 kế hoạch.",
+      label: "Giả lập phượt thủ được mời tham gia kế hoạch.",
     },
     {
       value: 5,
-      label: "Giả lập chốt 30 kế hoạch.",
+      label: "Giả lập chốt kế hoạch.",
     },
     {
       value: 6,
-      label: "Giả lập đặt đồ cho 30 kế hoạch.",
+      label: "Giả lập đặt hàng cho kế hoạch.",
     },
   ];
 
@@ -96,7 +96,7 @@ const EmulatorPage = () => {
     CREATE_PLAN_SIMULATOR
   );
 
-  const handleCreatePlan = async (plan) => {
+  const handleCreatePlan = async (plan, count) => {
     try {
       const { data } = await create({
         variables: {
@@ -108,7 +108,7 @@ const EmulatorPage = () => {
             maxMember: plan.maxMember,
             maxMemberWeight: plan.maxMemberWeight,
             departureAddress: plan.departureAddress,
-            name: plan.name,
+            name: plan.name + count,
             note: plan.note,
             periodCount: plan.periodCount,
             savedContacts: plan.savedContacts,
@@ -204,20 +204,22 @@ const EmulatorPage = () => {
   const simulateCreatePlans = async () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = "";
-    // for (let i = 0; i < accounts?.length; i++) {
-    //   localStorage.setItem("userToken", accounts[i].token);
-    //   for (let i = 0; i < 10; i++) {
-    //     const res = await handleCreatePlan(planData[0]);
-    //     response += `${res}\n`;
-    //   }
-    //   setResponseMsg(response);
-    // }
-    for (let i = 0; i < 2; i++) {
-      localStorage.setItem("userToken", accounts[0].token);
-      const res = await handleCreatePlan(planData[0]);
-      response += `${res}\n`;
+    let count = 0;
+    for (let i = 0; i < accounts?.length; i++) {
+      localStorage.setItem("userToken", accounts[i].token);
+      for (let j = 0; j < 10; j++) {
+        const res = await handleCreatePlan(planData[0], count);
+        response += `${res}\n`;
+        count++;
+      }
       setResponseMsg(response);
     }
+    // for (let i = 0; i < 2; i++) {
+    //   localStorage.setItem("userToken", accounts[0].token);
+    //   const res = await handleCreatePlan(planData[0]);
+    //   response += `${res}\n`;
+    //   setResponseMsg(response);
+    // }
     localStorage.setItem("checkIsUserCall", "no");
   };
 
@@ -265,7 +267,7 @@ const EmulatorPage = () => {
     }
   };
 
-  const simulateJoinPlan = async () => {
+  const simulateJoinAndChangeMethodPlan = async () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = "";
     for (let i = 0; i < accounts?.length; i++) {
@@ -283,7 +285,12 @@ const EmulatorPage = () => {
             weight: 1,
           };
           let currentJoinMethod = "SCAN";
-          // if (accounts[i].id !== 44 || accounts[i].id !== 45) {
+          if (accounts[i].id !== 44 && accounts[i].id !== 45) {
+            currentJoinMethod = "INVITE";
+          }
+          // if (currentPlans[j].joinMethod === "INVITE") {
+          //   currentJoinMethod = "SCAN";
+          // } else if (currentPlans[j].joinMethod === "SCAN") {
           //   currentJoinMethod = "INVITE";
           // }
           const changeData = {
@@ -294,6 +301,39 @@ const EmulatorPage = () => {
           const resChange = await handleChangeJoinMethod(changeData);
           response += `${resJoin}\n`;
           response += `${resChange}\n`;
+        }
+        setResponseMsg(response);
+      }
+    }
+    localStorage.setItem("checkIsUserCall", "no");
+  };
+
+  const simulateMassJoinPlan = async () => {
+    localStorage.setItem("checkIsUserCall", "yes");
+    let response = "";
+    for (let i = 0; i < accounts?.length; i++) {
+      console.log(accounts[i].token);
+      const { data } = await refetchLoadPlans({
+        id: accounts[i].id, // Always refetches a new list
+      });
+      let currentPlans = data["plans"]["nodes"];
+      console.log(currentPlans);
+      if (currentPlans.length > 0) {
+        for (let j = 0; j < currentPlans?.length; j++) {
+          for (let k = 0; k < accounts?.length; k++) {
+            if (accounts[k].id !== accounts[i].id) {
+              if (currentPlans[j].joinMethod === "SCAN") {
+                localStorage.setItem("userToken", accounts[k].token);
+                const joinData = {
+                  companions: null,
+                  planId: currentPlans[j].id,
+                  weight: 1,
+                };
+                const resJoin = await handleJoinPlan(joinData);
+                response += `${resJoin}\n`;
+              }
+            }
+          }
         }
         setResponseMsg(response);
       }
@@ -353,7 +393,9 @@ const EmulatorPage = () => {
                 if (selectedSimulator === 1) {
                   simulateCreatePlans();
                 } else if (selectedSimulator === 2) {
-                  simulateJoinPlan();
+                  simulateJoinAndChangeMethodPlan();
+                } else if (selectedSimulator === 3) {
+                  simulateMassJoinPlan();
                 }
               }}
               disabled={false}

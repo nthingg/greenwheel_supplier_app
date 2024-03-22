@@ -45,6 +45,7 @@ export const LOAD_PLANS_SIMULATOR = gql`
         status
         memberCount
         maxMember
+        joinMethod
       }
     }
   }
