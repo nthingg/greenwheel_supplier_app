@@ -1,6 +1,6 @@
 export const planData = [
   {
-    departAt: "2024-03-29 08:43:00+00",
+    departAt: "2024-04-01 08:43:00+00",
     departure: [106.80992590984253, 10.841327798960252],
     destinationId: 1,
     gcoinBudgetPerCapita: 10000000,

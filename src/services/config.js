@@ -34,9 +34,9 @@ const authLink = setContext((_, { headers }) => {
   let token = localStorage.getItem("token");
   // console.log("ADMIN " + token)
   // console.log("USER " + token)
-  console.log(checkIsUserCall)
+  // console.log(checkIsUserCall)
   if (checkIsUserCall === "yes") {
-    console.log("USER IS CALLING")
+    // console.log("USER IS CALLING")
     return {
       headers: {
         ...headers,
@@ -44,7 +44,7 @@ const authLink = setContext((_, { headers }) => {
       },
     };
   } else {
-    console.log("ADMIN IS CALLING")
+    // console.log("ADMIN IS CALLING")
     return {
       headers: {
         ...headers,

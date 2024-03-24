@@ -24,10 +24,10 @@ import { LOAD_PLANS, LOAD_PLANS_FILTER } from "../services/graphql/plan";
 
 const PlanPage = () => {
   const planStat = ["REGISTERING", "READY", "CANCELED", "COMPLETED", "FLAWED"];
-  const [selectedDiv, setSelectedDiv] = useState(1);
-  const [selectedStatus, setSelectedStatus] = useState(planStat[1]);
+  const [selectedDiv, setSelectedDiv] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState(planStat[0]);
   const [isHidden, setIsHidden] = useState(false);
-  const [isReadyHidden, setIsReadyHidden] = useState(false);
+  const [isReadyHidden, setIsReadyHidden] = useState(true);
   const [isVeriHidden, setIsVeriHidden] = useState(true);
   const [registerReadyStatus, setRegisterReadyStatus] = useState("incoming");
   const [registerVeriStatus, setRegisterVeriStatus] = useState("happening");
@@ -176,7 +176,7 @@ const PlanPage = () => {
       </div>
       <div className="planContainer">
         <div className="icon-row">
-          {[1, 2, 3, 4].map((index) => (
+          {[0, 1, 2, 3, 4].map((index) => (
             <div
               key={index}
               className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
@@ -202,7 +202,7 @@ const PlanPage = () => {
               }}
             >
               {/* Replace with appropriate icons */}
-              {/* {index === 0 && <AppRegistrationIcon sx={{ color: "#3498DB" }} />} */}
+              {index === 0 && <AppRegistrationIcon sx={{ color: "#3498DB" }} />}
               {index === 1 && (
                 <PlaylistAddCheckIcon sx={{ color: "#3498DB" }} />
               )}
@@ -210,7 +210,7 @@ const PlanPage = () => {
               {index === 3 && <CheckCircleIcon color="success" />}
               {index === 4 && <BuildCircleIcon sx={{ color: "#3498DB" }} />}
               <span>
-                {/* {index === 0 && `Chờ chốt (${registeringPlans})`} */}
+                {index === 0 && `Chờ chốt (${registeringPlans})`}
                 {index === 1 && `Sẵn sàng (${readyPlans})`}
                 {index === 2 && `Đã hủy (${canceledPlans})`}
                 {index === 3 && `Đã hoàn thành (${completedPlans})`}

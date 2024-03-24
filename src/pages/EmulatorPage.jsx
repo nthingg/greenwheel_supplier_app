@@ -31,8 +31,10 @@ const EmulatorPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
   const [accounts, setAccounts] = useState([]);
-  const [responseMsg, setResponseMsg] = useState("");
+  const [responseMsg, setResponseMsg] = useState([]);
   const [loadingState, setLoading] = useState(true);
+  const [selectState, setSelectLoading] = useState(true);
+  const [ini, setIni] = useState(true);
   const [selectedSimulator, setSelectedSimulator] = useState(0);
 
   const emulatorOptions = [
@@ -89,7 +91,7 @@ const EmulatorPage = () => {
     CREATE_PLAN_SIMULATOR
   );
 
-  const handleCreatePlan = async (plan, count) => {
+  const handleCreatePlan = async (plan, count, acc) => {
     try {
       const { data } = await create({
         variables: {
@@ -112,14 +114,26 @@ const EmulatorPage = () => {
           },
         },
       });
-      return `Người dùng [${data["createPlan"]["account"]["name"]}] tạo kế hoạch [${data["createPlan"]["name"]}] thành công`;
+      const response = {
+        userName: acc.name,
+        action: "Tạo kế hoạch",
+        status: true,
+        id: count,
+      };
+      return response;
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
       handleClick();
       localStorage.removeItem("errorMsg");
-      return "Tạo kế hoạch thất bại";
+      const response = {
+        userName: acc.name,
+        action: "Tạo kế hoạch",
+        status: false,
+        id: count,
+      };
+      return response;
     }
   };
 
@@ -139,6 +153,10 @@ const EmulatorPage = () => {
       setAccounts(res);
     }
   }, [data, loading, error]);
+
+  useEffect(() => {
+    console.log(accounts);
+  }, [accounts]);
 
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
@@ -187,6 +205,7 @@ const EmulatorPage = () => {
             break;
           }
         }
+        console.log("im here");
         setAccounts(accounts);
       })
       .catch((error) => {
@@ -195,28 +214,28 @@ const EmulatorPage = () => {
   };
 
   const simulateCreatePlans = async () => {
+    console.log(accounts);
     localStorage.setItem("checkIsUserCall", "yes");
-    let response = "";
+    let response = [];
     let count = 0;
     for (let i = 0; i < accounts?.length; i++) {
       localStorage.setItem("userToken", accounts[i].token);
       for (let j = 0; j < 10; j++) {
-        const res = await handleCreatePlan(planData[0], count);
-        response += `${res}\n`;
         count++;
+        const res = await handleCreatePlan(planData[0], count, accounts[i]);
+        response.push(res);
       }
-      setResponseMsg(response);
     }
     // for (let i = 0; i < 2; i++) {
     //   localStorage.setItem("userToken", accounts[0].token);
-    //   const res = await handleCreatePlan(planData[0]);
-    //   response += `${res}\n`;
-    //   setResponseMsg(response);
+    //   const res = await handleCreatePlan(planData[0], 1, accounts[i]);
+    //   response.push(res);
     // }
+    setResponseMsg(response);
     localStorage.setItem("checkIsUserCall", "no");
   };
 
-  const handleJoinPlan = async (dto) => {
+  const handleJoinPlan = async (dto, count, acc) => {
     try {
       const { data } = await join({
         variables: {
@@ -227,18 +246,30 @@ const EmulatorPage = () => {
           },
         },
       });
-      return `Người dùng [${data["joinPlan"]["account"]["name"]}] tham gia kế hoạch [${data["joinPlan"]["plan"]["name"]}] thành công`;
+      const response = {
+        userName: acc.name,
+        action: "Tham gia kế hoạch",
+        status: true,
+        id: count,
+      };
+      return response;
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
       handleClick();
       localStorage.removeItem("errorMsg");
-      return "Tham gia kế hoạch thất bại";
+      const response = {
+        userName: acc.name,
+        action: "Tham gia kế hoạch",
+        status: false,
+        id: count,
+      };
+      return response;
     }
   };
 
-  const handleChangeJoinMethod = async (dto) => {
+  const handleChangeJoinMethod = async (dto, count, acc) => {
     try {
       const { data } = await changeJoinMethod({
         variables: {
@@ -248,23 +279,34 @@ const EmulatorPage = () => {
           },
         },
       });
-      // return `Người dùng [${data["changePlanJoinMethod"]["account"]["name"]}] thay đổi phương thức mời của kế hoạch [${data["changePlanJoinMethod"]["name"]}] thành [${data["changePlanJoinMethod"]["joinMethod"]}] thành công`;
-      return `Người dùng thay đổi phương thức mời của kế hoạch [${data["changePlanJoinMethod"]["name"]}] thành [${data["changePlanJoinMethod"]["joinMethod"]}] thành công`;
+      const response = {
+        userName: acc.name,
+        action: "Thay đổi phương thức mời",
+        status: true,
+        id: count,
+      };
+      return response;
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
       handleClick();
       localStorage.removeItem("errorMsg");
-      return "Thay đổi phương thức mời của kế hoạch thất bại";
+      const response = {
+        userName: acc.name,
+        action: "Thay đổi phương thức mời",
+        status: false,
+        id: count,
+      };
+      return response;
     }
   };
 
   const simulateJoinAndChangeMethodPlan = async () => {
     localStorage.setItem("checkIsUserCall", "yes");
-    let response = "";
+    let response = [];
+    let count = 0;
     for (let i = 0; i < accounts?.length; i++) {
-      console.log(accounts[i].token);
       localStorage.setItem("userToken", accounts[i].token);
       const { data } = await refetchLoadPlans({
         id: accounts[i].id, // Always refetches a new list
@@ -272,6 +314,7 @@ const EmulatorPage = () => {
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
+          count++;
           const joinData = {
             companions: null,
             planId: currentPlans[j].id,
@@ -290,10 +333,14 @@ const EmulatorPage = () => {
             joinMethod: currentJoinMethod,
             planId: currentPlans[j].id,
           };
-          const resJoin = await handleJoinPlan(joinData);
-          const resChange = await handleChangeJoinMethod(changeData);
-          response += `${resJoin}\n`;
-          response += `${resChange}\n`;
+          const resJoin = await handleJoinPlan(joinData, count, accounts[i]);
+          const resChange = await handleChangeJoinMethod(
+            changeData,
+            count,
+            accounts[i]
+          );
+          response.push(resJoin);
+          response.push(resChange);
         }
         setResponseMsg(response);
       }
@@ -303,28 +350,32 @@ const EmulatorPage = () => {
 
   const simulateMassJoinPlan = async () => {
     localStorage.setItem("checkIsUserCall", "yes");
-    let response = "";
+    let response = [];
+    let count = 0;
     for (let i = 0; i < accounts?.length; i++) {
       localStorage.setItem("userToken", accounts[i].token);
-      console.log(accounts[i].token);
       const { data } = await refetchLoadPlans({
         id: accounts[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
-      console.log(currentPlans);
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
           for (let k = 0; k < accounts?.length; k++) {
             if (accounts[k].id !== accounts[i].id) {
               if (currentPlans[j].joinMethod === "SCAN") {
+                count++;
                 localStorage.setItem("userToken", accounts[k].token);
                 const joinData = {
                   companions: null,
                   planId: currentPlans[j].id,
                   weight: 1,
                 };
-                const resJoin = await handleJoinPlan(joinData);
-                response += `${resJoin}\n`;
+                const resJoin = await handleJoinPlan(
+                  joinData,
+                  count,
+                  accounts[k]
+                );
+                response.push(resJoin);
               }
             }
           }
@@ -339,39 +390,55 @@ const EmulatorPage = () => {
     CONFIRM_PLAN_SIMULATOR
   );
 
-  const handleConfirmMember = async (planId) => {
+  const handleConfirmMember = async (planId, count, acc) => {
     try {
       const { data } = await planConfirm({
         variables: {
           dto: planId,
         },
       });
-      return `Kế hoạch [${data["confirmMembers"]["name"]}] chốt thành công.`;
+      const response = {
+        userName: acc.name,
+        action: "Chốt kế hoạch",
+        status: true,
+        id: count,
+      };
+      return response;
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
       setErrMsg(msg);
       handleClick();
       localStorage.removeItem("errorMsg");
-      return `Chốt kế hoạch ${planId} thất bại`;
+      const response = {
+        userName: acc.name,
+        action: "Chốt kế hoạch",
+        status: false,
+        id: count,
+      };
+      return response;
     }
   };
 
   const simulateConfirmPlan = async () => {
     localStorage.setItem("checkIsUserCall", "yes");
-    let response = "";
+    let response = [];
+    let count = 0;
     for (let i = 0; i < accounts?.length; i++) {
-      console.log(accounts[i].token);
       localStorage.setItem("userToken", accounts[i].token);
       const { data } = await refetchLoadPlans({
         id: accounts[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
-      console.log(currentPlans);
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
-          const res = await handleConfirmMember(currentPlans[j].id);
-          response += `${res}\n`;
+          count++;
+          const res = await handleConfirmMember(
+            currentPlans[j].id,
+            count,
+            accounts[i]
+          );
+          response.push(res);
         }
         setResponseMsg(response);
       }
@@ -379,11 +446,14 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "no");
   };
 
+  const [loginMsg, setLoginMsg] = useState("");
+
   const MassLogin = () => {
     for (let i = 0; i < accounts?.length; i++) {
       onSignIn(accounts[i].phone);
     }
   };
+  // localStorage.setItem("checkIsUserCall", "no");
 
   MassLogin();
 
@@ -412,6 +482,7 @@ const EmulatorPage = () => {
               onChange={(e) => {
                 if (e != null) {
                   setSelectedSimulator(e.value);
+                  setSelectLoading(false);
                 } else {
                 }
               }}
@@ -425,9 +496,17 @@ const EmulatorPage = () => {
               })}
             />
             <button
-              className={loadingState ? "linkDisabled" : "link"}
+              className={loadingState && selectState ? "linkDisabled" : "link"}
               // className={"link"}
               onClick={async () => {
+                if (loginMsg === "") {
+                  let res = "";
+                  accounts.forEach(async (acc) => {
+                    res += `[Đăng nhập] ${acc.name} \n`;
+                  });
+                  setLoginMsg(res);
+                }
+
                 if (selectedSimulator === 1) {
                   simulateCreatePlans();
                 } else if (selectedSimulator === 2) {
@@ -442,10 +521,30 @@ const EmulatorPage = () => {
             >
               <PlayArrowIcon /> <span>Chạy giả lập</span>
             </button>
-            <div className="resultTable">
-              <p className="title">Kết quả</p>
-              <div className="body">
-                <span className="response">{responseMsg}</span>
+            <div className="response-table">
+              <div className="resultTable">
+                <p className="title">Đăng nhập</p>
+                <div className="body login-res">
+                  <span className="response">{loginMsg}</span>
+                </div>
+              </div>
+              <div className="resultTable">
+                <p className="title">Kết quả</p>
+                <div className="body">
+                  {responseMsg.map((message, index) => (
+                    <div key={index} className="response-item">
+                      <p className="response-msg">
+                        {message.id}. {message.userName} - {message.action}
+                      </p>
+                      {message.status && (
+                        <p className="response-status success">Thành công</p>
+                      )}
+                      {!message.status && (
+                        <p className="response-status fail">Thất bại</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
