@@ -99,3 +99,11 @@ export const LOAD_REGISTERING_PLANS_SIMULATOR =
     }
   }
 `;
+
+export const ORDER_SIMULATOR =
+  `mutation orderPlan($dto: OrderCreateInput!) {
+    createOrder(dto: $dto) {
+      id
+    }
+  }
+`;

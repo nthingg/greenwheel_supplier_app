@@ -224,6 +224,7 @@ const EmulatorPage = () => {
         count++;
         const res = await handleCreatePlan(planData[0], count, accounts[i]);
         response.push(res);
+        setResponseMsg(response);
       }
     }
     // for (let i = 0; i < 2; i++) {
@@ -231,7 +232,6 @@ const EmulatorPage = () => {
     //   const res = await handleCreatePlan(planData[0], 1, accounts[i]);
     //   response.push(res);
     // }
-    setResponseMsg(response);
     localStorage.setItem("checkIsUserCall", "no");
   };
 
@@ -320,20 +320,22 @@ const EmulatorPage = () => {
             planId: currentPlans[j].id,
             weight: 1,
           };
-          let currentJoinMethod = "SCAN";
-          if (accounts[i].id !== 44 && accounts[i].id !== 45) {
-            currentJoinMethod = "INVITE";
+          let currentJoinMethod = "NONE";
+          if (currentPlans[j].joinMethod === "NONE") {
+            if (accounts[i].id !== 44 && accounts[i].id !== 45) {
+              currentJoinMethod = "INVITE";
+            } else {
+              currentJoinMethod = "SCAN";
+            }
+          } else {
+            currentJoinMethod = currentPlans[j].joinMethod;
           }
-          // if (currentPlans[j].joinMethod === "INVITE") {
-          //   currentJoinMethod = "SCAN";
-          // } else if (currentPlans[j].joinMethod === "SCAN") {
-          //   currentJoinMethod = "INVITE";
-          // }
           const changeData = {
             joinMethod: currentJoinMethod,
             planId: currentPlans[j].id,
           };
           const resJoin = await handleJoinPlan(joinData, count, accounts[i]);
+          count++;
           const resChange = await handleChangeJoinMethod(
             changeData,
             count,
@@ -341,8 +343,8 @@ const EmulatorPage = () => {
           );
           response.push(resJoin);
           response.push(resChange);
+          setResponseMsg(response);
         }
-        setResponseMsg(response);
       }
     }
     localStorage.setItem("checkIsUserCall", "no");
@@ -376,11 +378,11 @@ const EmulatorPage = () => {
                   accounts[k]
                 );
                 response.push(resJoin);
+                setResponseMsg(response);
               }
             }
           }
         }
-        setResponseMsg(response);
       }
     }
     localStorage.setItem("checkIsUserCall", "no");
@@ -439,8 +441,77 @@ const EmulatorPage = () => {
             accounts[i]
           );
           response.push(res);
+          setResponseMsg(response);
         }
-        setResponseMsg(response);
+      }
+    }
+    localStorage.setItem("checkIsUserCall", "no");
+  };
+
+  const handleOrderPlan = async (dto, count, acc) => {
+    try {
+      const { data } = await changeJoinMethod({
+        variables: {
+          dto: {
+            cart: dto.cart,
+            note: dto.note,
+            period: dto.period,
+            planId: dto.planId,
+            serveDates: dto.serveDates,
+            type: dto.type,
+          },
+        },
+      });
+      const response = {
+        userName: acc.name,
+        action: "Đặt hàng cho kế hoạch",
+        status: true,
+        id: count,
+      };
+      return response;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+      const response = {
+        userName: acc.name,
+        action: "Đặt hàng cho kế hoạch",
+        status: false,
+        id: count,
+      };
+      return response;
+    }
+  };
+
+  const simulateOrderPlan = async () => {
+    localStorage.setItem("checkIsUserCall", "yes");
+    let response = [];
+    let count = 0;
+    for (let i = 0; i < accounts?.length; i++) {
+      localStorage.setItem("userToken", accounts[i].token);
+      const { data } = await refetchLoadPlans({
+        id: accounts[i].id, // Always refetches a new list
+      });
+      let currentPlans = data["plans"]["nodes"];
+      if (currentPlans.length > 0) {
+        for (let j = 0; j < currentPlans?.length; j++) {
+          for (let k = 0; k < planData.tempOrders.length; k++) {
+            count++;
+            const orderData = {
+              cart: planData.tempOrders[k].cart,
+              note: null,
+              planId: currentPlans[j].id,
+              serveDates: [],
+              type: planData.tempOrders[k].type,
+              period: planData.tempOrders[k].period,
+            };
+            const res = await handleOrderPlan(orderData, count, accounts[i]);
+            response.push(res);
+            setResponseMsg(response);
+          }
+        }
       }
     }
     localStorage.setItem("checkIsUserCall", "no");

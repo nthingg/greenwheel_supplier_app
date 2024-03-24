@@ -3,7 +3,7 @@ export const planData = [
     departAt: "2024-04-01 08:43:00+00",
     departure: [106.80992590984253, 10.841327798960252],
     destinationId: 1,
-    gcoinBudgetPerCapita: 10000000,
+    gcoinBudgetPerCapita: 1000000,
     maxMember: 10,
     maxMemberWeight: 1,
     departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
