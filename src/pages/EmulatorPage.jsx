@@ -12,6 +12,7 @@ import {
   GEN_MEM_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
   LOAD_PLANS_SIMULATOR,
+  ORDER_CREATE_SIMULATOR,
 } from "../services/graphql/simulator";
 import { GraphQLError } from "graphql";
 import { onError } from "@apollo/client/link/error";
@@ -65,12 +66,9 @@ const EmulatorPage = () => {
     setSnackbarOpen(false);
   };
 
-  const {
-    error: plansError,
-    loading: plansLoading,
-    data: plansData,
-    refetch: plansRefect,
-  } = useQuery(LOAD_PLANS_SIMULATOR);
+  const [planConfirm, { data: dataConfirm, error: errorConfirm }] = useMutation(
+    CONFIRM_PLAN_SIMULATOR
+  );
 
   const { error, loading, data, refetch } = useQuery(GEN_MEM_SIMULATOR);
 
@@ -93,6 +91,10 @@ const EmulatorPage = () => {
 
   const [create, { data: dataCreate, error: errorCreate }] = useMutation(
     CREATE_PLAN_SIMULATOR
+  );
+
+  const [createOrder, { data: dataOrder, error: errorOrder }] = useMutation(
+    ORDER_CREATE_SIMULATOR
   );
 
   const handleCreatePlan = async (plan, count, acc) => {
@@ -204,7 +206,6 @@ const EmulatorPage = () => {
             break;
           }
         }
-        console.log("im here");
         setAccounts(accounts);
         localStorage.setItem("loggedAcc", JSON.stringify(accounts));
       })
@@ -393,10 +394,6 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "no");
   };
 
-  const [planConfirm, { data: dataConfirm, error: errorConfirm }] = useMutation(
-    CONFIRM_PLAN_SIMULATOR
-  );
-
   const handleConfirmMember = async (planId, count, acc) => {
     try {
       const { data } = await planConfirm({
@@ -457,7 +454,7 @@ const EmulatorPage = () => {
 
   const handleOrderPlan = async (dto, count, acc) => {
     try {
-      const { data } = await changeJoinMethod({
+      const { data } = await createOrder({
         variables: {
           dto: {
             cart: dto.cart,
@@ -512,7 +509,8 @@ const EmulatorPage = () => {
           } else {
             temp = planData[0].tempOrders;
           }
-          for (let k = 0; k < temp; k++) {
+          console.log(temp);
+          for (let k = 0; k < temp.length; k++) {
             count++;
             const orderData = {
               cart: temp[k].cart,
@@ -522,6 +520,7 @@ const EmulatorPage = () => {
               type: temp[k].type,
               period: temp[k].period,
             };
+            console.log(orderData);
             const res = await handleOrderPlan(orderData, count, loggedAcc[i]);
             response.push(res);
             setResponseMsg(response);

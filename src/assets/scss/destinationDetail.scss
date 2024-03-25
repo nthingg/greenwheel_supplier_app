@@ -1,9 +1,8 @@
 .destination {
     margin: 0 30px 40px 30px;
-    display: flex;
-    justify-content: space-between;
 
     .item {
+        margin-top: 40px;
         gap: 20;
 
         .reasonTable {
@@ -19,6 +18,7 @@
                 padding: 15px;
                 border-radius: 3px 3px 0 0;
                 margin: 0;
+                font-size: 24px;
             }
 
             .body {
@@ -29,11 +29,11 @@
     }
 }
 
-.detail {
-    width: 100%;
+.detailDestination {
     background-color: #f2f2f2;
-    height: 100vh;
-    padding: 20px 30px 0 30px;
+    height: fit-content;
+    min-height: 100vh;
+    padding: 20px 30px 40px 30px;
 
     .period-container {
         display: flex;
@@ -48,19 +48,19 @@
         width: 80px;
         padding: 0 12px;
     }
-    .morning {
+    .spring {
         background-color: #f1c40f;
         margin-right: 4px;
     }
-    .noon {
+    .summer {
         background-color: #cb4335;
         margin-right: 4px;
     }
-    .afternoon {
+    .fall {
         background-color: orange;
         margin-right: 4px;
     }
-    .evening {
+    .winter {
         background-color: purple;
     }
     .period-text {
@@ -78,7 +78,7 @@
         .prodTitle {
             padding: 20px 20px 0 40px;
             width: 100%;
-            font-size: 22px;
+            font-size: 30px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -117,25 +117,28 @@
             }
         }
 
-        .image_container {
-            margin: 10px 0 0 40px;
-
-            img {
-                width: 450px;
-                height: 300px;
-                border-radius: 10px;
-                object-fit: cover;
-            }
-        }
-
         .destinationDetail {
             margin-top: 20px;
             display: flex;
-            justify-content: start;
+
+            .slider-container {
+                width: 650px;
+            }
+
+            .left {
+                .slick-slide img {
+                    height: 400px;
+                    margin: auto;
+                }
+            }
 
             .right {
                 margin-left: 8%;
             }
+        }
+
+        .bottom {
+            margin: 40px 30px 0 30px;
         }
 
         .details {

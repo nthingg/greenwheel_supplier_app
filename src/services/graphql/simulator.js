@@ -86,17 +86,12 @@ export const CONFIRM_PLAN_SIMULATOR = gql`
   }
 `;
 
-export const LOAD_REGISTERING_PLANS_SIMULATOR = `
+export const LOAD_REGISTERING_PLANS_SIMULATOR = gql`
   query plan($id: Int!) {
-    plans(first: 10, where: {
-      accountId: {
-        eq: $id
-      }
-      status: {
-        eq: REGISTERING
-      }
-    })
-    {
+    plans(
+      first: 10
+      where: { accountId: { eq: $id }, status: { eq: REGISTERING } }
+    ) {
       nodes {
         id
       }
@@ -104,18 +99,18 @@ export const LOAD_REGISTERING_PLANS_SIMULATOR = `
   }
 `;
 
-export const ORDER_SIMULATOR = `
-  mutation orderPlan($dto: OrderCreateInput!) {
+export const ORDER_CREATE_SIMULATOR = gql`
+  mutation createNewOrder($dto: OrderCreateInput!) {
     createOrder(dto: $dto) {
-      id
+      type
     }
   }
 `;
 
-export const INVITE_PLANS_SIMULATOR = `  
+export const INVITE_PLANS_SIMULATOR = gql`
   mutation inviteToPlan($dto: PlanInviteInput!) {
-      inviteToPlan(dto: $dto) {
-        id
-      }
+    inviteToPlan(dto: $dto) {
+      id
     }
+  }
 `;

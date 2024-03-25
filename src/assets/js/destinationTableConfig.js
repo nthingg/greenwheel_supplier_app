@@ -17,12 +17,7 @@ export const destinationsColumns = [
     field: "name",
     width: 380,
     renderCell: (params) => {
-      return (
-        <div className="cellWithImg">
-          <img className="cellImg" src={params.row.imageUrls[0]} alt="avatar" />
-          {params.row.name}
-        </div>
-      );
+      return <div>{params.row.name}</div>;
     },
     renderHeader: () => <span>Tên địa điểm</span>,
   },

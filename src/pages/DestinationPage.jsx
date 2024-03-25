@@ -9,8 +9,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { LOAD_DESTINATIONS, LOAD_PRODUCTS } from "../services/queries";
 import DestinationTable from "../components/DestinationTable";
+import { LOAD_DESTINATIONS } from "../services/graphql/destination";
 
 const DestinationPage = () => {
   const { error, loading, data, refetch } = useQuery(LOAD_DESTINATIONS);

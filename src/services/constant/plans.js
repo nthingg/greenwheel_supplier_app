@@ -14,7 +14,7 @@ export const planData = [
     departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
     name: "test-plan-",
     note: "",
-    periodCount: 4,
+    periodCount: 6,
     savedContacts: [
       {
         name: "Cứu hộ Phường Nhà Bàng",
@@ -65,6 +65,10 @@ export const planData = [
             description: "Tham quan, giải trí",
             shortDescription: "Đến bìa rừng Trà Sư và di chuyển.",
           },
+        ],
+      },
+      {
+        events: [
           {
             type: "VISIT",
             duration: "00:30:00",

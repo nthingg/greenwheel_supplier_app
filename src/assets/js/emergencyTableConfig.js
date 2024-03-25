@@ -1,17 +1,17 @@
 export const emergenciesColumns = [
   {
     field: "index",
-    width: 150,
+    width: 80,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
       return <div>{params.row.id}</div>;
     },
-    renderHeader: () => <span>STT</span>,
+    renderHeader: () => <span>#</span>,
   },
   {
     field: "name",
-    width: 250,
+    width: 300,
     renderCell: (params) => {
       return (
         <div className="cellWithImg">
@@ -36,49 +36,78 @@ export const emergenciesColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      function formatPhoneNumber(phoneNumber) {
+      function formatPhoneNumberCen(phoneNumber) {
         // Replace leading "+84" with "0" (if present)
-        phoneNumber = phoneNumber.replace(/^\+84/, "0");
+        phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
 
-        let part1, part2, part3;
+        let formattedParts;
         switch (phoneNumber.length) {
           case 9:
-            part1 = phoneNumber.slice(0, 3);
-            part2 = phoneNumber.slice(3, 6);
-            part3 = phoneNumber.slice(6);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(3),
+              phoneNumber.slice(6),
+            ];
             break;
           case 10:
-            part1 = phoneNumber.slice(0, 4);
-            part2 = phoneNumber.slice(4, 7);
-            part3 = phoneNumber.slice(7);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(4),
+              phoneNumber.slice(7),
+            ];
             break;
           case 11:
-            part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-            part2 = phoneNumber.slice(4, 7);
-            part3 = phoneNumber.slice(7);
+            formattedParts = [
+              phoneNumber.slice(0, 3),
+              "*".repeat(5),
+              phoneNumber.slice(7),
+            ];
             break;
           default:
             // Handle invalid lengths (optional)
-            console.warn(`Invalid phone number length: ${phoneNumber}`);
             return phoneNumber;
         }
 
-        // Combine parts with spaces
-        return `${part1} ${part2} ${part3}`;
+        return formattedParts.join("");
       }
-      return <div>{formatPhoneNumber(params.row.phone)}</div>;
+      return <div>{formatPhoneNumberCen(params.row.phone)}</div>;
     },
     renderHeader: () => <span>Số điện thoại</span>,
   },
   {
-    field: "memberCount",
-    width: 700,
-    align: "right",
+    field: "address",
+    width: 650,
     align: "left",
     headerAlign: "left",
     renderCell: (params) => {
       return <div>{params.row.address}</div>;
     },
     renderHeader: () => <span>Địa chỉ</span>,
+  },
+  {
+    field: "type",
+    width: 150,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      switch (params.row.type) {
+        case "MEDICAL":
+          return <div>Trạm xá</div>;
+        case "RESCUE":
+          return <div>Cứu hộ</div>;
+        case "FIRE":
+          return <div>Cứu hỏa</div>;
+        case "GROCERY":
+          return <div>Tạp hóa</div>;
+        case "SECURITY":
+          return <div>Bảo an</div>;
+        case "VEHICLE":
+          return <div>Xe cộ</div>;
+        default:
+          // Handle default case or unknown status
+          break;
+      }
+    },
+    renderHeader: () => <span>Loại</span>,
   },
 ];
