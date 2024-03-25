@@ -37,6 +37,15 @@ const EmulatorPage = () => {
   const [selectState, setSelectLoading] = useState(true);
   const [ini, setIni] = useState(true);
   const [selectedSimulator, setSelectedSimulator] = useState(0);
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  useEffect(() => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+    if (loggedAcc) {
+      setLoading(false);
+    }
+    setIsEnabled(!loadingState && !selectState);
+  }, [loadingState, selectState]);
 
   const emulatorOptions = [
     { value: 1, label: "Giả lập tạo kế hoạch." },
@@ -123,6 +132,7 @@ const EmulatorPage = () => {
       const response = {
         userName: acc.name,
         action: "Tạo kế hoạch",
+        detail: `[${acc.name}] tạo kế hoạch [${plan.name + count}]`,
         status: true,
         id: count,
       };
@@ -130,12 +140,13 @@ const EmulatorPage = () => {
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
+      // setErrMsg(msg);
+      // handleClick();
       localStorage.removeItem("errorMsg");
       const response = {
         userName: acc.name,
         action: "Tạo kế hoạch",
+        detail: `${msg}`,
         status: false,
         id: count,
       };
@@ -251,6 +262,7 @@ const EmulatorPage = () => {
       const response = {
         userName: acc.name,
         action: "Tham gia kế hoạch",
+        detail: `[${acc.name}] tham gia kế hoạch [${dto.planName}]`,
         status: true,
         id: count,
       };
@@ -258,12 +270,13 @@ const EmulatorPage = () => {
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
+      // setErrMsg(msg);
+      // handleClick();
       localStorage.removeItem("errorMsg");
       const response = {
         userName: acc.name,
         action: "Tham gia kế hoạch",
+        detail: `${msg}`,
         status: false,
         id: count,
       };
@@ -284,6 +297,7 @@ const EmulatorPage = () => {
       const response = {
         userName: acc.name,
         action: "Thay đổi phương thức mời",
+        detail: `[${acc.name}] chuyển cách tham gia của [${dto.planName}] sang [${dto.joinMethod}]`,
         status: true,
         id: count,
       };
@@ -291,12 +305,13 @@ const EmulatorPage = () => {
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
+      // setErrMsg(msg);
+      // handleClick();
       localStorage.removeItem("errorMsg");
       const response = {
         userName: acc.name,
         action: "Thay đổi phương thức mời",
+        detail: `${msg}`,
         status: false,
         id: count,
       };
@@ -323,6 +338,7 @@ const EmulatorPage = () => {
             companions: null,
             planId: currentPlans[j].id,
             weight: 1,
+            planName: currentPlans[j].name,
           };
           let currentJoinMethod = "NONE";
           if (currentPlans[j].joinMethod === "NONE") {
@@ -337,6 +353,7 @@ const EmulatorPage = () => {
           const changeData = {
             joinMethod: currentJoinMethod,
             planId: currentPlans[j].id,
+            planName: currentPlans[j].name,
           };
           const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
           count++;
@@ -377,6 +394,7 @@ const EmulatorPage = () => {
                   companions: null,
                   planId: currentPlans[j].id,
                   weight: 1,
+                  planName: currentPlans[j].name,
                 };
                 const resJoin = await handleJoinPlan(
                   joinData,
@@ -394,7 +412,7 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "no");
   };
 
-  const handleConfirmMember = async (planId, count, acc) => {
+  const handleConfirmMember = async (planId, count, acc, planName) => {
     try {
       const { data } = await planConfirm({
         variables: {
@@ -404,6 +422,7 @@ const EmulatorPage = () => {
       const response = {
         userName: acc.name,
         action: "Chốt kế hoạch",
+        detail: `[${acc.name}] chốt kế hoạch [${planName}]`,
         status: true,
         id: count,
       };
@@ -411,12 +430,13 @@ const EmulatorPage = () => {
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
+      // setErrMsg(msg);
+      // handleClick();
       localStorage.removeItem("errorMsg");
       const response = {
         userName: acc.name,
         action: "Chốt kế hoạch",
+        detail: `${msg}`,
         status: false,
         id: count,
       };
@@ -442,7 +462,8 @@ const EmulatorPage = () => {
           const res = await handleConfirmMember(
             currentPlans[j].id,
             count,
-            loggedAcc[i]
+            loggedAcc[i],
+            currentPlans[j].name
           );
           response.push(res);
           setResponseMsg(response);
@@ -469,6 +490,7 @@ const EmulatorPage = () => {
       const response = {
         userName: acc.name,
         action: "Đặt hàng cho kế hoạch",
+        detail: `[${acc.name}] đặt hàng cho kế hoạch [${dto.planName}]`,
         status: true,
         id: count,
       };
@@ -476,12 +498,13 @@ const EmulatorPage = () => {
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
-      setErrMsg(msg);
-      handleClick();
+      // setErrMsg(msg);
+      // handleClick();
       localStorage.removeItem("errorMsg");
       const response = {
         userName: acc.name,
         action: "Đặt hàng cho kế hoạch",
+        detail: `${msg}`,
         status: false,
         id: count,
       };
@@ -506,10 +529,13 @@ const EmulatorPage = () => {
           let temp = [];
           if (loggedAcc[i].id !== 44 && loggedAcc[i].id !== 45) {
             temp = [planData[0].tempOrders[0], planData[0].tempOrders[1]];
+            console.log("half");
+            console.log(temp);
           } else {
             temp = planData[0].tempOrders;
+            console.log("full");
+            console.log(temp);
           }
-          console.log(temp);
           for (let k = 0; k < temp.length; k++) {
             count++;
             const orderData = {
@@ -519,8 +545,10 @@ const EmulatorPage = () => {
               serveDates: temp[k].serveDates,
               type: temp[k].type,
               period: temp[k].period,
+              planName: currentPlans[j].name,
             };
-            console.log(orderData);
+            // console.log("/////////////////////////////////////");
+            // console.log(orderData);
             const res = await handleOrderPlan(orderData, count, loggedAcc[i]);
             response.push(res);
             setResponseMsg(response);
@@ -569,6 +597,7 @@ const EmulatorPage = () => {
                   setSelectedSimulator(e.value);
                   setSelectLoading(false);
                 } else {
+                  setSelectLoading(true);
                 }
               }}
               theme={(theme) => ({
@@ -580,34 +609,40 @@ const EmulatorPage = () => {
                 },
               })}
             />
-            <button
-              className={loadingState && selectState ? "linkDisabled" : "link"}
-              // className={"link"}
-              onClick={async () => {
-                if (loginMsg === "") {
-                  let res = "";
-                  accounts.forEach(async (acc) => {
-                    res += `[Đăng nhập] ${acc.name} \n`;
-                  });
-                  setLoginMsg(res);
-                }
+            {!isEnabled && (
+              <button className={"linkDisabled"} disabled>
+                <PlayArrowIcon /> <span>Chạy giả lập</span>
+              </button>
+            )}
+            {isEnabled && (
+              <button
+                className={"link"}
+                onClick={async () => {
+                  if (loginMsg === "") {
+                    let res = "";
+                    accounts.forEach(async (acc) => {
+                      res += `[Đăng nhập] ${acc.name} \n`;
+                    });
+                    setLoginMsg(res);
+                  }
 
-                if (selectedSimulator === 1) {
-                  simulateCreatePlans();
-                } else if (selectedSimulator === 2) {
-                  simulateJoinAndChangeMethodPlan();
-                } else if (selectedSimulator === 3) {
-                  simulateMassJoinPlan();
-                } else if (selectedSimulator === 4) {
-                  simulateConfirmPlan();
-                } else if (selectedSimulator === 5) {
-                  simulateOrderPlan();
-                }
-              }}
-              disabled={false}
-            >
-              <PlayArrowIcon /> <span>Chạy giả lập</span>
-            </button>
+                  if (selectedSimulator === 1) {
+                    simulateCreatePlans();
+                  } else if (selectedSimulator === 2) {
+                    simulateJoinAndChangeMethodPlan();
+                  } else if (selectedSimulator === 3) {
+                    simulateMassJoinPlan();
+                  } else if (selectedSimulator === 4) {
+                    simulateConfirmPlan();
+                  } else if (selectedSimulator === 5) {
+                    simulateOrderPlan();
+                  }
+                }}
+              >
+                <PlayArrowIcon /> <span>Chạy giả lập</span>
+              </button>
+            )}
+
             <div className="response-table">
               <div className="resultTable">
                 <p className="title">Đăng nhập</p>
@@ -623,6 +658,7 @@ const EmulatorPage = () => {
                       <p className="response-msg">
                         {message.id}. {message.userName} - {message.action}
                       </p>
+                      <p className="response-detail">{message.detail}</p>
                       {message.status && (
                         <p className="response-status success">Thành công</p>
                       )}

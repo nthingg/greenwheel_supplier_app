@@ -8,7 +8,7 @@ export const planData = [
     departAt: eightDaysLater,
     departure: [106.80992590984253, 10.841327798960252],
     destinationId: 1,
-    gcoinBudgetPerCapita: 1000,
+    gcoinBudgetPerCapita: 15000,
     maxMember: 10,
     maxMemberWeight: 1,
     departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
@@ -132,7 +132,7 @@ export const planData = [
         ],
       },
     ],
-    surcharges: [{ note: "Phụ phí­ test", gcoinAmount: 10000 }],
+    surcharges: [{ note: "Phụ phí­ test", amount: 10000 }],
     tempOrders: [
       {
         cart: [
@@ -180,10 +180,6 @@ export const planData = [
             key: 20,
             value: 5,
           },
-          {
-            key: 22,
-            value: 5,
-          },
         ],
         note: null,
         type: "MEAL",
@@ -198,7 +194,7 @@ export const planData = [
         cart: [
           {
             key: 1,
-            value: 3,
+            value: 4,
           },
         ],
         note: null,
