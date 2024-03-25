@@ -78,7 +78,7 @@ const EmulatorPage = () => {
     },
     {
       value: 6,
-      label: "Giả lập chỉnh sửa thời gian hệ thống",
+      label: "Giả lập chỉnh sửa thời gian hệ thống.",
     },
   ];
 
@@ -264,13 +264,17 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
       localStorage.setItem("userToken", loggedAcc[i].token);
+      log += `[Đăng nhập] ${loggedAcc[i].name} \n`;
       for (let j = 0; j < 10; j++) {
         count++;
         const res = await handleCreatePlan(planData[0], count, loggedAcc[i]);
         response.push(res);
         setResponseMsg(response);
+        log += `[Tạo kế hoạch] ${loggedAcc[i].name} \n`;
+        setLoginMsg(log);
       }
     }
     // for (let i = 0; i < 2; i++) {
@@ -395,8 +399,10 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
       localStorage.setItem("userToken", loggedAcc[i].token);
+      log += `[Đăng nhập] ${loggedAcc[i].name} \n`;
       const { data } = await refetchLoadPlans({
         id: loggedAcc[i].id, // Always refetches a new list
       });
@@ -428,9 +434,10 @@ const EmulatorPage = () => {
             planId: currentPlans[j].id,
             planName: currentPlans[j].name,
           };
-
+          log += `[Tham gia kế hoạch] ${loggedAcc[i].name} \n`;
           const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
           count++;
+          log += `[Thay đổi phương thức tham gia] ${loggedAcc[i].name} \n`;
           const resChange = await handleChangeJoinMethod(
             changeData,
             count,
@@ -448,6 +455,7 @@ const EmulatorPage = () => {
                   planId: currentPlans[j].id,
                   planName: currentPlans[j].name,
                 };
+                log += `[Mời thành viên khác] ${loggedAcc[i].name} \n`;
                 const resInvite = await handleInvitePlan(
                   inviteData,
                   count,
@@ -459,6 +467,7 @@ const EmulatorPage = () => {
             }
           }
 
+          setLoginMsg(log);
           setResponseMsg(response);
         }
       }
@@ -472,6 +481,7 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
       localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
@@ -483,6 +493,7 @@ const EmulatorPage = () => {
           for (let k = 0; k < loggedAcc?.length; k++) {
             if (loggedAcc[k].id !== loggedAcc[i].id) {
               count++;
+              log += `[Đăng nhập] ${loggedAcc[k].name} \n`;
               localStorage.setItem("userToken", loggedAcc[k].token);
               const joinData = {
                 companions: null,
@@ -490,12 +501,14 @@ const EmulatorPage = () => {
                 weight: 1,
                 planName: currentPlans[j].name,
               };
+              log += `[Tham gia kế hoạch] ${loggedAcc[k].name} \n`;
               const resJoin = await handleJoinPlan(
                 joinData,
                 count,
                 loggedAcc[k]
               );
               response.push(resJoin);
+              setLoginMsg(log);
               setResponseMsg(response);
             }
           }
@@ -543,7 +556,9 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
+      log += `[Đăng nhập] ${loggedAcc[i].name} \n`;
       localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
         id: loggedAcc[i].id, // Always refetches a new list
@@ -552,6 +567,7 @@ const EmulatorPage = () => {
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
           count++;
+          log += `[Chốt kế hoạch] ${loggedAcc[i].name} \n`;
           const res = await handleConfirmMember(
             currentPlans[j].id,
             count,
@@ -559,6 +575,7 @@ const EmulatorPage = () => {
             currentPlans[j].name
           );
           response.push(res);
+          setLoginMsg(log);
           setResponseMsg(response);
         }
       }
@@ -611,7 +628,9 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
+      log += `[Đăng nhập] ${loggedAcc[i].name} \n`;
       localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
         id: loggedAcc[i].id, // Always refetches a new list
@@ -642,9 +661,11 @@ const EmulatorPage = () => {
             };
             // console.log("/////////////////////////////////////");
             // console.log(orderData);
+            log += `[Đặt hàng cho kế hoạch] ${loggedAcc[i].name} \n`;
             const res = await handleOrderPlan(orderData, count, loggedAcc[i]);
             response.push(res);
             setResponseMsg(response);
+            setLoginMsg(log);
           }
         }
       }
@@ -658,18 +679,22 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
+    let log = "";
     for (let i = 0; i < loggedAcc?.length; i++) {
+      log += `[Đăng nhập] ${loggedAcc[i].name} \n`;
       count++;
       localStorage.setItem("userToken", loggedAcc[i].token);
       const joinData = {
         companions: null,
-        planId: joinId,
+        planId: parseInt(joinId, 10),
         weight: 1,
         planName: currentPlan.name,
       };
+      log += `[Tham gia kế hoạch] ${loggedAcc[i].name} \n`;
       const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
       response.push(resJoin);
       setResponseMsg(response);
+      setLoginMsg(log);
     }
     localStorage.setItem("checkIsUserCall", "no");
   };
@@ -721,7 +746,6 @@ const EmulatorPage = () => {
       onSignIn(accounts[i].phone);
     }
   };
-  // localStorage.setItem("checkIsUserCall", "no");
 
   MassLogin();
 
@@ -822,14 +846,6 @@ const EmulatorPage = () => {
               <button
                 className={"link"}
                 onClick={async () => {
-                  if (loginMsg === "") {
-                    let res = "";
-                    accounts.forEach(async (acc) => {
-                      res += `[Đăng nhập] ${acc.name} \n`;
-                    });
-                    setLoginMsg(res);
-                  }
-
                   if (selectedSimulator === 1) {
                     simulateCreatePlans();
                   } else if (selectedSimulator === 2) {
@@ -847,7 +863,7 @@ const EmulatorPage = () => {
                       });
                       let plan = data["plans"]["nodes"][0];
                       if (!plan) {
-                        const msg = `Không có kế hoạch nào thuộc id ${joinId}`;
+                        const msg = `Không có kế hoạch nào thuộc ID: ${joinId}`;
                         setErrMsg(msg);
                         handleClick();
                       } else {
@@ -855,12 +871,21 @@ const EmulatorPage = () => {
                       }
                     } catch (error) {
                       console.log(error);
-                      const msg = `Không có kế hoạch nào thuộc id ${joinId}`;
+                      const msg = `Vui lòng nhập đúng định dạng số`;
                       setErrMsg(msg);
                       handleClick();
                     }
                   } else if (selectedSimulator === 6) {
-                    handleChangeSystemTime(dateSimulator);
+                    let log = "";
+                    log += "[Đăng nhập] Quản trị hệ thống \n";
+                    log +=
+                      "[Chỉnh sửa thời gian hệ thống] Quản trị hệ thống \n";
+                    let response = [];
+                    const res = await handleChangeSystemTime(dateSimulator);
+
+                    response.push(res);
+                    setResponseMsg(response);
+                    setLoginMsg(log);
                   }
                 }}
               >
