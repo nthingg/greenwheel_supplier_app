@@ -10,7 +10,7 @@ export const planData = [
     destinationId: 1,
     gcoinBudgetPerCapita: 15000,
     maxMember: 10,
-    maxMemberWeight: 1,
+    maxMemberWeight: 3,
     departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
     name: "test-plan-",
     note: "",

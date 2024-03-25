@@ -28,6 +28,7 @@ import {
 import { auth } from "../services/firebase/setup";
 import { jwtDecode } from "jwt-decode";
 import { planData } from "../services/constant/plans";
+import { companionData } from "../services/constant/companions";
 
 const EmulatorPage = () => {
   const [vertical, setVertical] = useState("top");
@@ -490,15 +491,32 @@ const EmulatorPage = () => {
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
+          let setThree = false;
           for (let k = 0; k < loggedAcc?.length; k++) {
             if (loggedAcc[k].id !== loggedAcc[i].id) {
               count++;
               log += `[Đăng nhập] ${loggedAcc[k].name} \n`;
               localStorage.setItem("userToken", loggedAcc[k].token);
+              let tempCompanion = null;
+              let tempWeight = 1;
+              if (
+                loggedAcc[i].id !== 44 &&
+                loggedAcc[i].id !== 45 &&
+                loggedAcc[i].id !== 46
+              ) {
+                if (!setThree) {
+                  tempCompanion = [companionData[0], companionData[1]];
+                  tempWeight = 3;
+                  setThree = true;
+                } else {
+                  tempCompanion = [companionData[0]];
+                  tempWeight = 2;
+                }
+              }
               const joinData = {
-                companions: null,
+                companions: tempCompanion,
                 planId: currentPlans[j].id,
-                weight: 1,
+                weight: tempWeight,
                 planName: currentPlans[j].name,
               };
               log += `[Tham gia kế hoạch] ${loggedAcc[k].name} \n`;
