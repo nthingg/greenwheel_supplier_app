@@ -1,9 +1,14 @@
+const date = new Date();
+const eightDaysLater = new Date(date.getTime() + 8 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
+const nineDaysLater = new Date(date.getTime() + 9 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
+const tenDaysLater = new Date(date.getTime() + 10 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
+
 export const planData = [
   {
-    departAt: "2024-04-01 08:43:00+00",
+    departAt: eightDaysLater,
     departure: [106.80992590984253, 10.841327798960252],
     destinationId: 1,
-    gcoinBudgetPerCapita: 1000000,
+    gcoinBudgetPerCapita: 1000,
     maxMember: 10,
     maxMemberWeight: 1,
     departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
@@ -44,8 +49,7 @@ export const planData = [
             duration: "00:30:00",
             isStarred: false,
             description: "Check-in và nhận phòng",
-            shortDescription:
-              "Check-in Nhà nghỉ Thiên Định.",
+            shortDescription: "Check-in Nhà nghỉ Thiên Định.",
           },
           {
             type: "EAT",
@@ -59,8 +63,7 @@ export const planData = [
             duration: "01:00:00",
             isStarred: false,
             description: "Tham quan, giải trí",
-            shortDescription:
-              "Đến bìa rừng Trà Sư và di chuyển.",
+            shortDescription: "Đến bìa rừng Trà Sư và di chuyển.",
           },
           {
             type: "VISIT",
@@ -81,8 +84,7 @@ export const planData = [
             duration: "00:15:00",
             isStarred: false,
             description: "Nghỉ ngơi",
-            shortDescription:
-              "Nghỉ ngơi với buổi tối tự túc.",
+            shortDescription: "Nghỉ ngơi với buổi tối tự túc.",
           },
         ],
       },
@@ -100,16 +102,14 @@ export const planData = [
             duration: "02:00:00",
             isStarred: false,
             description: "Tham quan và giải trí",
-            shortDescription:
-              "Vui chơi tại cầu tre dài nhất Việt Nam.",
+            shortDescription: "Vui chơi tại cầu tre dài nhất Việt Nam.",
           },
           {
             type: "VISIT",
             duration: "00:30:00",
             isStarred: false,
             description: "Tham quan, giải trí",
-            shortDescription:
-              "Chụp hình tại Thành phố Bố Câu.",
+            shortDescription: "Chụp hình tại Thành phố Bố Câu.",
           },
           {
             type: "EAT",
@@ -133,49 +133,78 @@ export const planData = [
       {
         cart: [
           {
-            "key": 4,
-            "value": 5
-          }
+            key: 18,
+            value: 4,
+          },
         ],
         note: null,
         type: "LODGING",
         period: "NOON",
-        serveDates: ["2024-03-28", "2024-03-29"],
-        supplierId: 2,
+        serveDates: [
+          nineDaysLater.toLocaleDateString(),
+          tenDaysLater.toLocaleDateString(),
+        ],
+        supplierId: 8,
       },
       {
-        cart: [{
-          "key": 1,
-          "value": 1
-        }, {
-          "key": 2,
-          "value": 1
-        }, {
-          "key": 5,
-          "value": 1
-        }],
+        cart: [
+          {
+            key: 14,
+            value: 4,
+          },
+          {
+            key: 15,
+            value: 4,
+          },
+          {
+            key: 17,
+            value: 2,
+          },
+        ],
         note: null,
         type: "MEAL",
         period: "AFTERNOON",
-        serveDates: ["2024-03-28", "2024-03-29"],
-        supplierId: 3,
+        serveDates: [
+          nineDaysLater.toLocaleDateString(),
+          tenDaysLater.toLocaleDateString(),
+        ],
+        supplierId: 7,
       },
       {
-        cart: [{
-          "key": 3,
-          "value": 1
-        }, {
-          "key": 7,
-          "value": 1
-        }, {
-          "key": 8,
-          "value": 1
-        }],
+        cart: [
+          {
+            key: 20,
+            value: 5,
+          },
+          {
+            key: 22,
+            value: 5,
+          },
+        ],
         note: null,
         type: "MEAL",
         period: "NOON",
-        serveDates: ["2024-03-28", "2024-03-29"],
-        supplierId: 4,
+        serveDates: [
+          nineDaysLater.toLocaleDateString(),
+          tenDaysLater.toLocaleDateString(),
+        ],
+        supplierId: 11,
+      },
+      {
+        cart: [
+          {
+            key: 1,
+            value: 3,
+          },
+        ],
+        note: null,
+        type: "MEAL",
+        period: "NOON",
+        serveDates: [
+          nineDaysLater.toLocaleDateString(),
+          tenDaysLater.toLocaleDateString(),
+        ],
+        supplierId: 3,
       },
     ],
     travelDuration: "05:42:10",

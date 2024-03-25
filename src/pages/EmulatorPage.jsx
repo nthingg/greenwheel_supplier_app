@@ -41,7 +41,7 @@ const EmulatorPage = () => {
     { value: 1, label: "Giả lập tạo kế hoạch." },
     {
       value: 2,
-      label: "Giả lập trưởng nhóm tham gia kế hoạch của bản thân.",
+      label: "Giả lập trưởng nhóm tham gia kế hoạch.",
     },
     {
       value: 3,
@@ -50,6 +50,10 @@ const EmulatorPage = () => {
     {
       value: 4,
       label: "Giả lập chốt kế hoạch.",
+    },
+    {
+      value: 5,
+      label: "Giả lập đặt hàng cho kế hoạch.",
     },
   ];
 
@@ -149,14 +153,9 @@ const EmulatorPage = () => {
         const { __typename, ...rest } = account;
         return { ...rest, token: "" };
       });
-
       setAccounts(res);
     }
   }, [data, loading, error]);
-
-  useEffect(() => {
-    console.log(accounts);
-  }, [accounts]);
 
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
@@ -207,6 +206,7 @@ const EmulatorPage = () => {
         }
         console.log("im here");
         setAccounts(accounts);
+        localStorage.setItem("loggedAcc", JSON.stringify(accounts));
       })
       .catch((error) => {
         console.log(error);
@@ -214,22 +214,23 @@ const EmulatorPage = () => {
   };
 
   const simulateCreatePlans = async () => {
-    console.log(accounts);
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      localStorage.setItem("userToken", loggedAcc[i].token);
       for (let j = 0; j < 10; j++) {
         count++;
-        const res = await handleCreatePlan(planData[0], count, accounts[i]);
+        const res = await handleCreatePlan(planData[0], count, loggedAcc[i]);
         response.push(res);
         setResponseMsg(response);
       }
     }
     // for (let i = 0; i < 2; i++) {
-    //   localStorage.setItem("userToken", accounts[0].token);
-    //   const res = await handleCreatePlan(planData[0], 1, accounts[i]);
+    //   localStorage.setItem("userToken", loggedAcc[0].token);
+    //   const res = await handleCreatePlan(planData[0], 1, loggedAcc[i]);
     //   response.push(res);
     // }
     localStorage.setItem("checkIsUserCall", "no");
@@ -303,13 +304,15 @@ const EmulatorPage = () => {
   };
 
   const simulateJoinAndChangeMethodPlan = async () => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
-        id: accounts[i].id, // Always refetches a new list
+        id: loggedAcc[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
@@ -322,7 +325,7 @@ const EmulatorPage = () => {
           };
           let currentJoinMethod = "NONE";
           if (currentPlans[j].joinMethod === "NONE") {
-            if (accounts[i].id !== 44 && accounts[i].id !== 45) {
+            if (loggedAcc[i].id !== 44 && loggedAcc[i].id !== 45) {
               currentJoinMethod = "INVITE";
             } else {
               currentJoinMethod = "SCAN";
@@ -334,12 +337,12 @@ const EmulatorPage = () => {
             joinMethod: currentJoinMethod,
             planId: currentPlans[j].id,
           };
-          const resJoin = await handleJoinPlan(joinData, count, accounts[i]);
+          const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
           count++;
           const resChange = await handleChangeJoinMethod(
             changeData,
             count,
-            accounts[i]
+            loggedAcc[i]
           );
           response.push(resJoin);
           response.push(resChange);
@@ -351,22 +354,24 @@ const EmulatorPage = () => {
   };
 
   const simulateMassJoinPlan = async () => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
-        id: accounts[i].id, // Always refetches a new list
+        id: loggedAcc[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
-          for (let k = 0; k < accounts?.length; k++) {
-            if (accounts[k].id !== accounts[i].id) {
+          for (let k = 0; k < loggedAcc?.length; k++) {
+            if (loggedAcc[k].id !== loggedAcc[i].id) {
               if (currentPlans[j].joinMethod === "SCAN") {
                 count++;
-                localStorage.setItem("userToken", accounts[k].token);
+                localStorage.setItem("userToken", loggedAcc[k].token);
                 const joinData = {
                   companions: null,
                   planId: currentPlans[j].id,
@@ -375,7 +380,7 @@ const EmulatorPage = () => {
                 const resJoin = await handleJoinPlan(
                   joinData,
                   count,
-                  accounts[k]
+                  loggedAcc[k]
                 );
                 response.push(resJoin);
                 setResponseMsg(response);
@@ -423,13 +428,15 @@ const EmulatorPage = () => {
   };
 
   const simulateConfirmPlan = async () => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
-        id: accounts[i].id, // Always refetches a new list
+        id: loggedAcc[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
@@ -438,7 +445,7 @@ const EmulatorPage = () => {
           const res = await handleConfirmMember(
             currentPlans[j].id,
             count,
-            accounts[i]
+            loggedAcc[i]
           );
           response.push(res);
           setResponseMsg(response);
@@ -486,28 +493,36 @@ const EmulatorPage = () => {
   };
 
   const simulateOrderPlan = async () => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
     let count = 0;
-    for (let i = 0; i < accounts?.length; i++) {
-      localStorage.setItem("userToken", accounts[i].token);
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      localStorage.setItem("userToken", loggedAcc[i].token);
       const { data } = await refetchLoadPlans({
-        id: accounts[i].id, // Always refetches a new list
+        id: loggedAcc[i].id, // Always refetches a new list
       });
       let currentPlans = data["plans"]["nodes"];
       if (currentPlans.length > 0) {
         for (let j = 0; j < currentPlans?.length; j++) {
-          for (let k = 0; k < planData.tempOrders.length; k++) {
+          let temp = [];
+          if (loggedAcc[i].id !== 44 && loggedAcc[i].id !== 45) {
+            temp = [planData[0].tempOrders[0], planData[0].tempOrders[1]];
+          } else {
+            temp = planData[0].tempOrders;
+          }
+          for (let k = 0; k < temp; k++) {
             count++;
             const orderData = {
-              cart: planData.tempOrders[k].cart,
-              note: null,
+              cart: temp[k].cart,
+              note: temp[k].note,
               planId: currentPlans[j].id,
-              serveDates: [],
-              type: planData.tempOrders[k].type,
-              period: planData.tempOrders[k].period,
+              serveDates: temp[k].serveDates,
+              type: temp[k].type,
+              period: temp[k].period,
             };
-            const res = await handleOrderPlan(orderData, count, accounts[i]);
+            const res = await handleOrderPlan(orderData, count, loggedAcc[i]);
             response.push(res);
             setResponseMsg(response);
           }
@@ -586,6 +601,8 @@ const EmulatorPage = () => {
                   simulateMassJoinPlan();
                 } else if (selectedSimulator === 4) {
                   simulateConfirmPlan();
+                } else if (selectedSimulator === 5) {
+                  simulateOrderPlan();
                 }
               }}
               disabled={false}

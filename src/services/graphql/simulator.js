@@ -13,7 +13,7 @@ export const GEN_MEM_SIMULATOR = gql`
 `;
 
 export const JOIN_PLAN_SIMULATOR = gql`
- mutation joinPlanSimulator($dto: PlanJoinInput!) {
+  mutation joinPlanSimulator($dto: PlanJoinInput!) {
     joinPlan(dto: $dto) {
       id
       plan {
@@ -28,7 +28,11 @@ export const JOIN_PLAN_SIMULATOR = gql`
 
 export const LOAD_PLANS_SIMULATOR = gql`
   query LoadPlans($id: Int!) {
-    plans(first: 20, order: { id: DESC }, where: {account: {id: {eq: $id}}}) {
+    plans(
+      first: 20
+      order: { id: DESC }
+      where: { account: { id: { eq: $id } } }
+    ) {
       nodes {
         id
         name
@@ -36,7 +40,7 @@ export const LOAD_PLANS_SIMULATOR = gql`
           name
         }
         members {
-          id 
+          id
           status
           account {
             name
@@ -74,7 +78,7 @@ export const CHANGE_JOIN_METHOD_SIMULATOR = gql`
 `;
 
 export const CONFIRM_PLAN_SIMULATOR = gql`
- mutation confirmMembers($dto: Int!) {
+  mutation confirmMembers($dto: Int!) {
     confirmMembers(planId: $dto) {
       id
       name
@@ -82,8 +86,8 @@ export const CONFIRM_PLAN_SIMULATOR = gql`
   }
 `;
 
-export const LOAD_REGISTERING_PLANS_SIMULATOR =
-  `query plan($id: Int!) {
+export const LOAD_REGISTERING_PLANS_SIMULATOR = `
+  query plan($id: Int!) {
     plans(first: 10, where: {
       accountId: {
         eq: $id
@@ -100,10 +104,18 @@ export const LOAD_REGISTERING_PLANS_SIMULATOR =
   }
 `;
 
-export const ORDER_SIMULATOR =
-  `mutation orderPlan($dto: OrderCreateInput!) {
+export const ORDER_SIMULATOR = `
+  mutation orderPlan($dto: OrderCreateInput!) {
     createOrder(dto: $dto) {
       id
     }
   }
+`;
+
+export const INVITE_PLANS_SIMULATOR = `  
+  mutation inviteToPlan($dto: PlanInviteInput!) {
+      inviteToPlan(dto: $dto) {
+        id
+      }
+    }
 `;
