@@ -16,6 +16,19 @@
         border-radius: 8px;
         padding: 10px 10px 40px 10px;
 
+        .input-field {
+            display: flex;
+            align-items: center;
+
+            .ml-2 {
+                margin-left: 20px;
+            }
+
+            .basic-single {
+                width: 40%;
+            }
+        }
+
         .response-table {
             display: flex;
             justify-content: space-between;

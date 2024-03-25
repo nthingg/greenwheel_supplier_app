@@ -38,6 +38,10 @@ const EmulatorPage = () => {
   const [ini, setIni] = useState(true);
   const [selectedSimulator, setSelectedSimulator] = useState(0);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [idInputVisible, setIdInputVisible] = useState(false);
+  const [joinId, setJoinId] = useState(0);
+  const [dateVisible, setDateVisible] = useState(false);
+  const [dateSimulator, setDateSimulator] = useState("");
 
   useEffect(() => {
     const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
@@ -48,6 +52,10 @@ const EmulatorPage = () => {
   }, [loadingState, selectState]);
 
   const emulatorOptions = [
+    {
+      value: 0,
+      label: "Giả lập tham gia kế hoạch theo ID.",
+    },
     { value: 1, label: "Giả lập tạo kế hoạch." },
     {
       value: 2,
@@ -64,6 +72,10 @@ const EmulatorPage = () => {
     {
       value: 5,
       label: "Giả lập đặt hàng cho kế hoạch.",
+    },
+    {
+      value: 6,
+      label: "Giả lập chỉnh sửa thời gian hệ thống",
     },
   ];
 
@@ -559,6 +571,28 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "no");
   };
 
+  const simulateJoinPlanByID = async () => {
+    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+
+    localStorage.setItem("checkIsUserCall", "yes");
+    let response = [];
+    let count = 0;
+    for (let i = 0; i < loggedAcc?.length; i++) {
+      count++;
+      localStorage.setItem("userToken", loggedAcc[i].token);
+      const joinData = {
+        companions: null,
+        planId: joinId,
+        weight: 1,
+        planName: "kế hoạch của Quốc Mạnh",
+      };
+      const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
+      response.push(resJoin);
+      setResponseMsg(response);
+    }
+    localStorage.setItem("checkIsUserCall", "no");
+  };
+
   const [loginMsg, setLoginMsg] = useState("");
 
   const MassLogin = () => {
@@ -585,30 +619,79 @@ const EmulatorPage = () => {
           </div>
           <div className="details">
             <div id="recaptcha-container"></div>
-            <Select
-              placeholder={"Chọn loại giả lập"}
-              className="basic-single"
-              classNamePrefix="select"
-              isClearable={true}
-              name="color"
-              options={emulatorOptions}
-              onChange={(e) => {
-                if (e != null) {
-                  setSelectedSimulator(e.value);
-                  setSelectLoading(false);
-                } else {
-                  setSelectLoading(true);
+            <div className="input-field">
+              <Select
+                placeholder={"Chọn loại giả lập"}
+                className="basic-single"
+                classNamePrefix="select"
+                isClearable={true}
+                name="color"
+                size="small"
+                options={emulatorOptions}
+                onChange={(e) => {
+                  if (e != null) {
+                    setSelectedSimulator(e.value);
+                    setSelectLoading(false);
+                    if (e.value === 0) {
+                      setIdInputVisible(true);
+                      setDateVisible(false);
+                    } else if (e.value === 6) {
+                      setDateVisible(true);
+                      setIdInputVisible(false);
+                    } else {
+                      setIdInputVisible(false);
+                      setDateVisible(false);
+                    }
+                  } else {
+                    setSelectLoading(true);
+                    setIdInputVisible(false);
+                    setDateVisible(false);
+                  }
+                }}
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "#58D68D",
+                    primary: "#28B463",
+                  },
+                })}
+              />
+              <TextField
+                style={
+                  idInputVisible ? { display: "block" } : { display: "none" }
                 }
-              }}
-              theme={(theme) => ({
-                ...theme,
-                colors: {
-                  ...theme.colors,
-                  primary25: "#58D68D",
-                  primary: "#28B463",
-                },
-              })}
-            />
+                sx={{
+                  width: "15%",
+                }}
+                id="outlined-disabled"
+                className="basic-text ml-2"
+                type="text"
+                placeholder="Nhập ID"
+                size="small"
+                name="id"
+                onChange={(e) => {
+                  setJoinId(e.target.value);
+                }}
+                color="success"
+              />
+              <TextField
+                id="outlined-disabled"
+                style={dateVisible ? { display: "block" } : { display: "none" }}
+                sx={{
+                  width: "15%",
+                }}
+                className="basic-text ml-2"
+                type="date"
+                // placeholder="Nhập ID"
+                size="small"
+                name="id"
+                onChange={(e) => {
+                  setDateSimulator(e.target.value);
+                }}
+                color="success"
+              />
+            </div>
             {!isEnabled && (
               <button className={"linkDisabled"} disabled>
                 <PlayArrowIcon /> <span>Chạy giả lập</span>
@@ -636,6 +719,8 @@ const EmulatorPage = () => {
                     simulateConfirmPlan();
                   } else if (selectedSimulator === 5) {
                     simulateOrderPlan();
+                  } else if (selectedSimulator === 0) {
+                    simulateJoinPlanByID();
                   }
                 }}
               >
