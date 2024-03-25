@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GEN_MEM_SIMULATOR = gql`
   {
-    testAccounts(last: 4, order: { id: DESC }) {
+    testAccounts(last: 5, order: { id: DESC }) {
       nodes {
         id
         name
@@ -33,6 +33,31 @@ export const LOAD_PLANS_SIMULATOR = gql`
       order: { id: DESC }
       where: { account: { id: { eq: $id } } }
     ) {
+      nodes {
+        id
+        name
+        account {
+          name
+        }
+        members {
+          id
+          status
+          account {
+            name
+          }
+        }
+        status
+        memberCount
+        maxMember
+        joinMethod
+      }
+    }
+  }
+`;
+
+export const LOAD_PLANS_BY_ID_SIMULATOR = gql`
+  query LoadPlans($id: Int!) {
+    plans(first: 20, order: { id: DESC }, where: { id: { eq: $id } }) {
       nodes {
         id
         name
@@ -112,5 +137,11 @@ export const INVITE_PLANS_SIMULATOR = gql`
     inviteToPlan(dto: $dto) {
       id
     }
+  }
+`;
+
+export const SET_TIME_SIMULATOR = gql`
+  mutation setTime($time: DateTime!) {
+    setSystemTime(time: $time)
   }
 `;

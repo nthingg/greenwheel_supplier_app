@@ -10,9 +10,12 @@ import {
   CONFIRM_PLAN_SIMULATOR,
   CREATE_PLAN_SIMULATOR,
   GEN_MEM_SIMULATOR,
+  INVITE_PLANS_SIMULATOR,
   JOIN_PLAN_SIMULATOR,
+  LOAD_PLANS_BY_ID_SIMULATOR,
   LOAD_PLANS_SIMULATOR,
   ORDER_CREATE_SIMULATOR,
+  SET_TIME_SIMULATOR,
 } from "../services/graphql/simulator";
 import { GraphQLError } from "graphql";
 import { onError } from "@apollo/client/link/error";
@@ -104,8 +107,26 @@ const EmulatorPage = () => {
     },
   });
 
+  const {
+    error: errorLoadPlansId,
+    loading: loadingLoadPlansId,
+    data: dataLoadPlansId,
+    refetch: refetchLoadPlansById,
+  } = useQuery(LOAD_PLANS_BY_ID_SIMULATOR, {
+    variables: {
+      id: 0,
+    },
+  });
+
   const [join, { data: dataJoin, error: errorJoin }] =
     useMutation(JOIN_PLAN_SIMULATOR);
+
+  const [invite, { data: dataInvite, error: errorInvite }] = useMutation(
+    INVITE_PLANS_SIMULATOR
+  );
+
+  const [setTime, { data: dataSetTime, error: errorSetTime }] =
+    useMutation(SET_TIME_SIMULATOR);
 
   const [changeJoinMethod, { data: dataJoinMethod, error: errorJoinMethod }] =
     useMutation(CHANGE_JOIN_METHOD_SIMULATOR);
@@ -331,8 +352,45 @@ const EmulatorPage = () => {
     }
   };
 
+  const handleInvitePlan = async (dto, count, acc, guest) => {
+    try {
+      const { data } = await invite({
+        variables: {
+          dto: {
+            accountId: dto.accountId,
+            planId: dto.planId,
+          },
+        },
+      });
+      const response = {
+        userName: acc.name,
+        action: "Mời phượt thủ khác",
+        detail: `[${acc.name}] mời [${guest.name}] tham gia kế hoạch [${dto.planName}]`,
+        status: true,
+        id: count,
+      };
+      return response;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      // setErrMsg(msg);
+      // handleClick();
+      localStorage.removeItem("errorMsg");
+      const response = {
+        userName: acc.name,
+        action: "Mời phượt thủ khác",
+        detail: `[${acc.name}] mời [${guest.name}] tham gia kế hoạch [${dto.planName}]`,
+        status: false,
+        id: count,
+      };
+      return response;
+    }
+  };
+
   const simulateJoinAndChangeMethodPlan = async () => {
     const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
+    // console.log(loggedAcc);
+    // return;
 
     localStorage.setItem("checkIsUserCall", "yes");
     let response = [];
@@ -359,14 +417,18 @@ const EmulatorPage = () => {
             } else {
               currentJoinMethod = "SCAN";
             }
+          } else if (currentPlans[j].joinMethod === "INVITE") {
+            currentJoinMethod = "SCAN";
           } else {
-            currentJoinMethod = currentPlans[j].joinMethod;
+            currentJoinMethod = "INVITE";
           }
+
           const changeData = {
             joinMethod: currentJoinMethod,
             planId: currentPlans[j].id,
             planName: currentPlans[j].name,
           };
+
           const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
           count++;
           const resChange = await handleChangeJoinMethod(
@@ -376,6 +438,27 @@ const EmulatorPage = () => {
           );
           response.push(resJoin);
           response.push(resChange);
+
+          if (currentJoinMethod === "INVITE") {
+            for (let index = 0; index < loggedAcc?.length; index++) {
+              count++;
+              if (loggedAcc[index].id !== loggedAcc[i].id) {
+                const inviteData = {
+                  accountId: loggedAcc[index].id,
+                  planId: currentPlans[j].id,
+                  planName: currentPlans[j].name,
+                };
+                const resInvite = await handleInvitePlan(
+                  inviteData,
+                  count,
+                  loggedAcc[i],
+                  loggedAcc[index]
+                );
+                response.push(resInvite);
+              }
+            }
+          }
+
           setResponseMsg(response);
         }
       }
@@ -399,23 +482,21 @@ const EmulatorPage = () => {
         for (let j = 0; j < currentPlans?.length; j++) {
           for (let k = 0; k < loggedAcc?.length; k++) {
             if (loggedAcc[k].id !== loggedAcc[i].id) {
-              if (currentPlans[j].joinMethod === "SCAN") {
-                count++;
-                localStorage.setItem("userToken", loggedAcc[k].token);
-                const joinData = {
-                  companions: null,
-                  planId: currentPlans[j].id,
-                  weight: 1,
-                  planName: currentPlans[j].name,
-                };
-                const resJoin = await handleJoinPlan(
-                  joinData,
-                  count,
-                  loggedAcc[k]
-                );
-                response.push(resJoin);
-                setResponseMsg(response);
-              }
+              count++;
+              localStorage.setItem("userToken", loggedAcc[k].token);
+              const joinData = {
+                companions: null,
+                planId: currentPlans[j].id,
+                weight: 1,
+                planName: currentPlans[j].name,
+              };
+              const resJoin = await handleJoinPlan(
+                joinData,
+                count,
+                loggedAcc[k]
+              );
+              response.push(resJoin);
+              setResponseMsg(response);
             }
           }
         }
@@ -571,7 +652,7 @@ const EmulatorPage = () => {
     localStorage.setItem("checkIsUserCall", "no");
   };
 
-  const simulateJoinPlanByID = async () => {
+  const simulateJoinPlanByID = async (currentPlan) => {
     const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
 
     localStorage.setItem("checkIsUserCall", "yes");
@@ -584,13 +665,53 @@ const EmulatorPage = () => {
         companions: null,
         planId: joinId,
         weight: 1,
-        planName: "kế hoạch của Quốc Mạnh",
+        planName: currentPlan.name,
       };
       const resJoin = await handleJoinPlan(joinData, count, loggedAcc[i]);
       response.push(resJoin);
       setResponseMsg(response);
     }
     localStorage.setItem("checkIsUserCall", "no");
+  };
+
+  const handleChangeSystemTime = async (date) => {
+    try {
+      const { data } = await setTime({
+        variables: {
+          time: date,
+        },
+      });
+      let dt = "";
+      let st = false;
+      if (data) {
+        st = true;
+        dt = `Quản trị hệ thống thay đổi thời gian đến ${date}`;
+      } else {
+        dt = `Quản trị hệ thống thay đổi thời gian thất bại`;
+      }
+      const response = {
+        userName: "Quản trị hệ thống",
+        action: "Thay đổi thời gian hệ thống",
+        detail: dt,
+        status: st,
+        id: 1,
+      };
+      return response;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      // setErrMsg(msg);
+      // handleClick();
+      localStorage.removeItem("errorMsg");
+      const response = {
+        userName: "Quản trị hệ thống",
+        action: "Thay đổi thời gian hệ thống",
+        detail: `${msg}`,
+        status: false,
+        id: 1,
+      };
+      return response;
+    }
   };
 
   const [loginMsg, setLoginMsg] = useState("");
@@ -720,7 +841,26 @@ const EmulatorPage = () => {
                   } else if (selectedSimulator === 5) {
                     simulateOrderPlan();
                   } else if (selectedSimulator === 0) {
-                    simulateJoinPlanByID();
+                    try {
+                      const { data } = await refetchLoadPlansById({
+                        id: parseInt(joinId, 10), // Always refetches a new list
+                      });
+                      let plan = data["plans"]["nodes"][0];
+                      if (!plan) {
+                        const msg = `Không có kế hoạch nào thuộc id ${joinId}`;
+                        setErrMsg(msg);
+                        handleClick();
+                      } else {
+                        simulateJoinPlanByID(plan);
+                      }
+                    } catch (error) {
+                      console.log(error);
+                      const msg = `Không có kế hoạch nào thuộc id ${joinId}`;
+                      setErrMsg(msg);
+                      handleClick();
+                    }
+                  } else if (selectedSimulator === 6) {
+                    handleChangeSystemTime(dateSimulator);
                   }
                 }}
               >
