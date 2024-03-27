@@ -64,3 +64,18 @@ export const LOAD_DETAIL_ACCOUNT = gql`
     }
   }
 `;
+
+export const LOAD_ACCOUNTS_TRAVELER = gql`
+  {
+    accounts(
+      first: 100
+      order: { id: ASC }
+      where: { role: { eq: TRAVELER } }
+    ) {
+      nodes {
+        id
+        role
+      }
+    }
+  }
+`;

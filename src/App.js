@@ -25,8 +25,11 @@ import PlanPage from "./pages/PlanPage";
 import PlanDetailPage from "./pages/PlanDetailPage";
 import AccountPage from "./pages/AccountPage";
 import TravelerProfilePage from "./pages/TravelerProfilePage";
+import AdminHomePage from "./pages/AdminHomePage";
 
 function App() {
+  const role = localStorage.getItem("role");
+
   return (
     <ApolloProvider client={client}>
       <LoadScript
@@ -35,13 +38,21 @@ function App() {
       >
         <div className="app">
           <SideBar />
-          <main
-            className={
-              (TOKEN && "content") || (TOKEN === null && "loginContent")
-            }
-          >
+          <main className={TOKEN ? "content" : "loginContent"}>
             {/* <main className={"content"}> */}
             <Routes>
+              {role === "ADMIN" && (
+                <Route
+                  path="/"
+                  element={TOKEN ? <AdminHomePage /> : <Navigate to="/login" />}
+                ></Route>
+              )}
+              {role !== "ADMIN" && (
+                <Route
+                  path="/"
+                  element={TOKEN ? <HomePage /> : <Navigate to="/login" />}
+                ></Route>
+              )}
               <Route
                 path="/"
                 element={TOKEN ? <HomePage /> : <Navigate to="/login" />}

@@ -59,7 +59,7 @@ export const LOAD_DETAIL_ORDER = gql`
         plan {
           startDate
         }
-        serveDateIndexes
+        serveDates
         details {
           product {
             supplier {

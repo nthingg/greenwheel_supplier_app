@@ -103,3 +103,63 @@ export const LOAD_DETAIL_PLAN = gql`
     }
   }
 `;
+
+export const LOAD_NUMBERS_CANCELED = gql`
+  {
+    plans(first: 100, where: { status: { eq: CANCELED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+export const LOAD_NUMBERS_COMPLETED = gql`
+  {
+    plans(first: 100, where: { status: { eq: COMPLETED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+export const LOAD_NUMBERS_FLAWED = gql`
+  {
+    plans(first: 100, where: { status: { eq: FLAWED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+export const LOAD_NUMBERS_PENDING = gql`
+  {
+    plans(first: 100, where: { status: { eq: PENDING } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+export const LOAD_NUMBERS_READY = gql`
+  {
+    plans(first: 100, where: { status: { eq: READY } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+export const LOAD_NUMBERS_REGISTERING = gql`
+  {
+    plans(first: 100, where: { status: { eq: REGISTERING } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;

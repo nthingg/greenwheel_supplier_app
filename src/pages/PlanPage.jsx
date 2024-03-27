@@ -168,6 +168,7 @@ const PlanPage = () => {
             className="link"
             onClick={() => {
               refetch();
+              refetchTotal();
             }}
           >
             <RefreshIcon />

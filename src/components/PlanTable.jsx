@@ -97,9 +97,9 @@ const PlanTable = ({ plans, accountPlans }) => {
               "& .MuiDataGrid-columnHeader--withRightBorder": {
                 borderRightWidth: "2px",
               },
-              ".MuiTablePagination-displayedRows": {
-                display: "none",
-              },
+              // ".MuiTablePagination-displayedRows": {
+              //   display: "none",
+              // },
               boxShadow: 2,
             }}
           />
