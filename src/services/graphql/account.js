@@ -8,12 +8,10 @@ export const LOAD_ACCOUNTS_FILTER = gql`
         name
         phone
         email
-        avatarUrl
         isMale
         isActive
-        prestigeScore
-        supplier {
-          imageUrl
+        prestigePoint
+        provider {
           name
         }
       }

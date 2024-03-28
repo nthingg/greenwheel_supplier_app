@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const LOAD_SUPPLIERS_FILTER = gql`
-  query LoadSuppliers($status: [SupplierType!]) {
+  query LoadProviders($status: [ProviderType!]) {
     suppliers(
       first: 100
       order: { id: ASC }
@@ -12,7 +12,6 @@ export const LOAD_SUPPLIERS_FILTER = gql`
         name
         phone
         address
-        imageUrl
         balance
         isActive
         account {

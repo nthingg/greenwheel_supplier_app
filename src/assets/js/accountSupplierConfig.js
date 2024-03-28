@@ -24,17 +24,17 @@ export const supplierAccountsColumn = [
     renderHeader: () => <span>Tài khoản</span>,
   },
   {
-    field: "supplierName",
+    field: "providerName",
     width: 300,
     align: "left",
     headerAlign: "left",
     renderCell: (params) => {
-      if (params.row.supplier === null) {
+      if (params.row.provider === null) {
         return <div>Không có</div>;
       } else {
         return (
           <div className="cellWithImg">
-            <img
+            {/* <img
               className="cellImg"
               src={
                 params.row.supplier.imageUrl === null
@@ -42,8 +42,8 @@ export const supplierAccountsColumn = [
                   : params.row.supplier.imageUrl
               }
               alt="avatar"
-            />
-            {params.row.supplier.name}
+            /> */}
+            {params.row.provider.name}
           </div>
         );
       }

@@ -57,12 +57,12 @@ export const plansColumns = [
     renderHeader: () => <span>Thành viên</span>,
   },
   {
-    field: "departAt",
+    field: "departDate",
     width: 180,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      const date = new Date(params.row.departAt);
+      const date = new Date(params.row.departDate);
 
       const formattedDateTime = date.toLocaleDateString("vi-VN", {
         timeZone: "UTC",

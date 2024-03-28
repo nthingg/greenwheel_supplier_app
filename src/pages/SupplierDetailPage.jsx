@@ -68,62 +68,39 @@ const SupplierDetailPage = () => {
     setPhoneVisibility(!phoneVisibility);
   };
 
-  function formatPhoneNumber(phoneNumber) {
-    // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
-
-    let part1, part2, part3;
-    switch (phoneNumber.length) {
-      case 9:
-        part1 = phoneNumber.slice(0, 3);
-        part2 = phoneNumber.slice(3, 6);
-        part3 = phoneNumber.slice(6);
-        break;
-      case 10:
-        part1 = phoneNumber.slice(0, 4);
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      case 11:
-        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      default:
-        // Handle invalid lengths (optional)
-        console.warn(`Invalid phone number length: ${phoneNumber}`);
-        return phoneNumber;
-    }
-
-    // Combine parts with spaces
-    return `${part1} ${part2} ${part3}`;
-  }
-
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
+    phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
 
-    let part1, part2;
+    let formattedParts;
     switch (phoneNumber.length) {
       case 9:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(6);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(6),
+        ];
         break;
       case 10:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(7),
+        ];
         break;
       case 11:
-        part1 = "*".repeat(phoneNumber.length - 3);
-        part2 = phoneNumber.slice(7);
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(8),
+        ];
         break;
       default:
         // Handle invalid lengths (optional)
         return phoneNumber;
     }
 
-    // Combine parts with spaces
-    return `${part1}${part2}`;
+    return formattedParts.join("");
   }
 
   const handleClick = (index) => {
@@ -158,7 +135,6 @@ const SupplierDetailPage = () => {
         lng: data["suppliers"]["nodes"][0].coordinate.coordinates[0],
       };
       setPosition(center);
-      setPhone(formatPhoneNumber(data["suppliers"]["nodes"][0]["phone"]));
       setPhoneHide(
         formatPhoneNumberCen(data["suppliers"]["nodes"][0]["phone"])
       );
@@ -190,37 +166,6 @@ const SupplierDetailPage = () => {
       setProducts(res);
     }
   }, [dataProducts, loadingProducts, errorProducts]);
-
-  function formatPhoneNumber(phoneNumber) {
-    // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0");
-
-    let part1, part2, part3;
-    switch (phoneNumber.length) {
-      case 9:
-        part1 = phoneNumber.slice(0, 3);
-        part2 = phoneNumber.slice(3, 6);
-        part3 = phoneNumber.slice(6);
-        break;
-      case 10:
-        part1 = phoneNumber.slice(0, 4);
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      case 11:
-        part1 = phoneNumber.slice(0, 4); // Handle potential country code (adjust as needed)
-        part2 = phoneNumber.slice(4, 7);
-        part3 = phoneNumber.slice(7);
-        break;
-      default:
-        // Handle invalid lengths (optional)
-        console.warn(`Invalid phone number length: ${phoneNumber}`);
-        return phoneNumber;
-    }
-
-    // Combine parts with spaces
-    return `${part1} ${part2} ${part3}`;
-  }
 
   return (
     <div className="supplierDetailContainer">
@@ -270,38 +215,17 @@ const SupplierDetailPage = () => {
         <div className="supplierDetail">
           <div className="left">
             <div className="image_container">
-              <img src={supplier?.imageUrl} alt="" />
+              <img
+                src={`https://d38ozmgi8b70tu.cloudfront.net${supplier?.imagePath}`}
+                alt=""
+              />
             </div>
           </div>
           <div className="right">
             <div className="details">
               <div className="detailItem">
                 <span className="itemKey">Số điện thoại:</span>
-                <span className="itemValue">
-                  {phoneVisibility === false ? (
-                    <span className="itemValue">
-                      {phoneHide}
-                      <IconButton
-                        className="mapBtn"
-                        color="info"
-                        onClick={triggerPhone}
-                      >
-                        <VisibilityOffIcon />
-                      </IconButton>
-                    </span>
-                  ) : (
-                    <span className="itemValue">
-                      {phone}
-                      <IconButton
-                        className="mapBtn"
-                        color="info"
-                        onClick={triggerPhone}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                    </span>
-                  )}
-                </span>
+                <span className="itemValue">{phoneHide}</span>
               </div>
               <div className="detailItem">
                 <span className="itemKey">Địa chỉ:</span>
@@ -313,7 +237,8 @@ const SupplierDetailPage = () => {
                 </span>
               </div>
               {supplier?.type !== "REPAIR_SHOP" &&
-                supplier?.type !== "GROCERY_STORE" && (
+                supplier?.type !== "EMERGENCY" &&
+                supplier?.type !== "GROCERY" && (
                   <div className="detailItem">
                     <span className="itemKey">Số dư:</span>
                     <span className="itemValue">
@@ -328,14 +253,22 @@ const SupplierDetailPage = () => {
                     switch (supplier?.type) {
                       case "RESTAURANT":
                         return "Nhà hàng";
-                      case "GROCERY_STORE":
+                      case "GROCERY":
                         return "Tạp hóa";
                       case "HOTEL":
                         return "Khách sạn";
-                      case "REPAIR_SHOP":
-                        return "Cửa hàng sửa chữa";
+                      case "REPAIR":
+                        return "Tiệm sửa";
                       case "VEHICLE_RENTAL":
-                        return "Dịch vụ thuê xe";
+                        return "Thuê xe";
+                      case "EMERGENCY":
+                        return "Cứu hộ";
+                      case "FOOD_STALL":
+                        return "Quán ăn";
+                      case "MOTEL":
+                        return "Nhà nghỉ";
+                      case "TAXI":
+                        return "Taxi";
                       default:
                         return "Khác";
                     }
@@ -364,7 +297,8 @@ const SupplierDetailPage = () => {
               </Accordion>
             )} */}
             {supplier?.type !== "REPAIR_SHOP" &&
-              supplier?.type !== "GROCERY_STORE" && (
+              supplier?.type !== "EMERGENCY" &&
+              supplier?.type !== "GROCERY" && (
                 <Accordion>
                   <AccordionSummary
                     sx={{

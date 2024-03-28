@@ -23,7 +23,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: "https://btssapp.azurewebsites.net/graphql",
+    uri: "https://api-btss.southeastasia.cloudapp.azure.com/graphql",
   }),
 ]);
 

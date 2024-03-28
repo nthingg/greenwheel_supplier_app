@@ -7,18 +7,11 @@ export const LOAD_DETAIL_DESTINATION = gql`
         id
         name
         description
-        imageUrls
+        imagePaths
         isVisible
         address
         coordinate {
           coordinates
-        }
-        emergencyContacts {
-          imageUrl
-          name
-          phone
-          address
-          type
         }
         seasons
         topographic
@@ -31,7 +24,6 @@ export const LOAD_DETAIL_DESTINATION = gql`
           createdAt
           account {
             name
-            avatarUrl
           }
         }
       }
@@ -46,15 +38,9 @@ export const LOAD_DESTINATIONS = gql`
         id
         name
         description
-        imageUrls
+        imagePaths
         isVisible
         address
-        emergencyContacts {
-          imageUrl
-          name
-          phone
-          address
-        }
         seasons
         topographic
         activities
@@ -66,7 +52,6 @@ export const LOAD_DESTINATIONS = gql`
           createdAt
           account {
             name
-            avatarUrl
           }
         }
       }

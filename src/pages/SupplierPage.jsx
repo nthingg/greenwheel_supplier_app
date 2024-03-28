@@ -16,13 +16,18 @@ import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import BedIcon from "@mui/icons-material/Bed";
 import BuildIcon from "@mui/icons-material/Build";
+import Slider from "react-slick";
 
 const SupplierPage = () => {
   const suppType = [
-    "RESTAURANT",
+    "EMERGENCY",
+    "FOOD_STALL",
+    "GROCERY",
     "HOTEL",
-    "GROCERY_STORE",
-    "REPAIR_SHOP",
+    "MOTEL",
+    "REPAIR",
+    "RESTAURANT",
+    "TAXI",
     "VEHICLE_RENTAL",
   ];
   const [selectedDiv, setSelectedDiv] = useState(0);
@@ -54,6 +59,22 @@ const SupplierPage = () => {
         setSelectedStatus([suppType[4]]);
         refetch();
         break;
+      case 6:
+        setSelectedStatus([suppType[5]]);
+        refetch();
+        break;
+      case 7:
+        setSelectedStatus([suppType[6]]);
+        refetch();
+        break;
+      case 8:
+        setSelectedStatus([suppType[7]]);
+        refetch();
+        break;
+      case 9:
+        setSelectedStatus([suppType[8]]);
+        refetch();
+        break;
       default:
         break;
     }
@@ -71,6 +92,14 @@ const SupplierPage = () => {
       setSuppliers(res);
     }
   }, [data, loading, error]);
+
+  var settings = {
+    dots: false,
+    infinite: false,
+    slidesToShow: 6,
+    slidesToScroll: 2,
+    centerPadding: "60px",
+  };
 
   return (
     <div className="supplier">
@@ -112,38 +141,58 @@ const SupplierPage = () => {
         </div>
       </div>
       <div className="supplierContainer">
-        <div className="icon-row ic-r-ml">
-          {[0, 1, 2, 3, 4, 5].map((index) => (
-            <div
-              key={index}
-              className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
-              onClick={() => {
-                handleClick(index);
-              }}
-            >
-              {/* Replace with appropriate icons */}
-              {index === 0 && (
-                <FormatListBulletedIcon sx={{ color: "#3498DB" }} />
-              )}
-              {index === 1 && <LocalDiningIcon sx={{ color: "#3498DB" }} />}
-              {index === 2 && <BedIcon sx={{ color: "#3498DB" }} />}
-              {index === 3 && (
-                <EmojiFoodBeverageIcon sx={{ color: "#3498DB" }} />
-              )}
-              {index === 4 && <BuildIcon sx={{ color: "#3498DB" }} />}
-              {index === 5 && (
-                <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
-              )}
-              <span>
-                {index === 0 && "Tất cả"}
-                {index === 1 && "Nhà hàng"}
-                {index === 2 && "Khách sạn"}
-                {index === 3 && "Tạp hóa"}
-                {index === 4 && "Sữa chữa"}
-                {index === 5 && "Xe cộ"}
-              </span>
-            </div>
-          ))}
+        <div className="icon-row">
+          <Slider {...settings}>
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
+              <div
+                key={index}
+                className={`icon-item ${
+                  selectedDiv === index ? "selected" : ""
+                }`}
+                onClick={() => {
+                  handleClick(index);
+                }}
+              >
+                {/* Replace with appropriate icons */}
+                {index === 0 && (
+                  <FormatListBulletedIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 1 && <LocalDiningIcon sx={{ color: "#3498DB" }} />}
+                {index === 2 && <BedIcon sx={{ color: "#3498DB" }} />}
+                {index === 3 && (
+                  <EmojiFoodBeverageIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 4 && <BuildIcon sx={{ color: "#3498DB" }} />}
+                {index === 5 && (
+                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 6 && (
+                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 7 && (
+                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 8 && (
+                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 9 && (
+                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                )}
+                <span>
+                  {index === 0 && "Tất cả"}
+                  {index === 1 && "Cứu hộ"}
+                  {index === 2 && "Quán ăn"}
+                  {index === 3 && "Tạp hóa"}
+                  {index === 4 && "Khách sạn"}
+                  {index === 5 && "Nhà nghỉ"}
+                  {index === 6 && "Tiệm sửa"}
+                  {index === 7 && "Nhà hàng"}
+                  {index === 8 && "Taxi"}
+                  {index === 9 && "Thuê xe"}
+                </span>
+              </div>
+            ))}
+          </Slider>
         </div>
         <SupplierTable suppliers={suppliers} />
       </div>

@@ -3,20 +3,43 @@ import "../assets/scss/login.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import { useNavigate } from "react-router-dom";
-import { LOGIN } from "../services/mutations";
 import { useMutation } from "@apollo/client";
 import { jwtDecode } from "jwt-decode";
+import { LOGIN } from "../services/graphql/auth";
+import { Alert, Snackbar } from "@mui/material";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [vertical, setVertical] = useState("top");
+  const [horizontal, setHorizontal] = useState("right");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authorize, { data, loading, error }] = useMutation(LOGIN);
   const [token, setToken] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [errorMsg, setErrMsg] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !error && data && data.authorize) {
-      const newToken = data.authorize.accessToken;
+  const handleClick = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const [authorize, { data, loading, error }] = useMutation(LOGIN);
+
+  const login = async (e) => {
+    try {
+      const { data } = await authorize({
+        variables: {
+          input: {
+            email: email,
+            password: password,
+          },
+        },
+      });
+      console.log(data);
+      const newToken = data["staffRequestAuthorize"]["accessToken"];
       const decoded = jwtDecode(newToken);
       console.log(
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
@@ -25,24 +48,22 @@ const LoginPage = () => {
         "role",
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
       );
-      localStorage.setItem("token", data.authorize.accessToken);
+      localStorage.setItem(
+        "token",
+        data["staffRequestAuthorize"]["accessToken"]
+      );
       localStorage.setItem("checkIsUserCall", "no");
+
       navigate("/");
       navigate(0);
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
     }
-  }, [data, loading, error]);
-
-  function login(e) {
-    e.preventDefault();
-    authorize({
-      variables: {
-        input: {
-          email: email,
-          password: password,
-        },
-      },
-    });
-  }
+  };
   return (
     <div className="app">
       <div className="container-fluid ps-md-0">
@@ -100,6 +121,22 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={snackbarOpen}
+        onClose={handleClose}
+        autoHideDuration={2000}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {errorMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

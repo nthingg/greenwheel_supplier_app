@@ -17,7 +17,7 @@ export const staffAccountsColumn = [
     renderCell: (params) => {
       return (
         <div className="cellWithImg">
-          <img
+          {/* <img
             className="cellImg"
             src={
               params.row.avatarUrl === null
@@ -25,7 +25,7 @@ export const staffAccountsColumn = [
                 : params.row.avatarUrl
             }
             alt="avatar"
-          />
+          /> */}
           {params.row.name}
         </div>
       );

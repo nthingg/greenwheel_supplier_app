@@ -9,7 +9,6 @@ import TransactionPage from "./pages/TransactionPage";
 import LoginPage from "./pages/LoginPage";
 import client from "./services/config";
 import TransactionDetailPage from "./pages/TransactionDetailPage";
-import { TOKEN } from "./services/constant";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import EmulatorPage from "./pages/EmulatorPage";
 import ProductEditPage from "./pages/ProductEditPage";
@@ -29,6 +28,7 @@ import AdminHomePage from "./pages/AdminHomePage";
 
 function App() {
   const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
 
   return (
     <ApolloProvider client={client}>
@@ -38,34 +38,34 @@ function App() {
       >
         <div className="app">
           <SideBar />
-          <main className={TOKEN ? "content" : "loginContent"}>
+          <main className={token ? "content" : "loginContent"}>
             {/* <main className={"content"}> */}
             <Routes>
               {role === "ADMIN" && (
                 <Route
                   path="/"
-                  element={TOKEN ? <AdminHomePage /> : <Navigate to="/login" />}
+                  element={token ? <AdminHomePage /> : <Navigate to="/login" />}
                 ></Route>
               )}
               {role !== "ADMIN" && (
                 <Route
                   path="/"
-                  element={TOKEN ? <HomePage /> : <Navigate to="/login" />}
+                  element={token ? <HomePage /> : <Navigate to="/login" />}
                 ></Route>
               )}
               <Route
                 path="/"
-                element={TOKEN ? <HomePage /> : <Navigate to="/login" />}
+                element={token ? <HomePage /> : <Navigate to="/login" />}
               ></Route>
               <Route path="login" element={<LoginPage />}></Route>
               <Route
                 path="profile"
-                element={TOKEN ? <ProfilePage /> : <Navigate to="/login" />}
+                element={token ? <ProfilePage /> : <Navigate to="/login" />}
               ></Route>
               <Route path="products">
                 <Route
                   index
-                  element={TOKEN ? <ProductPage /> : <Navigate to="/login" />}
+                  element={token ? <ProductPage /> : <Navigate to="/login" />}
                 />
                 <Route path=":productId" element={<ProductDetailPage />} />
                 <Route path="detail">
@@ -78,7 +78,7 @@ function App() {
               <Route path="suppliers">
                 <Route
                   index
-                  element={TOKEN ? <SupplierPage /> : <Navigate to="/login" />}
+                  element={token ? <SupplierPage /> : <Navigate to="/login" />}
                 />
                 <Route path=":supplierId" element={<SupplierDetailPage />} />
                 <Route path="new" element={<SupplierCreatePage />} />
@@ -90,7 +90,7 @@ function App() {
                 <Route
                   index
                   element={
-                    TOKEN ? <TransactionPage /> : <Navigate to="/login" />
+                    token ? <TransactionPage /> : <Navigate to="/login" />
                   }
                 />
                 <Route path=":orderId" element={<TransactionDetailPage />} />
@@ -99,7 +99,7 @@ function App() {
                 <Route
                   index
                   element={
-                    TOKEN ? <DestinationPage /> : <Navigate to="/login" />
+                    token ? <DestinationPage /> : <Navigate to="/login" />
                   }
                 />
                 <Route
@@ -110,7 +110,7 @@ function App() {
               <Route path="plans">
                 <Route
                   index
-                  element={TOKEN ? <PlanPage /> : <Navigate to="/login" />}
+                  element={token ? <PlanPage /> : <Navigate to="/login" />}
                 />
                 <Route path=":planId" element={<PlanDetailPage />} />
                 <Route path="traveler-info">
@@ -120,16 +120,16 @@ function App() {
               <Route path="accounts">
                 <Route
                   index
-                  element={TOKEN ? <AccountPage /> : <Navigate to="/login" />}
+                  element={token ? <AccountPage /> : <Navigate to="/login" />}
                 />
               </Route>
               <Route
                 path="emulator"
-                element={TOKEN ? <EmulatorPage /> : <Navigate to="/login" />}
+                element={token ? <EmulatorPage /> : <Navigate to="/login" />}
               ></Route>
               <Route
                 path="test"
-                element={TOKEN ? <Test /> : <Navigate to="/login" />}
+                element={token ? <Test /> : <Navigate to="/login" />}
               ></Route>
             </Routes>
           </main>

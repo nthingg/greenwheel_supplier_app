@@ -62,14 +62,14 @@ const DestinationDetailPage = () => {
       data["destinations"]["nodes"]
     ) {
       setDestination(data["destinations"]["nodes"][0]);
-      let res = data["destinations"]["nodes"][0]["emergencyContacts"].map(
-        (node, id) => {
-          const { __typename, ...rest } = node;
-          return { ...rest, id: id + 1 }; // Add the index to the object
-        }
-      );
-      setEmergencies(res);
-      console.log(res);
+      // let res = data["destinations"]["nodes"][0]["emergencyContacts"].map(
+      //   (node, id) => {
+      //     const { __typename, ...rest } = node;
+      //     return { ...rest, id: id + 1 }; // Add the index to the object
+      //   }
+      // );
+      // setEmergencies(res);
+
       let acts = "";
       for (
         let index = 0;
@@ -112,12 +112,14 @@ const DestinationDetailPage = () => {
         lng: data["destinations"]["nodes"][0].coordinate.coordinates[0],
       };
       setPosition(destination);
+
+      console.log(data["destinations"]["nodes"][0]["imagePaths"]);
     }
   }, [data, loading, error]);
 
   var settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -160,9 +162,12 @@ const DestinationDetailPage = () => {
         <div className="destinationDetail">
           <div className="left slider-container">
             <Slider arrows={false} {...settings}>
-              {destination?.imageUrls.map((imageUrl, index) => (
-                <div>
-                  <img src={imageUrl} alt="" />
+              {destination?.imagePaths.map((imageUrl, index) => (
+                <div key={index}>
+                  <img
+                    src={`https://d38ozmgi8b70tu.cloudfront.net${imageUrl}`}
+                    alt=""
+                  />
                 </div>
               ))}
             </Slider>
@@ -298,7 +303,7 @@ const DestinationDetailPage = () => {
             </AccordionDetails>
           </Accordion>
         </div>
-        <div className="bottom">
+        {/* <div className="bottom">
           <Accordion>
             <AccordionSummary
               sx={{
@@ -318,7 +323,7 @@ const DestinationDetailPage = () => {
               <EmergencyTable list={emergencies} />
             </AccordionDetails>
           </Accordion>
-        </div>
+        </div> */}
       </div>
       <Dialog
         open={open}

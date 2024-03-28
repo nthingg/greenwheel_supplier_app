@@ -21,7 +21,7 @@ export const accountsColumn = [
     renderCell: (params) => {
       return (
         <div className="cellWithImg">
-          <img
+          {/* <img
             className="cellImg"
             src={
               params.row.avatarUrl === null
@@ -29,7 +29,7 @@ export const accountsColumn = [
                 : params.row.avatarUrl
             }
             alt="avatar"
-          />
+          /> */}
           {params.row.name}
         </div>
       );
@@ -102,12 +102,12 @@ export const accountsColumn = [
     renderHeader: () => <span>Giới tính</span>,
   },
   {
-    field: "prestigeScore",
+    field: "prestigePoint",
     width: 200,
     align: "right",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div className="prestigePoint">{params.row.prestigeScore}</div>;
+      return <div className="prestigePoint">{params.row.prestigePoint}</div>;
     },
     renderHeader: () => <span>Điểm uy tín</span>,
   },

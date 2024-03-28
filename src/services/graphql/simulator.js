@@ -2,12 +2,27 @@ import { gql } from "@apollo/client";
 
 export const GEN_MEM_SIMULATOR = gql`
   {
-    testAccounts(last: 5, order: { id: DESC }) {
+    accounts(where: { name: { startsWith: "test-account" } }) {
       nodes {
         id
         name
         phone
       }
+    }
+  }
+`;
+
+export const REQUEST_OTP_SIMULATOR = gql`
+  mutation requestOTP($dto: TravelerRequestOTPInput!) {
+    travelerRequestOTP(dto: $dto)
+  }
+`;
+
+export const REQUEST_AUTH_SIMULATOR = gql`
+  mutation auth($dto: TravelerAuthInput!) {
+    travelerRequestAuthorize(dto: $dto) {
+      accessToken
+      refreshToken
     }
   }
 `;

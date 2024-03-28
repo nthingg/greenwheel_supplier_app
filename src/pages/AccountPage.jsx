@@ -20,9 +20,10 @@ import {
   LOAD_ACCOUNTS_FILTER,
 } from "../services/graphql/account";
 import AccountTable from "../components/AccountTable";
+import Slider from "react-slick";
 
 const AccountPage = () => {
-  const accountRole = ["TRAVELER", "SUPPLIER", "STAFF"];
+  const accountRole = ["TRAVELER", "PROVIDER", "STAFF"];
   const [selectedDiv, setSelectedDiv] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(accountRole[0]);
   const [isVeriHidden, setIsVeriHidden] = useState(true);
@@ -73,7 +74,7 @@ const AccountPage = () => {
 
       let countSupplier = 0;
       for (const item of dataTotal["accounts"]["nodes"]) {
-        if (item["role"] === "SUPPLIER") {
+        if (item["role"] === "PROVIDER") {
           countSupplier++;
         }
       }
@@ -108,6 +109,14 @@ const AccountPage = () => {
       console.log(res);
     }
   }, [data, loading, error]);
+
+  var settings = {
+    dots: false,
+    infinite: false,
+    slidesToShow: 4,
+    slidesToScroll: 2,
+    centerPadding: "60px",
+  };
 
   return (
     <div className="account">
@@ -150,30 +159,34 @@ const AccountPage = () => {
         </div>
       </div>
       <div className="accountContainer">
-        <div className="icon-row ic-r-ml">
-          {[0, 1, 2].map((index) => (
-            <div
-              key={index}
-              className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
-              onClick={() => {
-                handleClick(index);
-              }}
-            >
-              {/* Replace with appropriate icons */}
-              {index === 0 && <PersonRoundedIcon sx={{ color: "#3498DB" }} />}
-              {index === 1 && (
-                <StorefrontRoundedIcon sx={{ color: "#3498DB" }} />
-              )}
-              {index === 2 && (
-                <ManageAccountsRoundedIcon sx={{ color: "#3498DB" }} />
-              )}
-              <span>
-                {index === 0 && `Nhà du lịch (${accountTravelers})`}
-                {index === 1 && `Nhà cung cấp (${accountSuppliers})`}
-                {index === 2 && `Quản lý (${accountStaffs})`}
-              </span>
-            </div>
-          ))}
+        <div className="icon-row">
+          <Slider {...settings}>
+            {[0, 1, 2].map((index) => (
+              <div
+                key={index}
+                className={`icon-item ${
+                  selectedDiv === index ? "selected" : ""
+                }`}
+                onClick={() => {
+                  handleClick(index);
+                }}
+              >
+                {/* Replace with appropriate icons */}
+                {index === 0 && <PersonRoundedIcon sx={{ color: "#3498DB" }} />}
+                {index === 1 && (
+                  <StorefrontRoundedIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 2 && (
+                  <ManageAccountsRoundedIcon sx={{ color: "#3498DB" }} />
+                )}
+                <span>
+                  {index === 0 && `Nhà du lịch (${accountTravelers})`}
+                  {index === 1 && `Nhà cung cấp (${accountSuppliers})`}
+                  {index === 2 && `Quản lý (${accountStaffs})`}
+                </span>
+              </div>
+            ))}
+          </Slider>
         </div>
         <FormControl>
           <RadioGroup
@@ -220,7 +233,7 @@ const AccountPage = () => {
           </RadioGroup>
         </FormControl>
         {selectedStatus === "TRAVELER" && <AccountTable travelers={accounts} />}
-        {selectedStatus === "SUPPLIER" && <AccountTable suppliers={accounts} />}
+        {selectedStatus === "PROVIDER" && <AccountTable suppliers={accounts} />}
         {selectedStatus === "STAFF" && <AccountTable staffs={accounts} />}
       </div>
     </div>

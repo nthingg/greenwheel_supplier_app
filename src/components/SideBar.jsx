@@ -119,7 +119,11 @@ const SideBar = () => {
             <button
               className="btn btn-lg text-uppercase fw-bold"
               type="button"
-              onClick={logout}
+              onClick={(e) => {
+                localStorage.clear();
+                navigate("/");
+                navigate(0);
+              }}
             >
               <ExitToAppIcon className="logout" />
             </button>

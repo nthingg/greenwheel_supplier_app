@@ -107,9 +107,9 @@ export const LOAD_DETAIL_SUPPLIER = gql`
         name
         phone
         address
-        imageUrl
         balance
         isActive
+        imagePath
         type
         account {
           isMale
@@ -126,18 +126,16 @@ export const LOAD_DETAIL_SUPPLIER = gql`
 
 export const GET_PRODUCT_BY_SUPPLIER = gql`
   query GetProductBySupplierId($id: Int!) {
-    products(where: { supplier: { id: { eq: $id } } }) {
+    products(where: { provider: { id: { eq: $id } } }) {
       nodes {
         id
         name
         isAvailable
         price
-        imageUrl
+        imagePath
         type
         partySize
         periods
-        paymentType
-        supplierId
       }
     }
   }

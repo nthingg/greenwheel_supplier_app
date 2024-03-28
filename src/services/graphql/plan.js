@@ -12,7 +12,7 @@ export const LOAD_PLANS_FILTER = gql`
         destination {
           name
         }
-        departAt
+        departDate
         startDate
         memberCount
         maxMember
@@ -45,13 +45,13 @@ export const LOAD_DETAIL_PLAN = gql`
           name
           phone
         }
-        regClosedAt
+        regCloseAt
         createdAt
         currentGcoinBudget
         memberCount
         maxMember
         status
-        departAt
+        departDate
         departure {
           coordinates
         }
@@ -81,12 +81,11 @@ export const LOAD_DETAIL_PLAN = gql`
           account {
             id
             name
-            avatarUrl
           }
           type
         }
         savedContacts {
-          imageUrl
+          imagePath
           name
           phone
           address

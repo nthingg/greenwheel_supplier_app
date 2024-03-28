@@ -1,14 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const LOGIN = gql`
-  mutation login($input: StaffAuthorizeInput!) {
-    authorize(model: $input) {
-      accessToken
-      refreshToken
-    }
-  }
-`;
-
 export const CREATE_PRODUCT = gql`
   mutation createProduct($input: ProductCreateInput!) {
     createProduct(dto: $input) {

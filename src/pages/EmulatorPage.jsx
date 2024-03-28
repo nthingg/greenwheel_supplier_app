@@ -15,6 +15,8 @@ import {
   LOAD_PLANS_BY_ID_SIMULATOR,
   LOAD_PLANS_SIMULATOR,
   ORDER_CREATE_SIMULATOR,
+  REQUEST_AUTH_SIMULATOR,
+  REQUEST_OTP_SIMULATOR,
   SET_TIME_SIMULATOR,
 } from "../services/graphql/simulator";
 import { GraphQLError } from "graphql";
@@ -41,19 +43,10 @@ const EmulatorPage = () => {
   const [selectState, setSelectLoading] = useState(true);
   const [ini, setIni] = useState(true);
   const [selectedSimulator, setSelectedSimulator] = useState(0);
-  const [isEnabled, setIsEnabled] = useState(false);
   const [idInputVisible, setIdInputVisible] = useState(false);
   const [joinId, setJoinId] = useState(0);
   const [dateVisible, setDateVisible] = useState(false);
   const [dateSimulator, setDateSimulator] = useState("");
-
-  useEffect(() => {
-    const loggedAcc = JSON.parse(localStorage.getItem("loggedAcc"));
-    if (loggedAcc) {
-      setLoading(false);
-    }
-    setIsEnabled(!loadingState && !selectState);
-  }, [loadingState, selectState]);
 
   const emulatorOptions = [
     {
@@ -96,6 +89,14 @@ const EmulatorPage = () => {
   );
 
   const { error, loading, data, refetch } = useQuery(GEN_MEM_SIMULATOR);
+
+  const [rqOTP, { data: dataRqOTP, error: errorRqOTP }] = useMutation(
+    REQUEST_OTP_SIMULATOR
+  );
+
+  const [rqAuth, { data: dataRqAuth, error: errorRqAuth }] = useMutation(
+    REQUEST_AUTH_SIMULATOR
+  );
 
   const {
     error: errorLoadPlans,
@@ -193,58 +194,100 @@ const EmulatorPage = () => {
       !loading &&
       !error &&
       data &&
-      data["testAccounts"] &&
-      data["testAccounts"]["nodes"]
+      data["accounts"] &&
+      data["accounts"]["nodes"]
     ) {
-      let res = data["testAccounts"]["nodes"].map((account) => {
+      let res = data["accounts"]["nodes"].map((account) => {
         const { __typename, ...rest } = account;
         return { ...rest, token: "" };
       });
+      console.log(res);
       setAccounts(res);
     }
   }, [data, loading, error]);
 
-  const onCaptchaVerify = () => {
-    if (!window.recaptchaVerifier) {
-      auth.settings.appVerificationDisabledForTesting = true;
+  // const onCaptchaVerify = () => {
+  //   if (!window.recaptchaVerifier) {
+  //     auth.settings.appVerificationDisabledForTesting = true;
 
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response) => {
-            onSignIn();
+  //     window.recaptchaVerifier = new RecaptchaVerifier(
+  //       auth,
+  //       "recaptcha-container",
+  //       {
+  //         size: "invisible",
+  //         callback: (response) => {
+  //           onSignIn();
+  //         },
+  //         "expired-callback": () => {},
+  //       }
+  //     );
+  //   }
+  // };
+
+  // const onSignIn = (phone) => {
+  //   onCaptchaVerify();
+
+  //   const appVerifier = window.recaptchaVerifier;
+  //   signInWithPhoneNumber(auth, phone, appVerifier)
+  //     .then((confirmationResult) => {
+  //       window.confirmationResult = confirmationResult;
+  //       console.log("OTP sended successfully!");
+  //       onOTPVerified();
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+  // const onOTPVerified = () => {
+  //   window.confirmationResult
+  //     .confirm("123123")
+  //     .then((res) => {
+  //       const decoded = jwtDecode(res.user["accessToken"]);
+  //       for (let i = 0; i < accounts.length; i++) {
+  //         if (accounts[i].phone === decoded["phone_number"]) {
+  //           accounts[i].token = res.user["accessToken"];
+  //           if (accounts[i].phone === accounts[accounts.length - 1].phone) {
+  //             setLoading(false);
+  //           }
+  //           break;
+  //         }
+  //       }
+  //       setAccounts(accounts);
+  //       localStorage.setItem("loggedAcc", JSON.stringify(accounts));
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+  const handlingAuth = async (travelerPhone) => {
+    try {
+      const { data: dataRqOTP } = await rqOTP({
+        variables: {
+          dto: {
+            channel: "VONAGE",
+            phone: travelerPhone,
           },
-          "expired-callback": () => {},
-        }
-      );
-    }
-  };
-
-  const onSignIn = (phone) => {
-    onCaptchaVerify();
-
-    const appVerifier = window.recaptchaVerifier;
-    signInWithPhoneNumber(auth, phone, appVerifier)
-      .then((confirmationResult) => {
-        window.confirmationResult = confirmationResult;
-        console.log("OTP sended successfully!");
-        onOTPVerified();
-      })
-      .catch((error) => {
-        console.log(error);
+        },
       });
-  };
+      console.log(dataRqOTP);
+      if (dataRqOTP) {
+        const { data: dataRqAuth } = await rqAuth({
+          variables: {
+            dto: {
+              channel: "VONAGE",
+              deviceToken: "test123",
+              otp: "123123",
+              phone: travelerPhone,
+            },
+          },
+        });
 
-  const onOTPVerified = () => {
-    window.confirmationResult
-      .confirm("123123")
-      .then((res) => {
-        const decoded = jwtDecode(res.user["accessToken"]);
         for (let i = 0; i < accounts.length; i++) {
-          if (accounts[i].phone === decoded["phone_number"]) {
-            accounts[i].token = res.user["accessToken"];
+          if (accounts[i].phone === travelerPhone) {
+            accounts[i].token =
+              dataRqAuth["travelerRequestAuthorize"]["accessToken"];
             if (accounts[i].phone === accounts[accounts.length - 1].phone) {
               setLoading(false);
             }
@@ -253,10 +296,27 @@ const EmulatorPage = () => {
         }
         setAccounts(accounts);
         localStorage.setItem("loggedAcc", JSON.stringify(accounts));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      } else {
+        setErrMsg("Đăng nhập không thành công");
+        handleClick();
+      }
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+    }
+  };
+
+  const Toast = async () => {
+    console.log("ayo im here nigga");
+  };
+
+  const MassLogin = async () => {
+    for (let i = 0; i < accounts?.length; i++) {
+      await handlingAuth(accounts[i].phone);
+    }
   };
 
   const simulateCreatePlans = async () => {
@@ -759,14 +819,6 @@ const EmulatorPage = () => {
 
   const [loginMsg, setLoginMsg] = useState("");
 
-  const MassLogin = () => {
-    for (let i = 0; i < accounts?.length; i++) {
-      onSignIn(accounts[i].phone);
-    }
-  };
-
-  MassLogin();
-
   return (
     <div>
       <div className="emulator">
@@ -855,15 +907,20 @@ const EmulatorPage = () => {
                 color="success"
               />
             </div>
-            {!isEnabled && (
+            {selectState && (
               <button className={"linkDisabled"} disabled>
                 <PlayArrowIcon /> <span>Chạy giả lập</span>
               </button>
             )}
-            {isEnabled && (
+            {!selectState && (
               <button
                 className={"link"}
                 onClick={async () => {
+                  if (loadingState) {
+                    await MassLogin();
+                  }
+                  console.log("123");
+
                   if (selectedSimulator === 1) {
                     simulateCreatePlans();
                   } else if (selectedSimulator === 2) {

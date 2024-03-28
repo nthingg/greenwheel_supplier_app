@@ -16,6 +16,7 @@ import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import Slider from "react-slick";
 
 const TransactionPage = () => {
   const iconColors = ["success", "error"]; // Define colors based on index
@@ -136,6 +137,14 @@ const TransactionPage = () => {
     }
   }, [data, loading, error]);
 
+  var settings = {
+    dots: false,
+    infinite: false,
+    slidesToShow: 4,
+    slidesToScroll: 2,
+    centerPadding: "60px",
+  };
+
   return (
     <div className="transaction">
       <div className="sharedTitle">
@@ -175,32 +184,36 @@ const TransactionPage = () => {
         </div>
       </div>
       <div className="transactionContainer">
-        <div className="icon-row ic-r-ml">
-          {[0, 1, 2, 3, 4].map((index) => (
-            <div
-              key={index}
-              className={`icon-item ${selectedDiv === index ? "selected" : ""}`}
-              onClick={() => {
-                handleClick(index);
-              }}
-            >
-              {/* Replace with appropriate icons */}
-              {index === 0 && (
-                <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
-              )}
-              {index === 1 && <MicrowaveIcon sx={{ color: "#3498DB" }} />}
-              {index === 2 && <CheckCircleIcon sx={{ color: "#3498DB" }} />}
-              {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
-              {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
-              <span>
-                {index === 0 && `Đã đặt (${reservedOrders})`}
-                {index === 1 && `Đã chuẩn bị (${prepOrders})`}
-                {index === 2 && `Đã phục vụ (${servedOrders})`}
-                {index === 3 && `Đã hủy (${cancelledOrders})`}
-                {index === 4 && `Bị phản ánh (${complainOrders})`}
-              </span>
-            </div>
-          ))}
+        <div className="icon-row">
+          <Slider {...settings}>
+            {[0, 1, 2, 3, 4].map((index) => (
+              <div
+                key={index}
+                className={`icon-item ${
+                  selectedDiv === index ? "selected" : ""
+                }`}
+                onClick={() => {
+                  handleClick(index);
+                }}
+              >
+                {/* Replace with appropriate icons */}
+                {index === 0 && (
+                  <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
+                )}
+                {index === 1 && <MicrowaveIcon sx={{ color: "#3498DB" }} />}
+                {index === 2 && <CheckCircleIcon sx={{ color: "#3498DB" }} />}
+                {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
+                {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
+                <span>
+                  {index === 0 && `Đã đặt (${reservedOrders})`}
+                  {index === 1 && `Đã chuẩn bị (${prepOrders})`}
+                  {index === 2 && `Đã phục vụ (${servedOrders})`}
+                  {index === 3 && `Đã hủy (${cancelledOrders})`}
+                  {index === 4 && `Bị phản ánh (${complainOrders})`}
+                </span>
+              </div>
+            ))}
+          </Slider>
         </div>
         <TransacionTable orders={orders} />
       </div>
