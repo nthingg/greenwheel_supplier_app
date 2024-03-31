@@ -156,7 +156,7 @@ const EmulatorPage = () => {
             name: plan.name + count,
             note: plan.note,
             periodCount: plan.periodCount,
-            savedContacts: plan.savedContacts,
+            savedProviderIds: plan.savedProviderIds,
             schedule: plan.schedule,
             surcharges: plan.surcharges,
             tempOrders: plan.tempOrders,

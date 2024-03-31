@@ -99,10 +99,6 @@ export const CREATE_PLAN_SIMULATOR = gql`
   mutation createPlan($dto: PlanCreateInput!) {
     createPlan(dto: $dto) {
       id
-      name
-      account {
-        name
-      }
     }
   }
 `;

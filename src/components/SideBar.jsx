@@ -120,7 +120,7 @@ const SideBar = () => {
               className="btn btn-lg text-uppercase fw-bold"
               type="button"
               onClick={(e) => {
-                localStorage.clear();
+                localStorage.removeItem("token");
                 navigate("/");
                 navigate(0);
               }}

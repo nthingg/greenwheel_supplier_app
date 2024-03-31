@@ -72,7 +72,7 @@ const PlanTable = ({ plans, accountPlans }) => {
             );
         }
       },
-      renderHeader: () => <span>Chi tiết</span>,
+      renderHeader: () => <span>CHI TIẾT</span>,
     },
   ];
   return (
@@ -90,9 +90,10 @@ const PlanTable = ({ plans, accountPlans }) => {
             showColumnVerticalBorder={true}
             sx={{
               "& .MuiDataGrid-columnHeader": {
-                backgroundColor: "#2ECC71",
+                backgroundColor: "#2C3E50",
                 color: "white",
-                fontWeight: "bold",
+                fontWeight: 600,
+                fontSize: 14,
               },
               "& .MuiDataGrid-columnHeader--withRightBorder": {
                 borderRightWidth: "2px",
@@ -100,7 +101,7 @@ const PlanTable = ({ plans, accountPlans }) => {
               // ".MuiTablePagination-displayedRows": {
               //   display: "none",
               // },
-              boxShadow: 2,
+              boxShadow: 0.4,
             }}
           />
         </div>
@@ -124,7 +125,7 @@ const PlanTable = ({ plans, accountPlans }) => {
               "& .MuiDataGrid-columnHeader--withRightBorder": {
                 borderRightWidth: "2px",
               },
-              boxShadow: 2,
+              boxShadow: 0.4,
             }}
           />
         </div>

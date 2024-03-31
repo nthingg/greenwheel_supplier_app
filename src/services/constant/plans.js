@@ -5,43 +5,18 @@ const tenDaysLater = new Date(date.getTime() + 10 * 24 * 60 * 60 * 1000); // Add
 
 export const planData = [
   {
-    departAt: eightDaysLater,
-    departure: [106.80992590984253, 10.841327798960252],
-    destinationId: 1,
-    gcoinBudgetPerCapita: 15000,
-    maxMember: 10,
-    maxMemberWeight: 3,
-    departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
-    name: "test-plan-",
-    note: "",
-    periodCount: 6,
-    savedContacts: [
-      {
-        name: "Cứu hộ Phường Nhà Bàng",
-        type: "RESCUE",
-        phone: "+842963875087",
-        address:
-          "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        imageUrl: null,
-      },
-      {
-        name: "Trạm xá Phường Nhà Bàng",
-        type: "MEDICAL",
-        phone: "+842963875087",
-        address:
-          "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        imageUrl: null,
-      },
-      {
-        name: "Tổng đài cứu hộ khẩn cấp khóm Sơn Đông",
-        type: "RESCUE",
-        phone: "+842963875087",
-        address:
-          "Đường Hải Thượng Lãn Ông, khóm Sơn Đông, P.Nhà Bàng. Tx.Tịnh Biên, T.An Giang",
-        imageUrl: null,
-      },
-    ],
+    departAt: eightDaysLater, //done
+    departure: [106.80992590984253, 10.841327798960252], //done
+    destinationId: 1, //done
+    maxMember: 10, //done
+    maxMemberWeight: 3, //done
+    departureAddress: "Đ. D1, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh", //done
+    name: "test-plan-", //done
+    note: "", //done
+    periodCount: 6, //done
+    savedProviderIds: [6, 7],
     schedule: [
+      //done
       {
         events: [
           {
@@ -132,12 +107,15 @@ export const planData = [
         ],
       },
     ],
-    surcharges: [{ note: "Phụ phí­ test", amount: 10000 }],
+    surcharges: [
+      { alreadyDivided: false, gcoinAmount: 10000, note: "Mua bia" },
+    ], //done
     tempOrders: [
+      //done
       {
         cart: [
           {
-            key: 18,
+            key: 6,
             value: 4,
           },
         ],
@@ -148,36 +126,36 @@ export const planData = [
           nineDaysLater.toLocaleDateString(),
           tenDaysLater.toLocaleDateString(),
         ],
-        supplierId: 8,
+        providerId: 5,
       },
+      // {
+      //   cart: [
+      //     {
+      //       key: 9,
+      //       value: 4,
+      //     },
+      //     {
+      //       key: 10,
+      //       value: 4,
+      //     },
+      //     {
+      //       key: 11,
+      //       value: 2,
+      //     },
+      //   ],
+      //   note: null,
+      //   type: "MEAL",
+      //   period: "AFTERNOON",
+      //   serveDates: [
+      //     nineDaysLater.toLocaleDateString(),
+      //     tenDaysLater.toLocaleDateString(),
+      //   ],
+      //   providerId: 9,
+      // },
       {
         cart: [
           {
-            key: 14,
-            value: 4,
-          },
-          {
-            key: 15,
-            value: 4,
-          },
-          {
-            key: 17,
-            value: 2,
-          },
-        ],
-        note: null,
-        type: "MEAL",
-        period: "AFTERNOON",
-        serveDates: [
-          nineDaysLater.toLocaleDateString(),
-          tenDaysLater.toLocaleDateString(),
-        ],
-        supplierId: 7,
-      },
-      {
-        cart: [
-          {
-            key: 20,
+            key: 7,
             value: 5,
           },
         ],
@@ -188,25 +166,26 @@ export const planData = [
           nineDaysLater.toLocaleDateString(),
           tenDaysLater.toLocaleDateString(),
         ],
-        supplierId: 11,
+        providerId: 8,
       },
-      {
-        cart: [
-          {
-            key: 1,
-            value: 4,
-          },
-        ],
-        note: null,
-        type: "MEAL",
-        period: "NOON",
-        serveDates: [
-          nineDaysLater.toLocaleDateString(),
-          tenDaysLater.toLocaleDateString(),
-        ],
-        supplierId: 3,
-      },
+      // {
+      //   cart: [
+      //     {
+      //       key: 1,
+      //       value: 4,
+      //     },
+      //   ],
+      //   note: null,
+      //   type: "MEAL",
+      //   period: "NOON",
+      //   serveDates: [
+      //     nineDaysLater.toLocaleDateString(),
+      //     tenDaysLater.toLocaleDateString(),
+      //   ],
+      //   providerId: 3,
+      // },
     ],
-    travelDuration: "05:42:10",
+    travelDuration: "05:42:10", //done
+    sourceId: null, //done
   },
 ];
