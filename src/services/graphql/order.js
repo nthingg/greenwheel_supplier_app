@@ -12,13 +12,13 @@ export const LOAD_ORDERS_FILTER = gql`
         total
         currentStatus
         createdAt
-        supplier {
+        provider {
           name
         }
         account {
           name
           phone
-          avatarUrl
+          avatarPath
         }
       }
     }

@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const LOAD_SUPPLIERS_FILTER = gql`
   query LoadProviders($status: [ProviderType!]) {
-    suppliers(
+    providers(
       first: 100
       order: { id: ASC }
       where: { type: { in: $status } }

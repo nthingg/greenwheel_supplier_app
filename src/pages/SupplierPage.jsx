@@ -87,8 +87,8 @@ const SupplierPage = () => {
   });
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
-    if (!loading && !error && data && data["suppliers"]["nodes"]) {
-      let res = data.suppliers.nodes.map(({ __typename, ...rest }) => rest);
+    if (!loading && !error && data && data["providers"]["nodes"]) {
+      let res = data.providers.nodes.map(({ __typename, ...rest }) => rest);
       setSuppliers(res);
     }
   }, [data, loading, error]);
