@@ -1,4 +1,4 @@
-import "../../assets/scss/supplierTable.scss";
+import "../../assets/scss/providers.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
@@ -97,13 +97,13 @@ const ProviderTable = ({ providers }) => {
     },
   ];
   return (
-    <div className="supplierTable">
+    <div className="provider-table">
       <DataGrid
         rows={providers}
         columns={providersColumns.concat(actionColumn)}
         rowSelection={false}
         pagination
-        autoPageSize
+        autoPageSize={true}
         showColumnVerticalBorder={true}
         sx={{
           "& .MuiDataGrid-columnHeader": {
@@ -114,7 +114,6 @@ const ProviderTable = ({ providers }) => {
           "& .MuiDataGrid-columnHeader--withRightBorder": {
             borderRightWidth: "2px",
           },
-          boxShadow: 2,
         }}
       />
     </div>

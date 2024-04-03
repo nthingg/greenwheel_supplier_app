@@ -56,9 +56,19 @@ const LoginPage = () => {
       console.log(data);
       const newToken = data["staffRequestAuthorize"]["accessToken"];
       const decoded = jwtDecode(newToken);
-      console.log(
-        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-      );
+
+      if (
+        decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] === "ADMIN"
+      ) {
+        setErrMsg("Lỗi: Sai email đăng nhập hoặc mật khẩu");
+        handleClick();
+        localStorage.removeItem("errorMsg");
+
+        return;
+      }
+
       localStorage.setItem(
         "role",
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]

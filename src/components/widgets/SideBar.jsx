@@ -15,6 +15,7 @@ const SideBar = () => {
   const navigate = useNavigate();
 
   const role = localStorage.getItem("role");
+  console.log(role);
 
   return (
     <div className="sidebar">
@@ -63,10 +64,16 @@ const SideBar = () => {
               className="user_image"
               alt="Profile"
             ></img>
-            {(role === "STAFF" || role === "SUPPLIER") && (
+            {role === "STAFF" && (
               <div className="user_info">
                 <span className="name">Provider</span>
-                <span className="role">Greenwheels Provider</span>
+                <span className="role">BTSS Provider</span>
+              </div>
+            )}
+            {role === "PROVIDER" && (
+              <div className="user_info">
+                <span className="name">Provider</span>
+                <span className="role">ABC Restaurant</span>
               </div>
             )}
             <button
