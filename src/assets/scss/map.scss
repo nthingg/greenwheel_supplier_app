@@ -1,0 +1,75 @@
+//auto complete input
+.autoCompleteInputContainer {
+    position: relative;
+
+    .basic-single {
+        width: 320px;
+    }
+
+    .addressSuggestions {
+        position: absolute;
+        top: 1.75em;
+        background-color: white;
+        border: 1px solid black;
+        overflow: hidden;
+        border-radius: 4px;
+        color: black;
+        z-index: 999;
+        padding: 0;
+
+        li {
+            list-style: none;
+            border-bottom: 1px solid black;
+            padding: 0.5em 1em;
+
+            &:hover {
+                background-color: rgb(22, 66, 128);
+                color: white;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+//address form
+.address-form {
+    #lat,
+    #long {
+        background: #fff;
+        margin: 10px;
+        padding: 7px;
+        color: #000;
+    }
+
+    .lonlat-container {
+        margin: 20px;
+    }
+
+    button {
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+
+        &.confirm-button {
+            margin-right: 1em;
+            background-color: rgb(0, 194, 120);
+            padding: 4px 10px;
+        }
+    }
+}
+
+//map
+.map {
+    position: absolute;
+    top: 20%;
+    bottom: 0;
+    width: 95%;
+    height: 500px;
+
+    .marker {
+        width: 50px;
+        height: 50px;
+    }
+}

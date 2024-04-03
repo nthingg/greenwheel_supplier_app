@@ -129,7 +129,14 @@ export const providersColumns = [
           onChange={() => {}}
           disabled={check}
           inputProps={{ "aria-label": "controlled" }}
-          color="success"
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: "#2c3d50",
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: "#2c3d50",
+            },
+          }}
         />
       );
     },

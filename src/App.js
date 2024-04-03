@@ -12,6 +12,7 @@ import ProductDetailPage from "./pages/product/ProductDetailPage";
 import ProviderPage from "./pages/provider/ProviderPage";
 import ProviderDetailPage from "./pages/provider/ProviderDetailPage";
 import Test from "./pages/home/TestPage";
+import ProviderAddPage from "./pages/provider/ProviderAddPage";
 
 function App() {
   const role = localStorage.getItem("role");
@@ -47,6 +48,7 @@ function App() {
                 element={token ? <ProviderPage /> : <Navigate to="/login" />}
               />
               <Route path=":providerId" element={<ProviderDetailPage />} />
+              <Route path="add" element={<ProviderAddPage />} />
             </Route>
             <Route path="orders">
               <Route

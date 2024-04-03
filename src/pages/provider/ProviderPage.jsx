@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
-import "../../assets/scss/supplierPage.scss";
+import "../../assets/scss/providers.scss";
 import "../../assets/scss/header.scss";
 import "../../assets/scss/filter.scss";
 import "../../assets/scss/shared.scss";
-import AddIcon from "@mui/icons-material/Add";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,6 +18,7 @@ import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import BedIcon from "@mui/icons-material/Bed";
 import BuildIcon from "@mui/icons-material/Build";
 import Slider from "react-slick";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 const ProviderPage = () => {
   const suppType = [
@@ -104,7 +104,7 @@ const ProviderPage = () => {
   };
 
   return (
-    <div className="supplier">
+    <div className="provider">
       <div className="shared-title">
         <div>
           <p className="title">Nhà cung cấp</p>
@@ -125,8 +125,8 @@ const ProviderPage = () => {
           </button>
         </div>
         <div className="right">
-          <Link to="/providers/new" className="link">
-            <AddIcon />
+          <Link to="/providers/add" className="link">
+            <AddCircleIcon />
             <span>Thêm nhà cung cấp</span>
           </Link>
           <button className="link">

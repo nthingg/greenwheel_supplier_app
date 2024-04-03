@@ -86,3 +86,11 @@ export const GET_PRODUCT_BY_SUPPLIER = gql`
     }
   }
 `;
+
+export const ADD_PROVIDER = gql`
+  mutation createProvider($dto: ProviderCreateInput!) {
+    createProvider(dto: $dto) {
+      id
+    }
+  }
+`;
