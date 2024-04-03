@@ -15,7 +15,7 @@ import Test from "./pages/home/TestPage";
 
 function App() {
   const role = localStorage.getItem("role");
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("staffToken");
 
   return (
     <ApolloProvider client={client}>

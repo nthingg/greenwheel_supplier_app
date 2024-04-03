@@ -30,7 +30,7 @@ const authLink = setContext((_, { headers }) => {
   // return the headers to the context so httpLink can read them
   let checkIsUserCall = localStorage.getItem("checkIsUserCall");
   let userToken = localStorage.getItem("userToken");
-  let token = localStorage.getItem("token");
+  let token = localStorage.getItem("staffToken");
   // console.log("ADMIN " + token)
   // console.log("USER " + token)
   // console.log(checkIsUserCall)
@@ -43,7 +43,7 @@ const authLink = setContext((_, { headers }) => {
       },
     };
   } else {
-    console.log("ADMIN IS CALLING");
+    console.log("STAFF IS CALLING");
     return {
       headers: {
         ...headers,

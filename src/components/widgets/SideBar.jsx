@@ -73,7 +73,7 @@ const SideBar = () => {
               className="user_logout"
               type="button"
               onClick={(e) => {
-                localStorage.removeItem("token");
+                localStorage.removeItem("staffToken");
                 navigate("/");
                 navigate(0);
               }}
