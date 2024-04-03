@@ -1,15 +1,14 @@
 .icon-row {
     margin: 0 auto 10px auto;
     width: 70%;
-    background-color: rgb(243, 243, 243);
+    background-color: #f8f9f9;
     border-radius: 8px;
     padding: 10px 0 10px 0;
     border: 1px solid gainsboro;
-    // justify-content: space-between;
 
     .slick-prev:before,
     .slick-next:before {
-        color: #17a589;
+        color: #2c3d50;
     }
 
     span {
@@ -22,12 +21,16 @@
     display: flex !important;
     justify-content: center;
     align-items: center;
-
     padding: 10px;
     margin: 0 0 0 10%;
     border-bottom: 2px solid transparent;
     border-radius: 8px;
     cursor: pointer;
+    transition: 0.4s;
+
+    // .MuiSvgIcon-root {
+    //     color: aqua;
+    // }
 
     span {
         margin-right: 8px;
@@ -35,13 +38,11 @@
 }
 
 .icon-item:hover {
-    border-width: 4px;
-    background-color: white;
-    border-color: white; /* Change to your desired color */
+    background-color: #2c3d50; /* Change to your desired color */
+    color: white;
 }
 
 .icon-item.selected {
-    border-color: #17a589; /* Change to your desired color */
-    border-width: 4px;
-    background-color: white;
+    background-color: #2c3d50; /* Change to your desired color */
+    color: white;
 }

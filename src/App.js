@@ -1,30 +1,17 @@
-import SideBar from "./components/SideBar";
 import "./index.css";
 import { useParams, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import ProfilePage from "./pages/ProfilePage";
-import ProductPage from "./pages/ProductPage";
 import { ApolloProvider } from "@apollo/client";
-import TransactionPage from "./pages/TransactionPage";
-import LoginPage from "./pages/LoginPage";
-import client from "./services/config";
-import TransactionDetailPage from "./pages/TransactionDetailPage";
-import ProductDetailPage from "./pages/ProductDetailPage";
-import EmulatorPage from "./pages/EmulatorPage";
-import ProductEditPage from "./pages/ProductEditPage";
-import SupplierPage from "./pages/SupplierPage";
-import SupplierDetailPage from "./pages/SupplierDetailPage";
-import DestinationPage from "./pages/DestinationPage";
-import DestinationDetailPage from "./pages/DestinationDetailPage";
-import ProductCreatePage from "./pages/ProductCreatePage";
-import SupplierCreatePage from "./pages/SupplierCreatePage";
-import Test from "./pages/TestPage";
-import { LoadScript } from "@react-google-maps/api";
-import PlanPage from "./pages/PlanPage";
-import PlanDetailPage from "./pages/PlanDetailPage";
-import AccountPage from "./pages/AccountPage";
-import TravelerProfilePage from "./pages/TravelerProfilePage";
-import AdminHomePage from "./pages/AdminHomePage";
+import SideBar from "./components/widgets/SideBar";
+import HomePage from "./pages/home/HomePage";
+import LoginPage from "./pages/auth/LoginPage";
+import client from "./services/apollo/config";
+import OrderPage from "./pages/order/OrderPage";
+import OrderDetailPage from "./pages/order/OrderDetailPage";
+import ProductPage from "./pages/product/ProductPage";
+import ProductDetailPage from "./pages/product/ProductDetailPage";
+import ProviderPage from "./pages/provider/ProviderPage";
+import ProviderDetailPage from "./pages/provider/ProviderDetailPage";
+import Test from "./pages/home/TestPage";
 
 function App() {
   const role = localStorage.getItem("role");
@@ -32,109 +19,49 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <LoadScript
-        googleMapsApiKey="AIzaSyAERCSiCGfcuVAjDib-6JWN5T7Agni47yU"
-        libraries={["places"]}
-      >
-        <div className="app">
+      <div className="app">
+        <div style={!token ? { display: "none" } : { display: "block" }}>
           <SideBar />
-          <main className={token ? "content" : "loginContent"}>
-            {/* <main className={"content"}> */}
-            <Routes>
-              {role === "ADMIN" && (
-                <Route
-                  path="/"
-                  element={token ? <AdminHomePage /> : <Navigate to="/login" />}
-                ></Route>
-              )}
-              {role !== "ADMIN" && (
-                <Route
-                  path="/"
-                  element={token ? <HomePage /> : <Navigate to="/login" />}
-                ></Route>
-              )}
-              <Route
-                path="/"
-                element={token ? <HomePage /> : <Navigate to="/login" />}
-              ></Route>
-              <Route path="login" element={<LoginPage />}></Route>
-              <Route
+        </div>
+        <main className={token ? "content" : "loginContent"}>
+          <Routes>
+            <Route
+              path="/"
+              element={token ? <HomePage /> : <Navigate to="/login" />}
+            ></Route>
+            <Route path="login" element={<LoginPage />}></Route>
+            {/* <Route
                 path="profile"
                 element={token ? <ProfilePage /> : <Navigate to="/login" />}
-              ></Route>
-              <Route path="products">
-                <Route
-                  index
-                  element={token ? <ProductPage /> : <Navigate to="/login" />}
-                />
-                <Route path=":productId" element={<ProductDetailPage />} />
-                <Route path="detail">
-                  <Route path=":productId" element={<ProductDetailPage />} />
-                </Route>
-                <Route path="edit">
-                  <Route path=":productId" element={<ProductEditPage />} />
-                </Route>
-              </Route>
-              <Route path="suppliers">
-                <Route
-                  index
-                  element={token ? <SupplierPage /> : <Navigate to="/login" />}
-                />
-                <Route path=":supplierId" element={<SupplierDetailPage />} />
-                <Route path="new" element={<SupplierCreatePage />} />
-                <Route path="add-product">
-                  <Route path=":supplierId" element={<ProductCreatePage />} />
-                </Route>
-              </Route>
-              <Route path="orders">
-                <Route
-                  index
-                  element={
-                    token ? <TransactionPage /> : <Navigate to="/login" />
-                  }
-                />
-                <Route path=":orderId" element={<TransactionDetailPage />} />
-              </Route>
-              <Route path="destinations">
-                <Route
-                  index
-                  element={
-                    token ? <DestinationPage /> : <Navigate to="/login" />
-                  }
-                />
-                <Route
-                  path=":destinationId"
-                  element={<DestinationDetailPage />}
-                />
-              </Route>
-              <Route path="plans">
-                <Route
-                  index
-                  element={token ? <PlanPage /> : <Navigate to="/login" />}
-                />
-                <Route path=":planId" element={<PlanDetailPage />} />
-                <Route path="traveler-info">
-                  <Route path=":travelerId" element={<TravelerProfilePage />} />
-                </Route>
-              </Route>
-              <Route path="accounts">
-                <Route
-                  index
-                  element={token ? <AccountPage /> : <Navigate to="/login" />}
-                />
-              </Route>
+              ></Route> */}
+            <Route path="products">
               <Route
-                path="emulator"
-                element={token ? <EmulatorPage /> : <Navigate to="/login" />}
-              ></Route>
+                index
+                element={token ? <ProductPage /> : <Navigate to="/login" />}
+              />
+              <Route path=":productId" element={<ProductDetailPage />} />
+            </Route>
+            <Route path="providers">
               <Route
-                path="test"
-                element={token ? <Test /> : <Navigate to="/login" />}
-              ></Route>
-            </Routes>
-          </main>
-        </div>
-      </LoadScript>
+                index
+                element={token ? <ProviderPage /> : <Navigate to="/login" />}
+              />
+              <Route path=":providerId" element={<ProviderDetailPage />} />
+            </Route>
+            <Route path="orders">
+              <Route
+                index
+                element={token ? <OrderPage /> : <Navigate to="/login" />}
+              />
+              <Route path=":orderId" element={<OrderDetailPage />} />
+            </Route>
+            <Route
+              path="test"
+              element={token ? <Test /> : <Navigate to="/login" />}
+            ></Route>
+          </Routes>
+        </main>
+      </div>
     </ApolloProvider>
   );
 }

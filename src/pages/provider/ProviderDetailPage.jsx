@@ -1,0 +1,391 @@
+import "../../assets/scss/supplierDetail.scss";
+import "../../assets/scss/shared.scss";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import EditIcon from "@mui/icons-material/Edit";
+import ProductTable from "../../components/tables/ProductTable";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import LocalDiningIcon from "@mui/icons-material/LocalDining";
+import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
+import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
+import BedIcon from "@mui/icons-material/Bed";
+import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from "@mui/icons-material/Search";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+} from "@mui/material";
+import MapIcon from "@mui/icons-material/Map";
+import {
+  LOAD_DETAIL_SUPPLIER,
+  GET_PRODUCT_BY_SUPPLIER,
+} from "../../services/graphql/provider";
+
+const ProviderDetailPage = () => {
+  const containerStyle = {
+    width: "950px",
+    height: "400px",
+  };
+  const defaultAddress =
+    "Dinh Độc Lập, 135 Nam Kỳ Khởi Nghĩa, Bến Thành, Quận 1, Thành phố Hồ Chí Minh";
+
+  const navigate = useNavigate();
+  const { providerId } = useParams();
+  const [supplier, setSupplier] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [selectedDiv, setSelectedDiv] = useState(0);
+  const [position, setPosition] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const [address, setAddress] = useState(defaultAddress);
+  const [showMap, setShowMap] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [phoneHide, setPhoneHide] = useState("");
+  const [phoneVisibility, setPhoneVisibility] = useState(false);
+
+  const triggerPhone = () => {
+    setPhoneVisibility(!phoneVisibility);
+  };
+
+  function formatPhoneNumberCen(phoneNumber) {
+    // Replace leading "+84" with "0" (if present)
+    phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
+
+    let formattedParts;
+    switch (phoneNumber.length) {
+      case 9:
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(6),
+        ];
+        break;
+      case 10:
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(7),
+        ];
+        break;
+      case 11:
+        formattedParts = [
+          phoneNumber.slice(0, 3),
+          "*".repeat(4),
+          phoneNumber.slice(8),
+        ];
+        break;
+      default:
+        // Handle invalid lengths (optional)
+        return phoneNumber;
+    }
+
+    return formattedParts.join("");
+  }
+
+  const handleClick = (index) => {
+    setSelectedDiv(index);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  //supplier
+  const { error, loading, data } = useQuery(LOAD_DETAIL_SUPPLIER, {
+    variables: {
+      id: parseInt(providerId, 10),
+    },
+  });
+  useEffect(() => {
+    if (
+      !loading &&
+      !error &&
+      data &&
+      data["suppliers"] &&
+      data["suppliers"]["nodes"]
+    ) {
+      setSupplier(data["suppliers"]["nodes"][0]);
+      const center = {
+        lat: data["suppliers"]["nodes"][0].coordinate.coordinates[1],
+        lng: data["suppliers"]["nodes"][0].coordinate.coordinates[0],
+      };
+      setPosition(center);
+      setPhoneHide(
+        formatPhoneNumberCen(data["suppliers"]["nodes"][0]["phone"])
+      );
+    }
+  }, [data, loading, error]);
+
+  //products
+  const {
+    error: errorProducts,
+    loading: loadingProducts,
+    data: dataProducts,
+  } = useQuery(GET_PRODUCT_BY_SUPPLIER, {
+    variables: {
+      id: parseInt(providerId, 10),
+    },
+  });
+  useEffect(() => {
+    if (
+      !loadingProducts &&
+      !errorProducts &&
+      dataProducts &&
+      dataProducts["products"] &&
+      dataProducts["products"]["nodes"]
+    ) {
+      let res = dataProducts.products.nodes.map((node, index) => {
+        const { __typename, ...rest } = node;
+        return { ...rest, index: index + 1 }; // Add the index to the object
+      });
+      setProducts(res);
+    }
+  }, [dataProducts, loadingProducts, errorProducts]);
+
+  return (
+    <div className="supplierDetailContainer">
+      <div className="sharedTitle">
+        <div className="navigation">
+          <div className="left">
+            <div className="return-btn">
+              <Link to="/providers" className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">
+                Thông tin chi tiết nhà cung cấp
+              </div>
+              <div className="return-body">
+                <p>Danh sách nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết nhà cung cấp</p>
+              </div>
+            </div>
+          </div>
+          <div className="right">
+            <Link to="/providers/new-product" className="modify-supplier">
+              <EditIcon />
+              <p>Chỉnh sửa</p>
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className="detailContainer">
+        <div className="prodTitle">
+          <div className="supplier-header">
+            <p>{supplier?.name}</p>
+            <div className="supplier-name"></div>
+            <div className="supplier-status">
+              {supplier?.isActive === false && (
+                <p className="status cancelled">Ngưng hoạt động</p>
+              )}
+              {supplier?.isActive === true && (
+                <p className="status confirmed">Đang hoạt động</p>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="supplierDetail">
+          <div className="left">
+            <div className="image_container">
+              <img
+                src={`https://d38ozmgi8b70tu.cloudfront.net${supplier?.imagePath}`}
+                alt=""
+              />
+            </div>
+          </div>
+          <div className="right">
+            <div className="details">
+              <div className="detailItem">
+                <span className="itemKey">Số điện thoại:</span>
+                <span className="itemValue">{phoneHide}</span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Địa chỉ:</span>
+                <span className="itemValue">
+                  {supplier?.address}
+                  <IconButton color="info" onClick={handleClickOpen}>
+                    <MapIcon />
+                  </IconButton>
+                </span>
+              </div>
+              {supplier?.type !== "REPAIR_SHOP" &&
+                supplier?.type !== "EMERGENCY" &&
+                supplier?.type !== "GROCERY" && (
+                  <div className="detailItem">
+                    <span className="itemKey">Số dư:</span>
+                    <span className="itemValue">
+                      {supplier?.balance.toLocaleString("vi-VN") + "đ"}
+                    </span>
+                  </div>
+                )}
+              <div className="detailItem">
+                <span className="itemKey">Danh mục:</span>
+                <span className="itemValue">
+                  {(() => {
+                    switch (supplier?.type) {
+                      case "RESTAURANT":
+                        return "Nhà hàng";
+                      case "GROCERY":
+                        return "Tạp hóa";
+                      case "HOTEL":
+                        return "Khách sạn";
+                      case "REPAIR":
+                        return "Tiệm sửa";
+                      case "VEHICLE_RENTAL":
+                        return "Thuê xe";
+                      case "EMERGENCY":
+                        return "Cứu hộ";
+                      case "FOOD_STALL":
+                        return "Quán ăn";
+                      case "MOTEL":
+                        return "Nhà nghỉ";
+                      case "TAXI":
+                        return "Taxi";
+                      default:
+                        return "Khác";
+                    }
+                  })()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="tableProducts">
+          <div className="bottom">
+            {/* {(supplier?.type == "REPAIR_SHOP" ||
+              supplier?.type == "VEHICLE_RENTAL") && (
+              <Accordion disabled>
+                <AccordionSummary
+                  sx={{
+                    fontSize: 24,
+                    minWidth: 1400,
+                  }}
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel3-content"
+                  id="panel3-header"
+                >
+                  Các dịch vụ hiện có
+                </AccordionSummary>
+              </Accordion>
+            )} */}
+            {supplier?.type !== "REPAIR_SHOP" &&
+              supplier?.type !== "EMERGENCY" &&
+              supplier?.type !== "GROCERY" && (
+                <Accordion>
+                  <AccordionSummary
+                    sx={{
+                      fontSize: 24,
+                    }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    Các dịch vụ hiện có
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{
+                      minWidth: 1400,
+                    }}
+                  >
+                    <div className="header">
+                      <div className="left">
+                        <input
+                          type="text"
+                          className={"form-control"}
+                          id="floatingValue"
+                          name="value"
+                          placeholder="Tìm kiếm ..."
+                        />
+                        <button className="link">
+                          <SearchIcon />
+                        </button>
+                      </div>
+                      <div className="right">
+                        {/* <Link to="/products/new" className="link">
+              <AddIcon />
+              <span>Thêm dịch vụ</span>
+            </Link> */}
+                        <Link
+                          to={`/providers/add-product/${providerId}`}
+                          className="link"
+                        >
+                          <AddCircleIcon />
+                          <span>Thêm dịch vụ</span>
+                        </Link>
+                        <button className="link">
+                          <span>Tải xuống file Excel</span>
+                          <CloudDownloadIcon />
+                        </button>
+                        <button className="link">
+                          <FilterAltIcon />
+                        </button>
+                        <button
+                          className="link"
+                          // onClick={() => {
+                          //   refetch();
+                          // }}
+                        >
+                          <RefreshIcon />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="detail-table">
+                      <ProductTable products={products} />
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+          </div>
+        </div>
+      </div>
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+          Bản đồ
+        </DialogTitle>
+        <DialogContent style={{ width: 1000 }}>
+          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+            Chi tiết địa điểm của {supplier?.name}:
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
+export default ProviderDetailPage;

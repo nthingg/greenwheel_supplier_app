@@ -1,9 +1,10 @@
-.sharedTitle {
+.shared-title {
     width: 100%;
     margin: 0 0 20px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    color: #2c3d50;
 
     .title {
         font-size: 30px;
@@ -50,10 +51,12 @@
             font-size: 18px;
             display: flex;
             text-decoration: none;
-            border: #27ae60 1px solid;
+            border: #2c3d50 1px solid;
             padding: 0 15px 0 15px;
             border-radius: 20px;
             margin-right: 20px;
+            transition: 0.4s;
+            font-weight: 600;
 
             p {
                 margin-left: 10px;
@@ -61,7 +64,9 @@
         }
 
         .navigateButton:hover {
-            background-color: #d7dbdd;
+            background-color: #2c3d50;
+            color: white;
+            font-weight: 600;
         }
     }
 
@@ -72,13 +77,14 @@
     .link {
         text-decoration: none;
         color: white;
-        background-color: #2ecc71;
+        background-color: #2c3d50;
         font-size: 16px;
-        padding: 8px;
+        padding: 4px 8px 4px 8px;
         border-radius: 5px;
         cursor: pointer;
         display: flex;
         justify-content: center;
+        transition: 0.4s;
 
         svg {
             margin-right: 6px;
@@ -90,10 +96,6 @@
     }
 
     .link:hover {
-        background-color: #27ae60;
-
-        p {
-            color: white;
-        }
+        background-color: #1c2833;
     }
 }
