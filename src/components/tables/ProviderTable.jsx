@@ -112,7 +112,7 @@ const ProviderTable = ({ providers }) => {
             fontWeight: "bold",
           },
           "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightWidth: "2px",
+            borderRightStyle: "none",
           },
         }}
       />

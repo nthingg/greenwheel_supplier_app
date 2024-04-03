@@ -48,6 +48,8 @@ export const ordersColumns = [
   {
     field: "name",
     width: 240,
+    align: "center",
+    headerAlign: "center",
     renderCell: (params) => {
       return (
         <div className="cellWithImg">

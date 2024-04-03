@@ -45,9 +45,9 @@ export const LOAD_SUPPLIERS_FILTER = gql`
   }
 `;
 
-export const LOAD_DETAIL_SUPPLIER = gql`
-  query GetSupplierById($id: Int!) {
-    suppliers(where: { id: { eq: $id } }) {
+export const LOAD_DETAIL_PROVIDER = gql`
+  query GetProviderById($id: Int!) {
+    providers(where: { id: { eq: $id } }) {
       nodes {
         id
         name
@@ -70,9 +70,9 @@ export const LOAD_DETAIL_SUPPLIER = gql`
   }
 `;
 
-export const GET_PRODUCT_BY_SUPPLIER = gql`
-  query GetProductBySupplierId($id: Int!) {
-    products(where: { provider: { id: { eq: $id } } }) {
+export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
+  query GetProductByProviderId($id: Int!, $type: [ProductType!]) {
+    products(where: { provider: { id: { eq: $id } }, type: { in: $type } }) {
       nodes {
         id
         name

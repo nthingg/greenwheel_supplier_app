@@ -112,9 +112,9 @@ const ProductTable = ({ products }) => {
             fontWeight: "bold",
           },
           "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightWidth: "2px",
+            borderRightStyle: "none",
           },
-          boxShadow: 2,
+          backgroundColor: "white",
         }}
       />
     </div>

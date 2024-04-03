@@ -117,9 +117,8 @@ const OrderTable = ({ orders }) => {
             fontWeight: "bold",
           },
           "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightWidth: "2px",
+            borderRightStyle: "none",
           },
-          boxShadow: 2,
         }}
       />
     </div>

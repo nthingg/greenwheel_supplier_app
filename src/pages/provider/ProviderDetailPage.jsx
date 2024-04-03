@@ -1,5 +1,7 @@
-import "../../assets/scss/supplierDetail.scss";
+import "../../assets/scss/providers.scss";
 import "../../assets/scss/shared.scss";
+import "../../assets/scss/header.scss";
+import StaticMap from "../../components/map/StaticMap";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -21,8 +23,8 @@ import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import "../../assets/scss/filter.scss";
+import Slider from "react-slick";
 import {
   Accordion,
   AccordionDetails,
@@ -37,39 +39,22 @@ import {
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import {
-  LOAD_DETAIL_SUPPLIER,
-  GET_PRODUCT_BY_SUPPLIER,
+  LOAD_DETAIL_PROVIDER,
+  GET_PRODUCT_BY_PROVIDER_FILTER,
 } from "../../services/graphql/provider";
 
 const ProviderDetailPage = () => {
-  const containerStyle = {
-    width: "950px",
-    height: "400px",
-  };
-  const defaultAddress =
-    "Dinh Độc Lập, 135 Nam Kỳ Khởi Nghĩa, Bến Thành, Quận 1, Thành phố Hồ Chí Minh";
-
   const navigate = useNavigate();
   const { providerId } = useParams();
-  const [supplier, setSupplier] = useState(null);
+  const [provider, setProvider] = useState(null);
   const [products, setProducts] = useState([]);
-  const [selectedDiv, setSelectedDiv] = useState(0);
   const [position, setPosition] = useState(null);
   const [open, setOpen] = useState(false);
-
-  const [address, setAddress] = useState(defaultAddress);
-  const [showMap, setShowMap] = useState(false);
-  const [phone, setPhone] = useState("");
   const [phoneHide, setPhoneHide] = useState("");
-  const [phoneVisibility, setPhoneVisibility] = useState(false);
-
-  const triggerPhone = () => {
-    setPhoneVisibility(!phoneVisibility);
-  };
 
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
-    phoneNumber = phoneNumber.replace(/^\+84/, "0"); // Replace leading "+84" with "0"
+    phoneNumber = phoneNumber.replace(/^\84/, "0"); // Replace leading "+84" with "0"
 
     let formattedParts;
     switch (phoneNumber.length) {
@@ -102,8 +87,39 @@ const ProviderDetailPage = () => {
     return formattedParts.join("");
   }
 
+  const prodType = ["BEVERAGE", "CAMP", "FOOD", "ROOM", "VEHICLE"];
+  const [selectedDiv, setSelectedDiv] = useState(0);
+  const [selectStatus, setSelectedStatus] = useState(prodType);
   const handleClick = (index) => {
     setSelectedDiv(index);
+    switch (index) {
+      case 0:
+        setSelectedStatus(prodType);
+        refetchProducts();
+        break;
+      case 1:
+        setSelectedStatus([prodType[0]]);
+        refetchProducts();
+        break;
+      case 2:
+        setSelectedStatus([prodType[1]]);
+        refetchProducts();
+        break;
+      case 3:
+        setSelectedStatus([prodType[2]]);
+        refetchProducts();
+        break;
+      case 4:
+        setSelectedStatus([prodType[3]]);
+        refetchProducts();
+        break;
+      case 4:
+        setSelectedStatus([prodType[4]]);
+        refetchProducts();
+        break;
+      default:
+        break;
+    }
   };
 
   const handleClickOpen = () => {
@@ -114,8 +130,16 @@ const ProviderDetailPage = () => {
     setOpen(false);
   };
 
+  var settings = {
+    dots: false,
+    infinite: false,
+    slidesToShow: 5,
+    slidesToScroll: 2,
+    centerPadding: "60px",
+  };
+
   //supplier
-  const { error, loading, data } = useQuery(LOAD_DETAIL_SUPPLIER, {
+  const { error, loading, data } = useQuery(LOAD_DETAIL_PROVIDER, {
     variables: {
       id: parseInt(providerId, 10),
     },
@@ -125,17 +149,17 @@ const ProviderDetailPage = () => {
       !loading &&
       !error &&
       data &&
-      data["suppliers"] &&
-      data["suppliers"]["nodes"]
+      data["providers"] &&
+      data["providers"]["nodes"]
     ) {
-      setSupplier(data["suppliers"]["nodes"][0]);
+      setProvider(data["providers"]["nodes"][0]);
       const center = {
-        lat: data["suppliers"]["nodes"][0].coordinate.coordinates[1],
-        lng: data["suppliers"]["nodes"][0].coordinate.coordinates[0],
+        lat: data["providers"]["nodes"][0].coordinate.coordinates[1],
+        lng: data["providers"]["nodes"][0].coordinate.coordinates[0],
       };
       setPosition(center);
       setPhoneHide(
-        formatPhoneNumberCen(data["suppliers"]["nodes"][0]["phone"])
+        formatPhoneNumberCen(data["providers"]["nodes"][0]["phone"])
       );
     }
   }, [data, loading, error]);
@@ -145,9 +169,11 @@ const ProviderDetailPage = () => {
     error: errorProducts,
     loading: loadingProducts,
     data: dataProducts,
-  } = useQuery(GET_PRODUCT_BY_SUPPLIER, {
+    refetch: refetchProducts,
+  } = useQuery(GET_PRODUCT_BY_PROVIDER_FILTER, {
     variables: {
       id: parseInt(providerId, 10),
+      type: selectStatus,
     },
   });
   useEffect(() => {
@@ -167,8 +193,8 @@ const ProviderDetailPage = () => {
   }, [dataProducts, loadingProducts, errorProducts]);
 
   return (
-    <div className="supplierDetailContainer">
-      <div className="sharedTitle">
+    <div className="providerDetailContainer">
+      <div className="shared-title">
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
@@ -189,7 +215,7 @@ const ProviderDetailPage = () => {
             </div>
           </div>
           <div className="right">
-            <Link to="/providers/new-product" className="modify-supplier">
+            <Link to="/providers/new-product" className="link">
               <EditIcon />
               <p>Chỉnh sửa</p>
             </Link>
@@ -198,24 +224,23 @@ const ProviderDetailPage = () => {
       </div>
       <div className="detailContainer">
         <div className="prodTitle">
-          <div className="supplier-header">
-            <p>{supplier?.name}</p>
-            <div className="supplier-name"></div>
-            <div className="supplier-status">
-              {supplier?.isActive === false && (
+          <div className="provider-header">
+            <p>{provider?.name}</p>
+            <div>
+              {provider?.isActive === false && (
                 <p className="status cancelled">Ngưng hoạt động</p>
               )}
-              {supplier?.isActive === true && (
+              {provider?.isActive === true && (
                 <p className="status confirmed">Đang hoạt động</p>
               )}
             </div>
           </div>
         </div>
-        <div className="supplierDetail">
+        <div className="providerDetail">
           <div className="left">
             <div className="image_container">
               <img
-                src={`https://d38ozmgi8b70tu.cloudfront.net${supplier?.imagePath}`}
+                src={`https://d38ozmgi8b70tu.cloudfront.net${provider?.imagePath}`}
                 alt=""
               />
             </div>
@@ -229,19 +254,20 @@ const ProviderDetailPage = () => {
               <div className="detailItem">
                 <span className="itemKey">Địa chỉ:</span>
                 <span className="itemValue">
-                  {supplier?.address}
+                  {provider?.address}
                   <IconButton color="info" onClick={handleClickOpen}>
                     <MapIcon />
                   </IconButton>
                 </span>
               </div>
-              {supplier?.type !== "REPAIR_SHOP" &&
-                supplier?.type !== "EMERGENCY" &&
-                supplier?.type !== "GROCERY" && (
+              {provider?.type !== "REPAIR" &&
+                provider?.type !== "TAXI" &&
+                provider?.type !== "EMERGENCY" &&
+                provider?.type !== "GROCERY" && (
                   <div className="detailItem">
                     <span className="itemKey">Số dư:</span>
                     <span className="itemValue">
-                      {supplier?.balance.toLocaleString("vi-VN") + "đ"}
+                      {provider?.balance.toLocaleString("vi-VN") + "đ"}
                     </span>
                   </div>
                 )}
@@ -249,7 +275,7 @@ const ProviderDetailPage = () => {
                 <span className="itemKey">Danh mục:</span>
                 <span className="itemValue">
                   {(() => {
-                    switch (supplier?.type) {
+                    switch (provider?.type) {
                       case "RESTAURANT":
                         return "Nhà hàng";
                       case "GROCERY":
@@ -295,15 +321,20 @@ const ProviderDetailPage = () => {
                 </AccordionSummary>
               </Accordion>
             )} */}
-            {supplier?.type !== "REPAIR_SHOP" &&
-              supplier?.type !== "EMERGENCY" &&
-              supplier?.type !== "GROCERY" && (
-                <Accordion>
+            {provider?.type !== "REPAIR" &&
+              provider?.type !== "TAXI" &&
+              provider?.type !== "EMERGENCY" &&
+              provider?.type !== "GROCERY" && (
+                <Accordion sx={{ boxShadow: "none", width: 1400 }}>
                   <AccordionSummary
                     sx={{
                       fontSize: 24,
+                      backgroundColor: "#2c3d50",
+                      color: "white",
+                      borderRadius: "10px",
+                      fontWeight: "600",
                     }}
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
                     aria-controls="panel1-content"
                     id="panel1-header"
                   >
@@ -311,10 +342,10 @@ const ProviderDetailPage = () => {
                   </AccordionSummary>
                   <AccordionDetails
                     sx={{
-                      minWidth: 1400,
+                      backgroundColor: "#f8f9f9",
                     }}
                   >
-                    <div className="header">
+                    <div className="header header-prod">
                       <div className="left">
                         <input
                           type="text"
@@ -328,10 +359,6 @@ const ProviderDetailPage = () => {
                         </button>
                       </div>
                       <div className="right">
-                        {/* <Link to="/products/new" className="link">
-              <AddIcon />
-              <span>Thêm dịch vụ</span>
-            </Link> */}
                         <Link
                           to={`/providers/add-product/${providerId}`}
                           className="link"
@@ -340,7 +367,6 @@ const ProviderDetailPage = () => {
                           <span>Thêm dịch vụ</span>
                         </Link>
                         <button className="link">
-                          <span>Tải xuống file Excel</span>
                           <CloudDownloadIcon />
                         </button>
                         <button className="link">
@@ -348,17 +374,64 @@ const ProviderDetailPage = () => {
                         </button>
                         <button
                           className="link"
-                          // onClick={() => {
-                          //   refetch();
-                          // }}
+                          onClick={() => {
+                            refetchProducts();
+                          }}
                         >
                           <RefreshIcon />
                         </button>
                       </div>
                     </div>
-                    <div className="detail-table">
-                      <ProductTable products={products} />
+                    <div className="icon-row">
+                      <Slider {...settings}>
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <div
+                            key={index}
+                            className={`icon-item ${
+                              selectedDiv === index ? "selected" : ""
+                            }`}
+                            onClick={() => {
+                              handleClick(index);
+                            }}
+                          >
+                            {/* Replace with appropriate icons */}
+                            {index === 0 && (
+                              <FormatListBulletedIcon
+                                sx={{ color: "#3498DB" }}
+                              />
+                            )}
+                            {index === 1 && (
+                              <LocalDiningIcon sx={{ color: "#3498DB" }} />
+                            )}
+                            {index === 2 && (
+                              <BedIcon sx={{ color: "#3498DB" }} />
+                            )}
+                            {index === 3 && (
+                              <EmojiFoodBeverageIcon
+                                sx={{ color: "#3498DB" }}
+                              />
+                            )}
+                            {index === 4 && (
+                              <HolidayVillageIcon sx={{ color: "#3498DB" }} />
+                            )}
+                            {index === 5 && (
+                              <DirectionsCarFilledIcon
+                                sx={{ color: "#3498DB" }}
+                              />
+                            )}
+                            <span>
+                              {index === 0 && "Tất cả"}
+                              {index === 1 && "Thức uống"}
+                              {index === 2 && "Lều trại"}
+                              {index === 3 && "Thức ăn"}
+                              {index === 4 && "Phòng nghỉ"}
+                              {index === 5 && "Phương tiện"}
+                            </span>
+                          </div>
+                        ))}
+                      </Slider>
                     </div>
+                    <ProductTable products={products} />
                   </AccordionDetails>
                 </Accordion>
               )}
@@ -372,13 +445,20 @@ const ProviderDetailPage = () => {
         }}
         maxWidth={false}
       >
-        <DialogTitle backgroundColor={"#239b56"} color={"white"}>
+        <DialogTitle
+          backgroundColor={"#2c3d50"}
+          color={"white"}
+          fontWeight={600}
+        >
           Bản đồ
         </DialogTitle>
-        <DialogContent style={{ width: 1000 }}>
+        <DialogContent style={{ width: 1000, height: 600 }}>
           <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Chi tiết địa điểm của {supplier?.name}:
+            Chi tiết địa điểm của {provider?.name}:
           </DialogContentText>
+          {position?.lng && position?.lat && (
+            <StaticMap longitude={position?.lng} latitude={position?.lat} />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Đóng</Button>

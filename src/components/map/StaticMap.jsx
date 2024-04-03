@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import PointerIcon from "../../assets/images/map-marker-512.png";
 import Map, { Marker } from "react-map-gl";
 import { useState, useEffect } from "react";
-import { FeatureCollection } from "geojson";
-import { CircleLayer } from "react-map-gl";
 
 const TOKEN =
   "pk.eyJ1IjoicGhhbmR1eSIsImEiOiJjbGswaDQzNjgwbGJlM2Z0NXd2c2V0eTgxIn0.mu5cOmm7meqqmT7eicLbKA";
