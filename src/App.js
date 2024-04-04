@@ -13,6 +13,7 @@ import ProviderPage from "./pages/provider/ProviderPage";
 import ProviderDetailPage from "./pages/provider/ProviderDetailPage";
 import Test from "./pages/home/TestPage";
 import ProviderAddPage from "./pages/provider/ProviderAddPage";
+import ProductAddPage from "./pages/product/ProductAddPage";
 
 function App() {
   const role = localStorage.getItem("role");
@@ -49,6 +50,9 @@ function App() {
               />
               <Route path=":providerId" element={<ProviderDetailPage />} />
               <Route path="add" element={<ProviderAddPage />} />
+              <Route path="add-product">
+                <Route path=":providerId" element={<ProductAddPage />} />
+              </Route>
             </Route>
             <Route path="orders">
               <Route

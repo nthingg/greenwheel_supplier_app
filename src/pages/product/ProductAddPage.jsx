@@ -1,4 +1,4 @@
-import "../../assets/scss/providers.scss";
+import "../../assets/scss/products.scss";
 import "../../assets/scss/shared.scss";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -12,34 +12,38 @@ import Select from "react-select";
 import { addPosts } from "../../services/apis/imageUploader";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
-import { ADD_PROVIDER } from "../../services/graphql/provider";
+import { ADD_PRODUCT } from "../../services/graphql/product";
 
 const ProductAddPage = () => {
+  const { providerId } = useParams();
   const navigate = useNavigate();
 
   const typeOptions = [
-    { value: "EMERGENCY", label: "Cứu hộ" },
-    { value: "FOOD_STALL", label: "Quán ăn" },
-    { value: "GROCERY", label: "Tạp hóa" },
-    { value: "HOTEL", label: "Khách sạn" },
-    { value: "MOTEL", label: "Nhà nghỉ" },
-    { value: "REPAIR", label: "Tiệm sửa" },
-    { value: "RESTAURANT", label: "Nhà hàng" },
-    { value: "TAXI", label: "Taxi" },
-    { value: "VEHICLE_RENTAL", label: "Thuê xe" },
+    { value: "BEVERAGE", label: "Đồ uống" },
+    { value: "CAMP", label: "Lều trại" },
+    { value: "FOOD", label: "Thức ăn" },
+    { value: "ROOM", label: "Phòng nghỉ" },
+    { value: "VEHICLE", label: "Phương tiện" },
+  ];
+
+  const periodsOptions = [
+    { value: "AFTERNOON", label: "Chiều" },
+    { value: "EVENING", label: "Tối" },
+    { value: "MORNING", label: "Sáng" },
+    { value: "NOON", label: "Trưa" },
   ];
 
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("right");
   const [file, setFile] = useState(null);
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [standard, setStandard] = useState(null);
+  const [party, setParty] = useState(0);
   const [type, setType] = useState("");
-  const [open, setOpen] = useState(false);
+  const [periods, setPeriods] = useState([]);
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
   const [errorMsg, setErrMsg] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [standardVisible, setStandardVisible] = useState(false);
 
   const handleClick = () => {
     setSnackbarOpen(true);
@@ -49,39 +53,34 @@ const ProductAddPage = () => {
     setSnackbarOpen(false);
   };
 
-  const [add, { data: dataAdd, error: errorAdd }] = useMutation(ADD_PROVIDER);
+  const [add, { data: dataAdd, error: errorAdd }] = useMutation(ADD_PRODUCT);
 
   const handleConfirmClick = async () => {
     const imgName = await addPosts(file);
-    // console.log(loc);
-    // console.log(address);
-    // console.log(name);
-    // console.log(acts);
-    // console.log(topo);
-    // console.log(seas);
-    // console.log(description);
-    // console.log(provinceId);
 
-    const loc = JSON.parse(localStorage.getItem("loc"));
-    const address = localStorage.getItem("address");
+    let per = [];
+    for (let index = 0; index < periods.length; index++) {
+      per.push(periods[index].value);
+    }
 
-    const dataProvider = {
-      phone: phone,
-      address: address,
-      coordinate: [loc.lng, loc.lat],
+    const dataProduct = {
+      description: description,
+      partySize: parseInt(party, 10),
+      periods: per,
       imageUrl: imgName,
       name: name,
-      standard: standard,
+      providerId: parseInt(providerId, 10),
       type: type,
+      price: parseInt(price, 10),
     };
 
     try {
       const { data } = await add({
         variables: {
-          dto: dataProvider,
+          dto: dataProduct,
         },
       });
-      navigate("/providers");
+      navigate(`/providers/${providerId}`);
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
@@ -92,29 +91,31 @@ const ProductAddPage = () => {
   };
 
   return (
-    <div className="provider-create">
+    <div className="product-create">
       <div className="shared-title">
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to="/destinations" className="navigateButton">
+              <Link to={`/providers/${providerId}`} className="navigateButton">
                 <ArrowCircleLeftIcon />
                 <p>Trở về</p>
               </Link>
             </div>
             <div className="return-title">
-              <div className="return-header">Thêm thông tin nhà cung cấp</div>
+              <div className="return-header">Thêm thông tin dịch vụ</div>
               <div className="return-body">
                 <p>Danh sách nhà cung cấp</p>
                 <ArrowForwardIosIcon />
-                <p>Thêm nhà cung cấp</p>
+                <p>Chi tiết nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>Thêm dịch vụ</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="provider-add-cont">
-        <div className="provider-create-cont">
+      <div className="product-add-cont">
+        <div className="product-create-cont">
           <div className="left">
             <div className="image_container">
               <img
@@ -157,7 +158,7 @@ const ProductAddPage = () => {
                     className="basic-single"
                     type="text"
                     // defaultValue={200000}
-                    placeholder="Nhập tên nhà cung cấp"
+                    placeholder="Nhập tên dịch vụ"
                     size="small"
                     name="name"
                     sx={{
@@ -186,16 +187,43 @@ const ProductAddPage = () => {
                   />
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Số điện thoại:</span>
+                  <span className="itemKey">Loại:</span>
+                  <Select
+                    placeholder={"Chọn loại dịch vụ"}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    isDisabled={false}
+                    isClearable={true}
+                    name="type"
+                    options={typeOptions}
+                    onChange={(e) => {
+                      setType(e.value);
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#2c3d50",
+                      },
+                    })}
+                  />
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Số người đề xuất:</span>
                   <TextField
                     id="outlined-disabled"
                     // label="Số người"
                     className="basic-single"
                     type="text"
                     // defaultValue={200000}
-                    placeholder="Nhập số điện thoại"
+                    placeholder="Nhập số người đề xuất"
                     size="small"
-                    name="phone"
+                    name="partySize"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="start">người</InputAdornment>
+                      ),
+                    }}
                     sx={{
                       width: "15%",
                       "& label.Mui-focused": {
@@ -217,35 +245,25 @@ const ProductAddPage = () => {
                       },
                     }}
                     onChange={(e) => {
-                      setPhone("84" + e.target.value.slice(1));
+                      setParty(e.target.value);
                     }}
                   />
                 </div>
               </div>
               <div className="right">
                 <div className="detailItem">
-                  <span className="itemKey">Loại hình:</span>
+                  <span className="itemKey">Thời điểm phục vụ:</span>
                   <Select
-                    placeholder={"Chọn loại hình nhà cung cấp"}
+                    placeholder={"Chọn thời điểm phục vụ dịch vụ"}
                     className="basic-single"
                     classNamePrefix="select"
                     isDisabled={false}
                     isClearable={true}
-                    name="type"
-                    options={typeOptions}
+                    name="periods"
+                    isMulti
+                    options={periodsOptions}
                     onChange={(e) => {
-                      if (e === null) {
-                        setType("");
-                        setStandardVisible(false);
-                        return;
-                      }
-                      if (e.value === "HOTEL" || e.value === "RESTAURANT") {
-                        setType(e.value);
-                        setStandardVisible(true);
-                      } else {
-                        setType(e.value);
-                        setStandardVisible(false);
-                      }
+                      setPeriods(e);
                     }}
                     theme={(theme) => ({
                       ...theme,
@@ -256,49 +274,85 @@ const ProductAddPage = () => {
                     })}
                   />
                 </div>
-                {standardVisible && (
-                  <div className="detailItem">
-                    <span className="itemKey">Tiêu chuẩn:</span>
-                    <TextField
-                      id="outlined-disabled"
-                      // label="Số người"
-                      className="basic-single"
-                      type="text"
-                      // defaultValue={200000}
-                      placeholder="Nhập tiêu chuẩn xếp hạng sao"
-                      size="small"
-                      name="standard"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="start">sao</InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        width: "15%",
-                        "& label.Mui-focused": {
-                          color: "black",
+                <div className="detailItem">
+                  <span className="itemKey">Giá:</span>
+                  <TextField
+                    id="outlined-disabled"
+                    // label="Số người"
+                    className="basic-single"
+                    type="text"
+                    // defaultValue={200000}
+                    placeholder="Nhập giá tiền dịch vụ"
+                    size="small"
+                    name="standard"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="start">đ</InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      width: "15%",
+                      "& label.Mui-focused": {
+                        color: "black",
+                      },
+                      "& .MuiInput-underline:after": {
+                        borderBottomColor: "black",
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "gainsboro",
                         },
-                        "& .MuiInput-underline:after": {
-                          borderBottomColor: "black",
+                        "&:hover fieldset": {
+                          borderColor: "black",
                         },
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "gainsboro",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "black",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "black",
-                          },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "black",
                         },
-                      }}
-                      onChange={(e) => {
-                        setStandard(e.target.value);
-                      }}
-                    />
-                  </div>
-                )}
+                      },
+                    }}
+                    onChange={(e) => {
+                      setPrice(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="details">
+              <div className="detailItem description">
+                <span className="itemKey">Mô tả:</span>
+                <TextField
+                  id="outlined-disabled"
+                  className="textarea"
+                  multiline
+                  rows={6}
+                  type="text"
+                  placeholder="Nhập mô tả"
+                  size="small"
+                  name="description"
+                  sx={{
+                    width: "15%",
+                    "& label.Mui-focused": {
+                      color: "black",
+                    },
+                    "& .MuiInput-underline:after": {
+                      borderBottomColor: "black",
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "gainsboro",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "black",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "black",
+                      },
+                    },
+                  }}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                  }}
+                />
               </div>
             </div>
           </div>

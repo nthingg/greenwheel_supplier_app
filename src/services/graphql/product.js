@@ -49,3 +49,11 @@ export const LOAD_DETAIL_PRODUCT = gql`
     }
   }
 `;
+
+export const ADD_PRODUCT = gql`
+  mutation createProduct($dto: ProductCreateInput!) {
+    createProduct(dto: $dto) {
+      id
+    }
+  }
+`;
