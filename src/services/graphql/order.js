@@ -12,6 +12,10 @@ export const LOAD_ORDERS_FILTER = gql`
         total
         currentStatus
         createdAt
+        traces {
+          status
+          modifiedAt
+        }
         provider {
           name
         }
@@ -52,7 +56,7 @@ export const LOAD_DETAIL_ORDER = gql`
         }
         traces {
           description
-          isCustomerModification
+          isClientAction
           modifiedAt
           status
         }
@@ -62,14 +66,14 @@ export const LOAD_DETAIL_ORDER = gql`
         serveDates
         details {
           product {
-            supplier {
+            provider {
               id
               name
               address
             }
             id
             name
-            imageUrl
+            imagePath
             price
           }
           quantity

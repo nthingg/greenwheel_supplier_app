@@ -58,7 +58,7 @@ export const ordersColumns = [
             src={
               params.row.account.avatarPath === null
                 ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                : `https://d38ozmgi8b70tu.cloudfront.net${params.row.avatarPath}`
+                : `https://d38ozmgi8b70tu.cloudfront.net${params.row.account.avatarPath}`
             }
             alt="avatar"
           />

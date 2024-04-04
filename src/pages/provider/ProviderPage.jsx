@@ -39,47 +39,38 @@ const ProviderPage = () => {
     switch (index) {
       case 0:
         setSelectedStatus(suppType);
-        refetch();
         break;
       case 1:
         setSelectedStatus([suppType[0]]);
-        refetch();
         break;
       case 2:
         setSelectedStatus([suppType[1]]);
-        refetch();
         break;
       case 3:
         setSelectedStatus([suppType[2]]);
-        refetch();
         break;
       case 4:
         setSelectedStatus([suppType[3]]);
-        refetch();
         break;
       case 5:
         setSelectedStatus([suppType[4]]);
-        refetch();
         break;
       case 6:
         setSelectedStatus([suppType[5]]);
-        refetch();
         break;
       case 7:
         setSelectedStatus([suppType[6]]);
-        refetch();
         break;
       case 8:
         setSelectedStatus([suppType[7]]);
-        refetch();
         break;
       case 9:
         setSelectedStatus([suppType[8]]);
-        refetch();
         break;
       default:
         break;
     }
+    refetch();
   };
 
   const { error, loading, data, refetch } = useQuery(LOAD_SUPPLIERS_FILTER, {

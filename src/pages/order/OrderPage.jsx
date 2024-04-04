@@ -22,15 +22,16 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import BeenhereIcon from "@mui/icons-material/Beenhere";
 
 const OrderPage = () => {
-  const iconColors = ["success", "error"]; // Define colors based on index
   const orderStatus = [
     "RESERVED",
     "PREPARED",
     "SERVED",
     "CANCELLED",
     "COMPLAINED",
+    "FINISHED",
   ];
   const [selectedDiv, setSelectedDiv] = useState(0);
   const [selectStatus, setSelectedStatus] = useState(orderStatus[0]);
@@ -54,6 +55,9 @@ const OrderPage = () => {
       case 4:
         setSelectedStatus([orderStatus[4]]);
         break;
+      case 5:
+        setSelectedStatus([orderStatus[5]]);
+        break;
       default:
         break;
     }
@@ -66,6 +70,7 @@ const OrderPage = () => {
   const [servedOrders, setServed] = useState(0);
   const [cancelledOrders, setCancelled] = useState(0);
   const [complainOrders, setComplain] = useState(0);
+  const [finishedOrders, setFinishedOrders] = useState(0);
   const {
     error: errorTotal,
     loading: loadingTotal,
@@ -117,11 +122,19 @@ const OrderPage = () => {
         }
       }
 
+      let countFinished = 0;
+      for (const item of dataTotal["orders"]["nodes"]) {
+        if (item["currentStatus"] === "FINISHED") {
+          countFinished++;
+        }
+      }
+
       setReserved(countReserved);
       setPrep(countPrep);
       setServed(countServed);
       setCancelled(countCanceled);
       setComplain(countComplain);
+      setFinishedOrders(countFinished);
     }
   }, [dataTotal, loadingTotal, errorTotal]);
 
@@ -191,7 +204,7 @@ const OrderPage = () => {
       <div className="transactionContainer">
         <div className="icon-row">
           <Slider {...settings}>
-            {[0, 1, 2, 3, 4].map((index) => (
+            {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
                 className={`icon-item ${
@@ -209,12 +222,14 @@ const OrderPage = () => {
                 {index === 2 && <CheckCircleIcon sx={{ color: "#3498DB" }} />}
                 {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
                 {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
+                {index === 5 && <BeenhereIcon sx={{ color: "#3498DB" }} />}
                 <span>
                   {index === 0 && `Đã đặt (${reservedOrders})`}
                   {index === 1 && `Đã chuẩn bị (${prepOrders})`}
                   {index === 2 && `Đã phục vụ (${servedOrders})`}
                   {index === 3 && `Đã hủy (${cancelledOrders})`}
                   {index === 4 && `Bị phản ánh (${complainOrders})`}
+                  {index === 5 && `Hoàn tất (${finishedOrders})`}
                 </span>
               </div>
             ))}

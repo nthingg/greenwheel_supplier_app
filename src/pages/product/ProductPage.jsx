@@ -29,35 +29,29 @@ const ProductPage = () => {
     switch (index) {
       case 0:
         setSelectedType(productType);
-        refetch();
         break;
       case 1:
         setSelectedType(["FOOD"]);
-        refetch();
         break;
       case 2:
         setSelectedType(["BEVERAGE"]);
-        refetch();
         break;
       case 3:
         setSelectedType(["CAMP"]);
-        refetch();
         break;
       case 4:
         setSelectedType(["ROOM"]);
-        refetch();
         break;
       case 5:
         setSelectedType(["VEHICLE"]);
-        refetch();
         break;
       case 6:
         setSelectedType(["OTHER"]);
-        refetch();
         break;
       default:
         break;
     }
+    refetch();
   };
 
   const { error, loading, data, refetch } = useQuery(LOAD_PRODUCTS_FILTER, {

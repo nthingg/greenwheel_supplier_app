@@ -20,7 +20,7 @@ export const detailsColumns = [
   },
   {
     field: "quantity",
-    width: 100,
+    width: 120,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {

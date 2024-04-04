@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 const OrderDetailTable = ({ details }) => {
   const [list, setDetails] = useState([]);
-  const [sum, setSum] = useState(0);
 
   useEffect(() => {
     if (details) {
@@ -15,15 +14,11 @@ const OrderDetailTable = ({ details }) => {
           accumulator + currentValue.product.price * currentValue.quantity,
         0
       );
-      setSum(sum);
     }
   });
 
   return (
     <div className="detailTable">
-      {/* <div className="total">
-        <p>Tổng: {sum.toLocaleString("vi-VN") + "đ"}</p>
-      </div> */}
       <DataGrid
         className="tableDetail"
         rows={list}
@@ -39,9 +34,9 @@ const OrderDetailTable = ({ details }) => {
             fontWeight: "bold",
           },
           "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightWidth: "2px",
+            borderRightStyle: "none",
           },
-          boxShadow: 2,
+          backgroundColor: "white",
         }}
         getRowId={(row) => row.product.id}
       />
