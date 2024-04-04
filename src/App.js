@@ -14,10 +14,31 @@ import ProviderDetailPage from "./pages/provider/ProviderDetailPage";
 import Test from "./pages/home/TestPage";
 import ProviderAddPage from "./pages/provider/ProviderAddPage";
 import ProductAddPage from "./pages/product/ProductAddPage";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
-function App() {
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+} from "@mui/material";
+import { useState } from "react";
+
+const App = () => {
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("staffToken");
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = async () => {
+    setOpen(false);
+  };
 
   return (
     <ApolloProvider client={client}>
@@ -75,9 +96,40 @@ function App() {
             ></Route>
           </Routes>
         </main>
+        <Fab
+          onClick={() => {
+            if (open) {
+              setOpen(false);
+            } else {
+              setOpen(true);
+            }
+          }}
+          sx={{ color: "#2c3d50" }}
+          style={{ right: 10, top: 10, position: "fixed", zIndex: 1600 }}
+        >
+          <NotificationsActiveIcon />
+        </Fab>
+        <Dialog
+          open={open}
+          onClose={() => {
+            setOpen(false);
+          }}
+          PaperProps={{
+            sx: { position: "fixed", top: -20, right: 50, width: 500 },
+          }}
+        >
+          <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>
+            Thông báo đơn hàng
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+              Danh sách thông báo:
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
       </div>
     </ApolloProvider>
   );
-}
+};
 
 export default App;

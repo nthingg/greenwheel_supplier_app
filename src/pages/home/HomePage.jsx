@@ -10,7 +10,7 @@ import { useQuery } from "@apollo/client";
 import {
   LOAD_NUMBERS_CANCELLED,
   LOAD_NUMBERS_RESERVED,
-  LOAD_NUMBERS_TEMPORARY,
+  LOAD_NUMBERS_SERVED,
 } from "../../services/graphql/order";
 import { useEffect, useState } from "react";
 import { LOAD_SUPPLIERS } from "../../services/graphql/provider";
@@ -51,7 +51,7 @@ const HomePage = () => {
     loadingTemp,
     data: dataTemp,
     refetch: refetchTemp,
-  } = useQuery(LOAD_NUMBERS_TEMPORARY);
+  } = useQuery(LOAD_NUMBERS_SERVED);
   const [temp, setTemp] = useState(0);
   useEffect(() => {
     if (!loadingTemp && !errorTemp && dataTemp && dataTemp["orders"]["nodes"]) {
@@ -72,9 +72,9 @@ const HomePage = () => {
       !loadingSupp &&
       !errorSupp &&
       dataSupp &&
-      dataSupp["suppliers"]["nodes"]
+      dataSupp["providers"]["nodes"]
     ) {
-      let res = dataSupp.suppliers.nodes.map(({ __typename, ...rest }) => rest);
+      let res = dataSupp.providers.nodes.map(({ __typename, ...rest }) => rest);
       setSupp(res.length);
     }
   }, [dataTemp, loadingTemp, errorTemp]);
@@ -117,9 +117,24 @@ const HomePage = () => {
           </div>
         </div>
         <div className="item-list">
+          <div className="item-container success">
+            <div className="item-top">
+              <div className="item-title">Số đơn hàng được đặt</div>
+              <div className="item-body">
+                <div className="left">
+                  <p>{reserved}</p>
+                </div>
+                <div className="right">
+                  <div className="btn temp">
+                    <ErrorOutlineOutlinedIcon sx={{ color: "white" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="item-container temp">
             <div className="item-top">
-              <div className="item-title">Số đơn hàng tạm thời</div>
+              <div className="item-title">Số đơn hàng được phục vụ</div>
               <div className="item-body">
                 <div className="left">
                   <p>{temp}</p>
@@ -132,21 +147,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-          <div className="item-container success">
-            <div className="item-top">
-              <div className="item-title">Số đơn hàng đã xác nhận</div>
-              <div className="item-body">
-                <div className="left">
-                  <p>{reserved}</p>
-                </div>
-                <div className="right">
-                  <div className="btn success">
-                    <CheckCircleOutlineOutlinedIcon sx={{ color: "white" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
           <div className="item-container cancel">
             <div className="item-top">
               <div className="item-title">Số đơn hàng đã hủy</div>
@@ -164,7 +165,7 @@ const HomePage = () => {
           </div>
           <div className="item-container info">
             <div className="item-top">
-              <div className="item-title">Số nhà cung cấp trong hệ thống</div>
+              <div className="item-title">Số lượng nhà cung cấp</div>
               <div className="item-body">
                 <div className="left">
                   <p>{supp}</p>

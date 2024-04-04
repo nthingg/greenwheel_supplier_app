@@ -2,13 +2,13 @@ import { gql } from "@apollo/client";
 
 export const LOAD_SUPPLIERS = gql`
   {
-    suppliers(first: 100, order: { id: ASC }) {
+    providers(first: 100, order: { id: ASC }) {
       nodes {
         id
         name
         phone
         address
-        imageUrl
+        imagePath
         balance
         isActive
         account {

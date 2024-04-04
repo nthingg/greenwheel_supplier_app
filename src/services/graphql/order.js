@@ -85,6 +85,34 @@ export const LOAD_DETAIL_ORDER = gql`
   }
 `;
 
+export const LOAD_NUMBERS_COMPLAINED = gql`
+  {
+    orders(first: 100, where: { currentStatus: { eq: COMPLAINED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+export const LOAD_NUMBERS_FINISHED = gql`
+  {
+    orders(first: 100, where: { currentStatus: { eq: FINISHED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+export const LOAD_NUMBERS_PREPARED = gql`
+  {
+    orders(first: 100, where: { currentStatus: { eq: PREPARED } }) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
 export const LOAD_NUMBERS_CANCELLED = gql`
   {
     orders(first: 100, where: { currentStatus: { eq: CANCELLED } }) {
@@ -94,18 +122,18 @@ export const LOAD_NUMBERS_CANCELLED = gql`
     }
   }
 `;
-export const LOAD_NUMBERS_TEMPORARY = gql`
+export const LOAD_NUMBERS_RESERVED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: TEMPORARY } }) {
+    orders(first: 100, where: { currentStatus: { eq: RESERVED } }) {
       nodes {
         id
       }
     }
   }
 `;
-export const LOAD_NUMBERS_RESERVED = gql`
+export const LOAD_NUMBERS_SERVED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: RESERVED } }) {
+    orders(first: 100, where: { currentStatus: { eq: SERVED } }) {
       nodes {
         id
       }
