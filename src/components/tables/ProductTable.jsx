@@ -14,10 +14,6 @@ const ProductTable = ({ products }) => {
   const options = ["Xem", "Chỉnh sửa"];
   const ITEM_HEIGHT = 48;
 
-  const handleDetailClick = () => {
-    navigate(`/products/${anchorId}`);
-  };
-
   const handleEditClick = () => {
     // Logic for "Xác nhận" option
     console.log("Xác nhận clicked");
@@ -38,6 +34,10 @@ const ProductTable = ({ products }) => {
         };
         const handleClose = () => {
           setAnchorId(null);
+        };
+
+        const handleDetailClick = () => {
+          navigate(`/providers/${params.row.provider.id}/product/${anchorId}`);
         };
 
         return (

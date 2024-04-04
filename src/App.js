@@ -49,6 +49,10 @@ function App() {
                 element={token ? <ProviderPage /> : <Navigate to="/login" />}
               />
               <Route path=":providerId" element={<ProviderDetailPage />} />
+              <Route
+                path=":providerId/product/:productId"
+                element={<ProductDetailPage />}
+              />
               <Route path="add" element={<ProviderAddPage />} />
               <Route path="add-product">
                 <Route path=":providerId" element={<ProductAddPage />} />
@@ -58,6 +62,10 @@ function App() {
               <Route
                 index
                 element={token ? <OrderPage /> : <Navigate to="/login" />}
+              />
+              <Route
+                path=":orderId/provider/:providerId"
+                element={<ProviderDetailPage />}
               />
               <Route path=":orderId" element={<OrderDetailPage />} />
             </Route>

@@ -82,6 +82,9 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
         type
         partySize
         periods
+        provider {
+          id
+        }
       }
     }
   }

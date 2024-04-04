@@ -45,7 +45,8 @@ import {
 
 const ProviderDetailPage = () => {
   const navigate = useNavigate();
-  const { providerId } = useParams();
+  const { providerId, orderId } = useParams();
+
   const [provider, setProvider] = useState(null);
   const [products, setProducts] = useState([]);
   const [position, setPosition] = useState(null);
@@ -198,20 +199,39 @@ const ProviderDetailPage = () => {
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to="/providers" className="navigateButton">
-                <ArrowCircleLeftIcon />
-                <p>Trở về</p>
-              </Link>
+              {orderId && (
+                <Link to={`/orders/${orderId}`} className="navigateButton">
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
+              {!orderId && (
+                <Link to={`/providers`} className="navigateButton">
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
             </div>
             <div className="return-title">
               <div className="return-header">
                 Thông tin chi tiết nhà cung cấp
               </div>
-              <div className="return-body">
-                <p>Danh sách nhà cung cấp</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết nhà cung cấp</p>
-              </div>
+              {orderId && (
+                <div className="return-body">
+                  <p>Danh sách đơn hàng</p>
+                  <ArrowForwardIosIcon />
+                  <p>Chi tiết đơn hàng</p>
+                  <ArrowForwardIosIcon />
+                  <p>Chi tiết nhà cung cấp</p>
+                </div>
+              )}
+              {!orderId && (
+                <div className="return-body">
+                  <p>Danh sách nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>Chi tiết nhà cung cấp</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="right">

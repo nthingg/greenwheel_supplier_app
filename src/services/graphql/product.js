@@ -25,8 +25,10 @@ export const LOAD_PRODUCTS_FILTER = gql`
         imageUrl
         price
         type
-        paymentType
         partySize
+        provider {
+          id
+        }
       }
     }
   }
@@ -40,11 +42,11 @@ export const LOAD_DETAIL_PRODUCT = gql`
         name
         isAvailable
         price
-        imageUrl
+        imagePath
         type
         partySize
         periods
-        paymentType
+        description
       }
     }
   }

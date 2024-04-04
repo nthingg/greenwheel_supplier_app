@@ -9,7 +9,7 @@ import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import { LOAD_DETAIL_PRODUCT } from "../../services/graphql/product";
 
 const ProductDetailPage = () => {
-  const { productId } = useParams();
+  const { providerId, productId } = useParams();
   console.log(productId);
   const [product, setProduct] = useState(null);
   const { error, loading, data } = useQuery(LOAD_DETAIL_PRODUCT, {
@@ -31,29 +31,53 @@ const ProductDetailPage = () => {
 
   return (
     <div className="detail">
-      <div className="sharedTitle">
+      <div className="shared-title">
         <div className="navigation">
-          <Link to="/products" className="navigateButton">
-            <ArrowCircleLeftIcon />
-            <p>Trở về</p>
-          </Link>
-          <p>Danh sách dịch vụ</p>
-          <ArrowForwardIosIcon />
-          <p> Thông tin dịch vụ</p>
+          <div className="left">
+            <div className="return-btn">
+              <Link to={`/providers/${providerId}`} className="navigateButton">
+                <ArrowCircleLeftIcon />
+                <p>Trở về</p>
+              </Link>
+            </div>
+            <div className="return-title">
+              <div className="return-header">Thông tin chi tiết dịch vụ</div>
+              <div className="return-body">
+                <p>Danh sách nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết nhà cung cấp</p>
+                <ArrowForwardIosIcon />
+                <p>Chi tiết dịch vụ</p>
+              </div>
+            </div>
+          </div>
+          <div className="right">
+            <Link to="/providers/new-product" className="link">
+              <EditIcon />
+              <p>Chỉnh sửa</p>
+            </Link>
+          </div>
         </div>
       </div>
       <div className="detailContainer">
         <div className="prodTitle">
           <p>{product?.name}</p>
-          <Link to={`/products/edit/${product?.id}`} className="link">
-            <EditIcon />
-            <p>Chỉnh sửa</p>
-          </Link>
+          <div>
+            {product?.isAvailable === false && (
+              <p className="status cancelled">Ngưng phục vụ</p>
+            )}
+            {product?.isAvailable === true && (
+              <p className="status confirmed">Đang phục vụ</p>
+            )}
+          </div>
         </div>
         <div className="productDetail">
           <div className="left">
             <div className="image_container">
-              <img src={product?.imageUrl} alt="" />
+              <img
+                src={`https://d38ozmgi8b70tu.cloudfront.net${product?.imagePath}`}
+                alt=""
+              />
             </div>
           </div>
           <div className="right">
@@ -84,7 +108,9 @@ const ProductDetailPage = () => {
                 <span className="itemValue">
                   {product?.price.toLocaleString("vi-VN") + "đ"} /{" "}
                   <span className="paymentType">
-                    {product?.paymentType === "PER_DAY" ? "ngày" : "sản phẩm"}
+                    {product?.type === "FOOD" || product?.type === "BEVERAGE"
+                      ? "sản phẩm"
+                      : "ngày"}
                   </span>
                 </span>
               </div>

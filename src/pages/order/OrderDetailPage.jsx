@@ -452,7 +452,7 @@ const OrderDetailPage = () => {
                   <span className="itemKey">Nhà cung cấp:</span>
                   <span className="itemValue">
                     <a
-                      href={`/providers/${order?.details[0].product.provider.id}`}
+                      href={`/orders/${order?.id}/provider/${order?.details[0].product.provider.id}`}
                     >
                       {order?.details[0].product.provider.name}
                     </a>
