@@ -14,7 +14,16 @@ import { IconButton } from "@mui/material";
 import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { LOAD_ORDERS, LOAD_ORDERS_FILTER } from "../../services/graphql/order";
+import {
+  LOAD_NUMBERS_CANCELLED,
+  LOAD_NUMBERS_COMPLAINED,
+  LOAD_NUMBERS_FINISHED,
+  LOAD_NUMBERS_PREPARED,
+  LOAD_NUMBERS_RESERVED,
+  LOAD_NUMBERS_SERVED,
+  LOAD_ORDERS,
+  LOAD_ORDERS_FILTER,
+} from "../../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -62,81 +71,106 @@ const OrderPage = () => {
         break;
     }
     refetch();
-    refetchTotal();
+    refetchCancelled();
+    refetchTemp();
+    refetchComplained();
+    refetchPrep();
+    refetchFin();
+    refetchReserve();
   };
 
-  const [reservedOrders, setReserved] = useState(0);
-  const [prepOrders, setPrep] = useState(0);
-  const [servedOrders, setServed] = useState(0);
-  const [cancelledOrders, setCancelled] = useState(0);
-  const [complainOrders, setComplain] = useState(0);
-  const [finishedOrders, setFinishedOrders] = useState(0);
   const {
-    error: errorTotal,
-    loading: loadingTotal,
-    data: dataTotal,
-    refetch: refetchTotal,
-  } = useQuery(LOAD_ORDERS);
-
+    error: errReserve,
+    loading: loadingReserve,
+    data: dataReserve,
+    refetch: refetchReserve,
+  } = useQuery(LOAD_NUMBERS_RESERVED);
+  const [reserved, setReserved] = useState(0);
   useEffect(() => {
     if (
-      !loadingTotal &&
-      !errorTotal &&
-      dataTotal.orders &&
-      dataTotal.orders.nodes
+      !loadingReserve &&
+      !errReserve &&
+      dataReserve &&
+      dataReserve["orders"]
     ) {
-      console.log(dataTotal);
-
-      let countReserved = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "RESERVED") {
-          countReserved++;
-        }
-      }
-
-      let countPrep = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "PREPARED") {
-          countPrep++;
-        }
-      }
-
-      let countServed = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "SERVED") {
-          countServed++;
-        }
-      }
-
-      let countCanceled = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "CANCELLED") {
-          countCanceled++;
-        }
-      }
-
-      let countComplain = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "COMPLAINED") {
-          countComplain++;
-        }
-      }
-
-      let countFinished = 0;
-      for (const item of dataTotal["orders"]["nodes"]) {
-        if (item["currentStatus"] === "FINISHED") {
-          countFinished++;
-        }
-      }
-
-      setReserved(countReserved);
-      setPrep(countPrep);
-      setServed(countServed);
-      setCancelled(countCanceled);
-      setComplain(countComplain);
-      setFinishedOrders(countFinished);
+      setReserved(dataReserve["orders"].totalCount);
     }
-  }, [dataTotal, loadingTotal, errorTotal]);
+  }, [dataReserve, loadingReserve, errReserve]);
+
+  const {
+    error: errorCancelled,
+    loading: loadingCancelled,
+    data: dataCancelled,
+    refetch: refetchCancelled,
+  } = useQuery(LOAD_NUMBERS_CANCELLED);
+  const [cancelled, setCancelled] = useState(0);
+  useEffect(() => {
+    if (
+      !loadingCancelled &&
+      !errorCancelled &&
+      dataCancelled &&
+      dataCancelled["orders"]
+    ) {
+      setCancelled(dataCancelled["orders"].totalCount);
+    }
+  }, [dataCancelled, loadingCancelled, errorCancelled]);
+
+  const {
+    error: errorPrep,
+    loading: loadingPrep,
+    data: dataPrep,
+    refetch: refetchPrep,
+  } = useQuery(LOAD_NUMBERS_PREPARED);
+  const [prep, setPrep] = useState(0);
+  useEffect(() => {
+    if (!loadingPrep && !errorPrep && dataPrep && dataPrep["orders"]) {
+      setCancelled(dataPrep["orders"].totalCount);
+    }
+  }, [dataPrep, loadingPrep, errorPrep]);
+
+  const {
+    error: errorComplained,
+    loading: loadingComplained,
+    data: dataComplained,
+    refetch: refetchComplained,
+  } = useQuery(LOAD_NUMBERS_COMPLAINED);
+  const [complained, setComplained] = useState(0);
+  useEffect(() => {
+    if (
+      !loadingComplained &&
+      !errorComplained &&
+      dataComplained &&
+      dataComplained["orders"]
+    ) {
+      setCancelled(dataComplained["orders"].totalCount);
+    }
+  }, [dataComplained, loadingComplained, errorComplained]);
+
+  const {
+    error: errorFin,
+    loading: loadingFin,
+    data: dataFin,
+    refetch: refetchFin,
+  } = useQuery(LOAD_NUMBERS_FINISHED);
+  const [fin, setFin] = useState(0);
+  useEffect(() => {
+    if (!loadingFin && !errorFin && dataFin && dataFin["orders"]) {
+      setCancelled(dataFin["orders"].totalCount);
+    }
+  }, [dataFin, loadingFin, errorFin]);
+
+  const {
+    error: errorTemp,
+    loading: loadingTemp,
+    data: dataTemp,
+    refetch: refetchTemp,
+  } = useQuery(LOAD_NUMBERS_SERVED);
+  const [temp, setTemp] = useState(0);
+  useEffect(() => {
+    if (!loadingTemp && !errorTemp && dataTemp && dataTemp["orders"]) {
+      setTemp(dataTemp["orders"].totalCount);
+    }
+  }, [dataTemp, loadingTemp, errorTemp]);
 
   const { error, loading, data, refetch } = useQuery(LOAD_ORDERS_FILTER, {
     variables: {
@@ -195,6 +229,12 @@ const OrderPage = () => {
             className="link"
             onClick={() => {
               refetch();
+              refetchCancelled();
+              refetchTemp();
+              refetchComplained();
+              refetchPrep();
+              refetchFin();
+              refetchReserve();
             }}
           >
             <RefreshIcon />
@@ -224,12 +264,12 @@ const OrderPage = () => {
                 {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
                 {index === 5 && <BeenhereIcon sx={{ color: "#3498DB" }} />}
                 <span>
-                  {index === 0 && `Đã đặt (${reservedOrders})`}
-                  {index === 1 && `Đã chuẩn bị (${prepOrders})`}
-                  {index === 2 && `Đã phục vụ (${servedOrders})`}
-                  {index === 3 && `Đã hủy (${cancelledOrders})`}
-                  {index === 4 && `Bị phản ánh (${complainOrders})`}
-                  {index === 5 && `Hoàn tất (${finishedOrders})`}
+                  {index === 0 && `Đã đặt (${reserved})`}
+                  {index === 1 && `Chuẩn bị (${prep})`}
+                  {index === 2 && `Phục vụ (${temp})`}
+                  {index === 3 && `Bị hủy (${cancelled})`}
+                  {index === 4 && `Bị phản ánh (${complained})`}
+                  {index === 5 && `Hoàn tất (${fin})`}
                 </span>
               </div>
             ))}

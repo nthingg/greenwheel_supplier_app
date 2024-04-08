@@ -87,56 +87,110 @@ export const LOAD_DETAIL_ORDER = gql`
 
 export const LOAD_NUMBERS_COMPLAINED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: COMPLAINED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: COMPLAINED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;
 export const LOAD_NUMBERS_FINISHED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: FINISHED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: FINISHED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;
 export const LOAD_NUMBERS_PREPARED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: PREPARED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: PREPARED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;
 
 export const LOAD_NUMBERS_CANCELLED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: CANCELLED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: CANCELLED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;
 export const LOAD_NUMBERS_RESERVED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: RESERVED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: RESERVED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;
 export const LOAD_NUMBERS_SERVED = gql`
   {
-    orders(first: 100, where: { currentStatus: { eq: SERVED } }) {
-      nodes {
-        id
+    orders(where: { currentStatus: { eq: SERVED } }) {
+      edges {
+        node {
+          id
+        }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;

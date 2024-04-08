@@ -1,22 +1,21 @@
 import { gql } from "@apollo/client";
 
 export const LOAD_SUPPLIERS = gql`
-  {
-    providers(first: 100, order: { id: ASC }) {
-      nodes {
-        id
-        name
-        phone
-        address
-        imagePath
-        balance
-        isActive
-        account {
-          isMale
-          isActive
-          createdAt
+  query {
+    providers {
+      edges {
+        node {
+          id
+          name
         }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `;

@@ -9,6 +9,9 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { useQuery } from "@apollo/client";
 import {
   LOAD_NUMBERS_CANCELLED,
+  LOAD_NUMBERS_COMPLAINED,
+  LOAD_NUMBERS_FINISHED,
+  LOAD_NUMBERS_PREPARED,
   LOAD_NUMBERS_RESERVED,
   LOAD_NUMBERS_SERVED,
 } from "../../services/graphql/order";
@@ -19,15 +22,14 @@ const HomePage = () => {
   const { error, loading, data, refetch } = useQuery(LOAD_NUMBERS_RESERVED);
   const [reserved, setReserved] = useState(0);
   useEffect(() => {
-    if (!loading && !error && data && data["orders"]["nodes"]) {
-      let res = data.orders.nodes.map(({ __typename, ...rest }) => rest);
-      setReserved(res.length);
+    if (!loading && !error && data && data["orders"]) {
+      setReserved(data["orders"].totalCount);
     }
   }, [data, loading, error]);
 
   const {
-    errorCancelled,
-    loadingCancelled,
+    error: errorCancelled,
+    loading: loadingCancelled,
     data: dataCancelled,
     refetch: refetchCancelled,
   } = useQuery(LOAD_NUMBERS_CANCELLED);
@@ -37,47 +39,81 @@ const HomePage = () => {
       !loadingCancelled &&
       !errorCancelled &&
       dataCancelled &&
-      dataCancelled["orders"]["nodes"]
+      dataCancelled["orders"]
     ) {
-      let res = dataCancelled.orders.nodes.map(
-        ({ __typename, ...rest }) => rest
-      );
-      setCancelled(res.length);
+      setCancelled(dataCancelled["orders"].totalCount);
     }
   }, [dataCancelled, loadingCancelled, errorCancelled]);
 
   const {
-    errorTemp,
-    loadingTemp,
+    error: errorPrep,
+    loading: loadingPrep,
+    data: dataPrep,
+    refetch: refetchPrep,
+  } = useQuery(LOAD_NUMBERS_PREPARED);
+  const [prep, setPrep] = useState(0);
+  useEffect(() => {
+    if (!loadingPrep && !errorPrep && dataPrep && dataPrep["orders"]) {
+      setCancelled(dataPrep["orders"].totalCount);
+    }
+  }, [dataPrep, loadingPrep, errorPrep]);
+
+  const {
+    error: errorComplained,
+    loading: loadingComplained,
+    data: dataComplained,
+    refetch: refetchComplained,
+  } = useQuery(LOAD_NUMBERS_COMPLAINED);
+  const [complained, setComplained] = useState(0);
+  useEffect(() => {
+    if (
+      !loadingComplained &&
+      !errorComplained &&
+      dataComplained &&
+      dataComplained["orders"]
+    ) {
+      setCancelled(dataComplained["orders"].totalCount);
+    }
+  }, [dataComplained, loadingComplained, errorComplained]);
+
+  const {
+    error: errorFin,
+    loading: loadingFin,
+    data: dataFin,
+    refetch: refetchFin,
+  } = useQuery(LOAD_NUMBERS_FINISHED);
+  const [fin, setFin] = useState(0);
+  useEffect(() => {
+    if (!loadingFin && !errorFin && dataFin && dataFin["orders"]) {
+      setCancelled(dataFin["orders"].totalCount);
+    }
+  }, [dataFin, loadingFin, errorFin]);
+
+  const {
+    error: errorTemp,
+    loading: loadingTemp,
     data: dataTemp,
     refetch: refetchTemp,
   } = useQuery(LOAD_NUMBERS_SERVED);
   const [temp, setTemp] = useState(0);
   useEffect(() => {
-    if (!loadingTemp && !errorTemp && dataTemp && dataTemp["orders"]["nodes"]) {
-      let res = dataTemp.orders.nodes.map(({ __typename, ...rest }) => rest);
-      setTemp(res.length);
+    if (!loadingTemp && !errorTemp && dataTemp && dataTemp["orders"]) {
+      setTemp(dataTemp["orders"].totalCount);
     }
   }, [dataTemp, loadingTemp, errorTemp]);
 
   const {
-    errorSupp,
-    loadingSupp,
+    error: errorSupp,
+    loading: loadingSupp,
     data: dataSupp,
     refetch: refetchSupp,
   } = useQuery(LOAD_SUPPLIERS);
   const [supp, setSupp] = useState(0);
   useEffect(() => {
-    if (
-      !loadingSupp &&
-      !errorSupp &&
-      dataSupp &&
-      dataSupp["providers"]["nodes"]
-    ) {
-      let res = dataSupp.providers.nodes.map(({ __typename, ...rest }) => rest);
-      setSupp(res.length);
+    if (!loadingSupp && !errorSupp && dataSupp && dataSupp["providers"]) {
+      setSupp(dataSupp["providers"].totalCount);
     }
-  }, [dataTemp, loadingTemp, errorTemp]);
+  }, [dataSupp, loadingSupp, errorSupp]);
 
   const [date, setDate] = useState(new Date());
 
@@ -110,6 +146,9 @@ const HomePage = () => {
                 refetchCancelled();
                 refetchSupp();
                 refetchTemp();
+                refetchComplained();
+                refetchPrep();
+                refetchFin();
               }}
             >
               <RefreshIcon />
@@ -117,7 +156,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="item-list">
-          <div className="item-container success">
+          <div className="item-container info">
             <div className="item-top">
               <div className="item-title">Số đơn hàng được đặt</div>
               <div className="item-body">
@@ -125,8 +164,8 @@ const HomePage = () => {
                   <p>{reserved}</p>
                 </div>
                 <div className="right">
-                  <div className="btn temp">
-                    <ErrorOutlineOutlinedIcon sx={{ color: "white" }} />
+                  <div className="btn info">
+                    <InfoIcon sx={{ color: "white" }} />
                   </div>
                 </div>
               </div>
@@ -134,10 +173,10 @@ const HomePage = () => {
           </div>
           <div className="item-container temp">
             <div className="item-top">
-              <div className="item-title">Số đơn hàng được phục vụ</div>
+              <div className="item-title">Số đơn hàng chuẩn bị</div>
               <div className="item-body">
                 <div className="left">
-                  <p>{temp}</p>
+                  <p>{prep}</p>
                 </div>
                 <div className="right">
                   <div className="btn temp">
@@ -147,10 +186,24 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-
+          <div className="item-container success">
+            <div className="item-top">
+              <div className="item-title">Số đơn hàng phục vụ</div>
+              <div className="item-body">
+                <div className="left">
+                  <p>{temp}</p>
+                </div>
+                <div className="right">
+                  <div className="btn success">
+                    <CheckCircleOutlineOutlinedIcon sx={{ color: "white" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="item-container cancel">
             <div className="item-top">
-              <div className="item-title">Số đơn hàng đã hủy</div>
+              <div className="item-title">Số đơn hàng bị hủy</div>
               <div className="item-body">
                 <div className="left">
                   <p>{cancelled}</p>
@@ -158,6 +211,36 @@ const HomePage = () => {
                 <div className="right">
                   <div className="btn cancel">
                     <CancelOutlinedIcon sx={{ color: "white" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="item-container info">
+            <div className="item-top">
+              <div className="item-title">Số đơn hàng bị phản ánh</div>
+              <div className="item-body">
+                <div className="left">
+                  <p>{complained}</p>
+                </div>
+                <div className="right">
+                  <div className="btn info">
+                    <InfoIcon sx={{ color: "white" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="item-container success">
+            <div className="item-top">
+              <div className="item-title">Số đơn hàng hoàn tất</div>
+              <div className="item-body">
+                <div className="left">
+                  <p>{fin}</p>
+                </div>
+                <div className="right">
+                  <div className="btn success">
+                    <CheckCircleOutlineOutlinedIcon sx={{ color: "white" }} />
                   </div>
                 </div>
               </div>
@@ -178,6 +261,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+          <div className="item-container info" style={{ border: "none" }}></div>
         </div>
       </div>
     </div>
