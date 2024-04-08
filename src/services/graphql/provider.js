@@ -25,7 +25,7 @@ export const LOAD_SUPPLIERS_FILTER = gql`
   query LoadProviders($status: [ProviderType!]) {
     providers(
       first: 100
-      order: { id: ASC }
+      order: { id: DESC }
       where: { type: { in: $status } }
     ) {
       nodes {

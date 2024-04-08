@@ -30,6 +30,8 @@ import { addPosts } from "../../services/apis/imageUploader";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { ADD_PROVIDER } from "../../services/graphql/provider";
+import * as turf from "@turf/turf";
+import { regionData } from "../../services/location/region";
 
 const ProviderAddPage = () => {
   const navigate = useNavigate();
@@ -46,6 +48,14 @@ const ProviderAddPage = () => {
     { value: "VEHICLE_RENTAL", label: "Thuê xe" },
   ];
 
+  const standardOptions = [
+    { value: 1, label: "Một sao" },
+    { value: 2, label: "Hai sao" },
+    { value: 3, label: "Ba sao" },
+    { value: 4, label: "Bốn sao" },
+    { value: 5, label: "Năm sao" },
+  ];
+
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("right");
   const [file, setFile] = useState(null);
@@ -57,6 +67,19 @@ const ProviderAddPage = () => {
   const [errorMsg, setErrMsg] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [standardVisible, setStandardVisible] = useState(false);
+  const [addressDetail, setAddressDetail] = useState("");
+  //error
+  const [nameError, setNameError] = useState(false);
+  const [nameHelperText, setNameHelperText] = useState("");
+  const [addressError, setAddressError] = useState(false);
+  const [addressHelperText, setAddressHelperText] = useState("");
+  const [phoneError, setPhoneError] = useState(false);
+  const [phoneHelperText, setPhoneHelperText] = useState("");
+  const [nameFinErr, setNameFinErr] = useState(true);
+  const [addressFinErr, setAddressFinErr] = useState(true);
+  const [phoneFinErr, setPhoneFinErr] = useState(true);
+  const [standardFinErr, setStandardFinErr] = useState(false);
+  const [typeFinErr, setTypeFinErr] = useState(false);
 
   const handleClick = () => {
     setSnackbarOpen(true);
@@ -78,14 +101,6 @@ const ProviderAddPage = () => {
 
   const handleConfirmClick = async () => {
     const imgName = await addPosts(file);
-    // console.log(loc);
-    // console.log(address);
-    // console.log(name);
-    // console.log(acts);
-    // console.log(topo);
-    // console.log(seas);
-    // console.log(description);
-    // console.log(provinceId);
 
     const loc = JSON.parse(localStorage.getItem("loc"));
     const address = localStorage.getItem("address");
@@ -137,6 +152,80 @@ const ProviderAddPage = () => {
 
   const updateCoordinates = (latitude, longitude) => {
     setAddress({ ...address, latitude, longitude });
+  };
+
+  const [suggestions, setSuggestions] = useState([]);
+
+  const handleChange = (event) => {
+    handleInputChange(event.target.value);
+  };
+
+  const handleInputChange = async (query) => {
+    const suggestions = await getLocations(query, TOKEN);
+
+    let res = [];
+
+    for (let index = 0; index < suggestions.length; index++) {
+      let points = turf.points([
+        [suggestions[index].center[0], suggestions[index].center[1]],
+      ]);
+
+      let searchWithin = turf.polygon(
+        regionData.features[0].geometry.coordinates[0]
+      );
+
+      var ptsWithin = turf.pointsWithinPolygon(points, searchWithin);
+
+      if (ptsWithin.features.length > 0) {
+        res.push(suggestions[index]);
+      }
+    }
+
+    setSuggestions(res);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    // const streetAndNumber = suggestion.place_name.split(",")[0];
+
+    if (suggestion.place_name.length < 20) {
+      setAddressError(true);
+      setAddressHelperText("Vị trí địa điểm gồm ít nhất 20 kí tự");
+    } else if (suggestion.place_name.length > 100) {
+      setAddressError(true);
+      setAddressHelperText("Vị trí địa điểm gồm nhiều nhất 100 kí tự");
+    } else {
+      setAddressError(false);
+      setAddressHelperText("");
+    }
+
+    const streetAndNumber = suggestion.place_name;
+    const latitude = suggestion.center[1];
+    const longitude = suggestion.center[0];
+
+    const address = {
+      streetAndNumber,
+      latitude,
+      longitude,
+    };
+
+    suggestion.context.forEach((element) => {
+      const identifier = element.id.split(".")[0];
+
+      address[identifier] = element.text;
+    });
+
+    const loc = {
+      lng: address.longitude,
+      lat: address.latitude,
+    };
+    localStorage.setItem("loc", JSON.stringify(loc));
+
+    console.log(address);
+    console.log(loc);
+
+    setAddress(address);
+    setAddressDetail(address.streetAndNumber);
+    setSuggestions([]);
   };
 
   return (
