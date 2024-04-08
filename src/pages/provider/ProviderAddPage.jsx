@@ -114,11 +114,10 @@ const ProviderAddPage = () => {
     const imgName = await addPosts(file);
 
     const loc = JSON.parse(localStorage.getItem("loc"));
-    const address = localStorage.getItem("address");
 
     const dataProvider = {
       phone: phone,
-      address: address,
+      address: addressDetail,
       coordinate: [loc.lng, loc.lat],
       imageUrl: imgName,
       name: name,
@@ -490,6 +489,7 @@ const ProviderAddPage = () => {
                         setStandardFinErr(false);
                       }
                       setType(e.value);
+                      setStandard(null);
                       setTypeFinErr(false);
                     }}
                     theme={(theme) => ({

@@ -13,6 +13,9 @@ export const providersColumns = [
     headerAlign: "center",
     // renderCell: (params) => params.rowIndex + 1,
     renderHeader: () => <span>#</span>,
+    renderCell: (params) => {
+      return <div>{params.row.index}</div>;
+    },
   },
   {
     field: "name",

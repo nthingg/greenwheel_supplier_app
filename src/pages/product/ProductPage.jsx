@@ -68,7 +68,6 @@ const ProductPage = () => {
         return { ...rest, index: index + 1 }; // Add the index to the object
       });
       setProducts(res);
-      console.log(res);
     }
   }, [data, loading, error]);
 

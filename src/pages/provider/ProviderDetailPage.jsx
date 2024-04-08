@@ -1,11 +1,13 @@
 import "../../assets/scss/providers.scss";
 import "../../assets/scss/shared.scss";
 import "../../assets/scss/header.scss";
+import "../../assets/scss/loading.scss";
 import StaticMap from "../../components/map/StaticMap";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditIcon from "@mui/icons-material/Edit";
@@ -194,138 +196,150 @@ const ProviderDetailPage = () => {
   }, [dataProducts, loadingProducts, errorProducts]);
 
   return (
-    <div className="providerDetailContainer">
-      <div className="shared-title">
-        <div className="navigation">
-          <div className="left">
-            <div className="return-btn">
-              {orderId && (
-                <Link to={`/orders/${orderId}`} className="navigateButton">
-                  <ArrowCircleLeftIcon />
-                  <p>Trở về</p>
-                </Link>
-              )}
-              {!orderId && (
-                <Link to={`/providers`} className="navigateButton">
-                  <ArrowCircleLeftIcon />
-                  <p>Trở về</p>
-                </Link>
-              )}
-            </div>
-            <div className="return-title">
-              <div className="return-header">
-                Thông tin chi tiết nhà cung cấp
-              </div>
-              {orderId && (
-                <div className="return-body">
-                  <p>Danh sách đơn hàng</p>
-                  <ArrowForwardIosIcon />
-                  <p>Chi tiết đơn hàng</p>
-                  <ArrowForwardIosIcon />
-                  <p>Chi tiết nhà cung cấp</p>
-                </div>
-              )}
-              {!orderId && (
-                <div className="return-body">
-                  <p>Danh sách nhà cung cấp</p>
-                  <ArrowForwardIosIcon />
-                  <p>Chi tiết nhà cung cấp</p>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="right">
-            <Link to="/providers/new-product" className="link">
-              <EditIcon />
-              <p>Chỉnh sửa</p>
-            </Link>
-          </div>
+    <div>
+      {provider === null && (
+        <div className="loading">
+          <RestartAltIcon
+            sx={{
+              fontSize: 80,
+              color: "#2c3d50",
+            }}
+          />
         </div>
-      </div>
-      <div className="detailContainer">
-        <div className="prodTitle">
-          <div className="provider-header">
-            <p>{provider?.name}</p>
-            <div>
-              {provider?.isActive === false && (
-                <p className="status cancelled">Ngưng hoạt động</p>
-              )}
-              {provider?.isActive === true && (
-                <p className="status confirmed">Đang hoạt động</p>
-              )}
+      )}
+      {provider !== null && (
+        <div className="providerDetailContainer">
+          <div className="shared-title">
+            <div className="navigation">
+              <div className="left">
+                <div className="return-btn">
+                  {orderId && (
+                    <Link to={`/orders/${orderId}`} className="navigateButton">
+                      <ArrowCircleLeftIcon />
+                      <p>Trở về</p>
+                    </Link>
+                  )}
+                  {!orderId && (
+                    <Link to={`/providers`} className="navigateButton">
+                      <ArrowCircleLeftIcon />
+                      <p>Trở về</p>
+                    </Link>
+                  )}
+                </div>
+                <div className="return-title">
+                  <div className="return-header">
+                    Thông tin chi tiết nhà cung cấp
+                  </div>
+                  {orderId && (
+                    <div className="return-body">
+                      <p>Danh sách đơn hàng</p>
+                      <ArrowForwardIosIcon />
+                      <p>Chi tiết đơn hàng</p>
+                      <ArrowForwardIosIcon />
+                      <p>Chi tiết nhà cung cấp</p>
+                    </div>
+                  )}
+                  {!orderId && (
+                    <div className="return-body">
+                      <p>Danh sách nhà cung cấp</p>
+                      <ArrowForwardIosIcon />
+                      <p>Chi tiết nhà cung cấp</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="right">
+                <Link to={`/providers/update/${provider?.id}`} className="link">
+                  <EditIcon />
+                  <p>Chỉnh sửa</p>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="providerDetail">
-          <div className="left">
-            <div className="image_container">
-              <img
-                src={`https://d38ozmgi8b70tu.cloudfront.net${provider?.imagePath}`}
-                alt=""
-              />
+          <div className="detailContainer">
+            <div className="prodTitle">
+              <div className="provider-header">
+                <p>{provider?.name}</p>
+                <div>
+                  {provider?.isActive === false && (
+                    <p className="status cancelled">Ngưng hoạt động</p>
+                  )}
+                  {provider?.isActive === true && (
+                    <p className="status confirmed">Đang hoạt động</p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="right">
-            <div className="details">
-              <div className="detailItem">
-                <span className="itemKey">Số điện thoại:</span>
-                <span className="itemValue">{phoneHide}</span>
+            <div className="providerDetail">
+              <div className="left">
+                <div className="image_container">
+                  <img
+                    src={`https://d38ozmgi8b70tu.cloudfront.net${provider?.imagePath}`}
+                    alt=""
+                  />
+                </div>
               </div>
-              <div className="detailItem">
-                <span className="itemKey">Địa chỉ:</span>
-                <span className="itemValue">
-                  {provider?.address}
-                  <IconButton color="info" onClick={handleClickOpen}>
-                    <MapIcon />
-                  </IconButton>
-                </span>
-              </div>
-              {provider?.type !== "REPAIR" &&
-                provider?.type !== "TAXI" &&
-                provider?.type !== "EMERGENCY" &&
-                provider?.type !== "GROCERY" && (
+              <div className="right">
+                <div className="details">
                   <div className="detailItem">
-                    <span className="itemKey">Số dư:</span>
+                    <span className="itemKey">Số điện thoại:</span>
+                    <span className="itemValue">{phoneHide}</span>
+                  </div>
+                  <div className="detailItem">
+                    <span className="itemKey">Địa chỉ:</span>
                     <span className="itemValue">
-                      {provider?.balance.toLocaleString("vi-VN") + "đ"}
+                      {provider?.address}
+                      <IconButton color="info" onClick={handleClickOpen}>
+                        <MapIcon />
+                      </IconButton>
                     </span>
                   </div>
-                )}
-              <div className="detailItem">
-                <span className="itemKey">Danh mục:</span>
-                <span className="itemValue">
-                  {(() => {
-                    switch (provider?.type) {
-                      case "RESTAURANT":
-                        return "Nhà hàng";
-                      case "GROCERY":
-                        return "Tạp hóa";
-                      case "HOTEL":
-                        return "Khách sạn";
-                      case "REPAIR":
-                        return "Tiệm sửa";
-                      case "VEHICLE_RENTAL":
-                        return "Thuê xe";
-                      case "EMERGENCY":
-                        return "Cứu hộ";
-                      case "FOOD_STALL":
-                        return "Quán ăn";
-                      case "MOTEL":
-                        return "Nhà nghỉ";
-                      case "TAXI":
-                        return "Taxi";
-                      default:
-                        return "Khác";
-                    }
-                  })()}
-                </span>
+                  {provider?.type !== "REPAIR" &&
+                    provider?.type !== "TAXI" &&
+                    provider?.type !== "EMERGENCY" &&
+                    provider?.type !== "GROCERY" && (
+                      <div className="detailItem">
+                        <span className="itemKey">Số dư:</span>
+                        <span className="itemValue">
+                          {provider?.balance.toLocaleString("vi-VN") + "đ"}
+                        </span>
+                      </div>
+                    )}
+                  <div className="detailItem">
+                    <span className="itemKey">Danh mục:</span>
+                    <span className="itemValue">
+                      {(() => {
+                        switch (provider?.type) {
+                          case "RESTAURANT":
+                            return "Nhà hàng";
+                          case "GROCERY":
+                            return "Tạp hóa";
+                          case "HOTEL":
+                            return "Khách sạn";
+                          case "REPAIR":
+                            return "Tiệm sửa";
+                          case "VEHICLE_RENTAL":
+                            return "Thuê xe";
+                          case "EMERGENCY":
+                            return "Cứu hộ";
+                          case "FOOD_STALL":
+                            return "Quán ăn";
+                          case "MOTEL":
+                            return "Nhà nghỉ";
+                          case "TAXI":
+                            return "Taxi";
+                          default:
+                            return "Khác";
+                        }
+                      })()}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="tableProducts">
-          <div className="bottom">
-            {/* {(supplier?.type == "REPAIR_SHOP" ||
+            <div className="tableProducts">
+              <div className="bottom">
+                {/* {(supplier?.type == "REPAIR_SHOP" ||
               supplier?.type == "VEHICLE_RENTAL") && (
               <Accordion disabled>
                 <AccordionSummary
@@ -341,149 +355,153 @@ const ProviderDetailPage = () => {
                 </AccordionSummary>
               </Accordion>
             )} */}
-            {provider?.type !== "REPAIR" &&
-              provider?.type !== "TAXI" &&
-              provider?.type !== "EMERGENCY" &&
-              provider?.type !== "GROCERY" && (
-                <Accordion sx={{ boxShadow: "none", width: 1400 }}>
-                  <AccordionSummary
-                    sx={{
-                      fontSize: 24,
-                      backgroundColor: "#2c3d50",
-                      color: "white",
-                      borderRadius: "10px",
-                      fontWeight: "600",
-                    }}
-                    expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
-                    aria-controls="panel1-content"
-                    id="panel1-header"
-                  >
-                    Các dịch vụ hiện có
-                  </AccordionSummary>
-                  <AccordionDetails
-                    sx={{
-                      backgroundColor: "#f8f9f9",
-                    }}
-                  >
-                    <div className="header header-prod">
-                      <div className="left">
-                        <input
-                          type="text"
-                          className={"form-control"}
-                          id="floatingValue"
-                          name="value"
-                          placeholder="Tìm kiếm ..."
-                        />
-                        <button className="link">
-                          <SearchIcon />
-                        </button>
-                      </div>
-                      <div className="right">
-                        <Link
-                          to={`/providers/add-product/${providerId}`}
-                          className="link"
-                        >
-                          <AddCircleIcon />
-                          <span>Thêm dịch vụ</span>
-                        </Link>
-                        <button className="link">
-                          <CloudDownloadIcon />
-                        </button>
-                        <button className="link">
-                          <FilterAltIcon />
-                        </button>
-                        <button
-                          className="link"
-                          onClick={() => {
-                            refetchProducts();
-                          }}
-                        >
-                          <RefreshIcon />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="icon-row">
-                      <Slider {...settings}>
-                        {[0, 1, 2, 3, 4, 5].map((index) => (
-                          <div
-                            key={index}
-                            className={`icon-item ${
-                              selectedDiv === index ? "selected" : ""
-                            }`}
-                            onClick={() => {
-                              handleClick(index);
-                            }}
-                          >
-                            {/* Replace with appropriate icons */}
-                            {index === 0 && (
-                              <FormatListBulletedIcon
-                                sx={{ color: "#3498DB" }}
-                              />
-                            )}
-                            {index === 1 && (
-                              <LocalDiningIcon sx={{ color: "#3498DB" }} />
-                            )}
-                            {index === 2 && (
-                              <BedIcon sx={{ color: "#3498DB" }} />
-                            )}
-                            {index === 3 && (
-                              <EmojiFoodBeverageIcon
-                                sx={{ color: "#3498DB" }}
-                              />
-                            )}
-                            {index === 4 && (
-                              <HolidayVillageIcon sx={{ color: "#3498DB" }} />
-                            )}
-                            {index === 5 && (
-                              <DirectionsCarFilledIcon
-                                sx={{ color: "#3498DB" }}
-                              />
-                            )}
-                            <span>
-                              {index === 0 && "Tất cả"}
-                              {index === 1 && "Thức uống"}
-                              {index === 2 && "Lều trại"}
-                              {index === 3 && "Thức ăn"}
-                              {index === 4 && "Phòng nghỉ"}
-                              {index === 5 && "Phương tiện"}
-                            </span>
+                {provider?.type !== "REPAIR" &&
+                  provider?.type !== "TAXI" &&
+                  provider?.type !== "EMERGENCY" &&
+                  provider?.type !== "GROCERY" && (
+                    <Accordion sx={{ boxShadow: "none", width: 1400 }}>
+                      <AccordionSummary
+                        sx={{
+                          fontSize: 24,
+                          backgroundColor: "#2c3d50",
+                          color: "white",
+                          borderRadius: "10px",
+                          fontWeight: "600",
+                        }}
+                        expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                      >
+                        Các dịch vụ hiện có
+                      </AccordionSummary>
+                      <AccordionDetails
+                        sx={{
+                          backgroundColor: "#f8f9f9",
+                        }}
+                      >
+                        <div className="header header-prod">
+                          <div className="left">
+                            <input
+                              type="text"
+                              className={"form-control"}
+                              id="floatingValue"
+                              name="value"
+                              placeholder="Tìm kiếm ..."
+                            />
+                            <button className="link">
+                              <SearchIcon />
+                            </button>
                           </div>
-                        ))}
-                      </Slider>
-                    </div>
-                    <ProductTable products={products} />
-                  </AccordionDetails>
-                </Accordion>
-              )}
+                          <div className="right">
+                            <Link
+                              to={`/providers/add-product/${providerId}`}
+                              className="link"
+                            >
+                              <AddCircleIcon />
+                              <span>Thêm dịch vụ</span>
+                            </Link>
+                            <button className="link">
+                              <CloudDownloadIcon />
+                            </button>
+                            <button className="link">
+                              <FilterAltIcon />
+                            </button>
+                            <button
+                              className="link"
+                              onClick={() => {
+                                refetchProducts();
+                              }}
+                            >
+                              <RefreshIcon />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="icon-row">
+                          <Slider {...settings}>
+                            {[0, 1, 2, 3, 4, 5].map((index) => (
+                              <div
+                                key={index}
+                                className={`icon-item ${
+                                  selectedDiv === index ? "selected" : ""
+                                }`}
+                                onClick={() => {
+                                  handleClick(index);
+                                }}
+                              >
+                                {/* Replace with appropriate icons */}
+                                {index === 0 && (
+                                  <FormatListBulletedIcon
+                                    sx={{ color: "#3498DB" }}
+                                  />
+                                )}
+                                {index === 1 && (
+                                  <LocalDiningIcon sx={{ color: "#3498DB" }} />
+                                )}
+                                {index === 2 && (
+                                  <BedIcon sx={{ color: "#3498DB" }} />
+                                )}
+                                {index === 3 && (
+                                  <EmojiFoodBeverageIcon
+                                    sx={{ color: "#3498DB" }}
+                                  />
+                                )}
+                                {index === 4 && (
+                                  <HolidayVillageIcon
+                                    sx={{ color: "#3498DB" }}
+                                  />
+                                )}
+                                {index === 5 && (
+                                  <DirectionsCarFilledIcon
+                                    sx={{ color: "#3498DB" }}
+                                  />
+                                )}
+                                <span>
+                                  {index === 0 && "Tất cả"}
+                                  {index === 1 && "Thức uống"}
+                                  {index === 2 && "Lều trại"}
+                                  {index === 3 && "Thức ăn"}
+                                  {index === 4 && "Phòng nghỉ"}
+                                  {index === 5 && "Phương tiện"}
+                                </span>
+                              </div>
+                            ))}
+                          </Slider>
+                        </div>
+                        <ProductTable products={products} />
+                      </AccordionDetails>
+                    </Accordion>
+                  )}
+              </div>
+            </div>
           </div>
+          <Dialog
+            open={open}
+            onClose={() => {
+              setOpen(false);
+            }}
+            maxWidth={false}
+          >
+            <DialogTitle
+              backgroundColor={"#2c3d50"}
+              color={"white"}
+              fontWeight={600}
+            >
+              Bản đồ
+            </DialogTitle>
+            <DialogContent style={{ width: 1000, height: 600 }}>
+              <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+                Chi tiết địa điểm của {provider?.name}:
+              </DialogContentText>
+              {position?.lng && position?.lat && (
+                <StaticMap longitude={position?.lng} latitude={position?.lat} />
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Đóng</Button>
+            </DialogActions>
+          </Dialog>
         </div>
-      </div>
-      <Dialog
-        open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-        maxWidth={false}
-      >
-        <DialogTitle
-          backgroundColor={"#2c3d50"}
-          color={"white"}
-          fontWeight={600}
-        >
-          Bản đồ
-        </DialogTitle>
-        <DialogContent style={{ width: 1000, height: 600 }}>
-          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Chi tiết địa điểm của {provider?.name}:
-          </DialogContentText>
-          {position?.lng && position?.lat && (
-            <StaticMap longitude={position?.lng} latitude={position?.lat} />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Đóng</Button>
-        </DialogActions>
-      </Dialog>
+      )}
     </div>
   );
 };

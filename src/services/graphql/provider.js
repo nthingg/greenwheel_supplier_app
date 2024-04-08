@@ -56,6 +56,7 @@ export const LOAD_DETAIL_PROVIDER = gql`
         isActive
         imagePath
         type
+        standard
         account {
           isMale
           isActive
@@ -92,6 +93,14 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
 export const ADD_PROVIDER = gql`
   mutation createProvider($dto: ProviderCreateInput!) {
     createProvider(dto: $dto) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_PROVIDER = gql`
+  mutation updateProvider($dto: ProviderUpdateInput!) {
+    updateProvider(dto: $dto) {
       id
     }
   }

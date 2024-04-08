@@ -81,7 +81,10 @@ const ProviderPage = () => {
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
     if (!loading && !error && data && data["providers"]["nodes"]) {
-      let res = data.providers.nodes.map(({ __typename, ...rest }) => rest);
+      let res = data.providers.nodes.map((node, index) => {
+        const { __typename, ...rest } = node;
+        return { ...rest, index: index + 1 }; // Add the index to the object
+      });
       setSuppliers(res);
     }
   }, [data, loading, error]);

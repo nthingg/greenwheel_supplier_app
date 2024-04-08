@@ -26,6 +26,7 @@ import {
   Fab,
 } from "@mui/material";
 import { useState } from "react";
+import ProviderUpdatePage from "./pages/provider/ProviderUpdatePage";
 
 const App = () => {
   const role = localStorage.getItem("role");
@@ -75,6 +76,10 @@ const App = () => {
                 element={<ProductDetailPage />}
               />
               <Route path="add" element={<ProviderAddPage />} />
+              <Route
+                path="update/:providerId"
+                element={<ProviderUpdatePage />}
+              />
               <Route path="add-product">
                 <Route path=":providerId" element={<ProductAddPage />} />
               </Route>
