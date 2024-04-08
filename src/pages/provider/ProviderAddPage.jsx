@@ -555,7 +555,7 @@ const ProviderAddPage = () => {
           </DialogTitle>
           <DialogContent style={{ width: 400, height: 180 }}>
             <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-              Bạn có muốn tiếp tục thêm địa điểm?
+              Bạn có muốn tiếp tục thêm nhà cung cấp?
             </DialogContentText>
             <div className="btns-group-dialog">
               <button
