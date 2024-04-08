@@ -1,6 +1,6 @@
 import "../../assets/scss/providers.scss";
 import "../../assets/scss/shared.scss";
-import AddressForm from "../../components/map/AddressForm";
+import "../../assets/scss/dialog.scss";
 import CustomMap from "../../components/map/Map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import getLocations from "../../services/apis/getLocations";
@@ -49,7 +49,6 @@ const ProviderAddPage = () => {
   ];
 
   const standardOptions = [
-    { value: 1, label: "Một sao" },
     { value: 2, label: "Hai sao" },
     { value: 3, label: "Ba sao" },
     { value: 4, label: "Bốn sao" },
@@ -68,6 +67,7 @@ const ProviderAddPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [standardVisible, setStandardVisible] = useState(false);
   const [addressDetail, setAddressDetail] = useState("");
+  const [openRedirect, setOpenRedirect] = useState(false);
   //error
   const [nameError, setNameError] = useState(false);
   const [nameHelperText, setNameHelperText] = useState("");
@@ -79,7 +79,18 @@ const ProviderAddPage = () => {
   const [addressFinErr, setAddressFinErr] = useState(true);
   const [phoneFinErr, setPhoneFinErr] = useState(true);
   const [standardFinErr, setStandardFinErr] = useState(false);
-  const [typeFinErr, setTypeFinErr] = useState(false);
+  const [typeFinErr, setTypeFinErr] = useState(true);
+  const [imgError, setImgError] = useState(true);
+  //redirect
+  const [idCreated, setIdCreated] = useState(0);
+
+  const handleClickOpenRedirect = () => {
+    setOpenRedirect(true);
+  };
+
+  const handleCloseRedirect = () => {
+    setOpenRedirect(false);
+  };
 
   const handleClick = () => {
     setSnackbarOpen(true);
@@ -121,7 +132,9 @@ const ProviderAddPage = () => {
           dto: dataProvider,
         },
       });
-      navigate("/providers");
+
+      setIdCreated(data.createProvider.id);
+      setOpenRedirect(true);
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
@@ -234,7 +247,7 @@ const ProviderAddPage = () => {
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to="/destinations" className="navigateButton">
+              <Link to="/providers" className="navigateButton">
                 <ArrowCircleLeftIcon />
                 <p>Trở về</p>
               </Link>
@@ -261,25 +274,32 @@ const ProviderAddPage = () => {
                     : "https://vinhphucwater.com.vn/wp-content/uploads/2023/05/no-image.jpg"
                 }
               />
-              <div className="formInput imageAdd">
-                <label htmlFor="file">
-                  <DriveFolderUploadOutlinedIcon className="icon" />
-                  <span>Thêm ảnh</span>
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  onChange={(e) => {
-                    // if (file !== null) {
-                    //   setErrMsg("Đã thêm hình ảnh.");
-                    //   handleClick();
-                    //   localStorage.removeItem("errorMsg");
-                    //   return;
-                    // }
-                    setFile(e.target.files[0]);
+              <div className="img-btns">
+                <button
+                  className="link reset"
+                  onClick={async () => {
+                    setFile(null);
+                    setImgError(true);
                   }}
-                  style={{ display: "none" }}
-                />
+                >
+                  <RotateLeftIcon />
+                  <span>Đặt lại</span>
+                </button>
+                <div className="formInput imageAdd">
+                  <label htmlFor="file">
+                    <DriveFolderUploadOutlinedIcon className="icon" />
+                    <span>Thêm ảnh</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="file"
+                    onChange={(e) => {
+                      setImgError(false);
+                      setFile(e.target.files[0]);
+                    }}
+                    style={{ display: "none" }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -297,28 +317,25 @@ const ProviderAddPage = () => {
                     placeholder="Nhập tên nhà cung cấp"
                     size="small"
                     name="name"
-                    sx={{
-                      width: "15%",
-                      "& label.Mui-focused": {
-                        color: "black",
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottomColor: "black",
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "gainsboro",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "black",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "black",
-                        },
-                      },
-                    }}
+                    error={nameError}
+                    helperText={nameHelperText}
                     onChange={(e) => {
-                      setName(e.target.value);
+                      if (e.target.value.length < 10) {
+                        setNameError(true);
+                        setNameHelperText("Tên địa điểm gồm ít nhất 10 kí tự");
+                        setNameFinErr(true);
+                      } else if (e.target.value.length > 50) {
+                        setNameError(true);
+                        setNameHelperText(
+                          "Tên địa điểm gồm nhiều nhất 50 kí tự"
+                        );
+                        setNameFinErr(true);
+                      } else {
+                        setNameError(false);
+                        setNameHelperText("");
+                        setNameFinErr(false);
+                        setName(e.target.value);
+                      }
                     }}
                   />
                 </div>
@@ -326,35 +343,27 @@ const ProviderAddPage = () => {
                   <span className="itemKey">Số điện thoại:</span>
                   <TextField
                     id="outlined-disabled"
-                    // label="Số người"
                     className="basic-single"
                     type="text"
-                    // defaultValue={200000}
                     placeholder="Nhập số điện thoại"
                     size="small"
                     name="phone"
-                    sx={{
-                      width: "15%",
-                      "& label.Mui-focused": {
-                        color: "black",
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottomColor: "black",
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "gainsboro",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "black",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "black",
-                        },
-                      },
-                    }}
+                    error={phoneError}
+                    helperText={phoneHelperText}
                     onChange={(e) => {
-                      setPhone("84" + e.target.value.slice(1));
+                      if (!e.target.validity.valid) {
+                        setPhoneError(true);
+                        setPhoneHelperText("SĐT theo định dạng '84xxxxxxxxx'");
+                        setPhoneFinErr(true);
+                      } else {
+                        setPhoneError(false);
+                        setPhoneHelperText("");
+                        setPhoneFinErr(false);
+                        setPhone(e.target.value);
+                      }
+                    }}
+                    inputProps={{
+                      pattern: "^84[0-9]{9}$",
                     }}
                   />
                 </div>
@@ -362,12 +371,59 @@ const ProviderAddPage = () => {
               <div className="right">
                 <div className="detailItem">
                   <span className="itemKey">Địa điểm:</span>
-                  <div className="address-cont">
-                    <AddressForm
-                      onSubmit={handleFormSubmit}
-                      address={address}
-                      setAddress={setAddress}
+                  <div className="address-cont autoCompleteInputContainer">
+                    <TextField
+                      id="address"
+                      className="basic-single"
+                      size="small"
+                      type="text"
+                      placeholder="Nhập địa điểm"
+                      error={addressError}
+                      helperText={addressHelperText}
+                      value={addressDetail}
+                      onChange={(e) => {
+                        setAddressDetail(e.target.value);
+                        if (e.target.value.length < 20) {
+                          setAddressError(true);
+                          setAddressFinErr(true);
+                          setAddressHelperText(
+                            "Vị trí địa điểm gồm ít nhất 20 kí tự"
+                          );
+                        } else if (e.target.value.length > 100) {
+                          setAddressError(true);
+                          setAddressFinErr(true);
+                          setAddressHelperText(
+                            "Vị trí địa điểm gồm nhiều nhất 100 kí tự"
+                          );
+                        } else {
+                          setAddressError(false);
+                          setAddressFinErr(false);
+                          setAddressHelperText("");
+                        }
+                        handleChange(e);
+                      }}
+                      sx={{
+                        width: "15%",
+                      }}
+                      onBlur={() => {
+                        setTimeout(function () {
+                          setSuggestions([]);
+                        }, 500);
+                      }}
                     />
+                    <ul className="addressSuggestions">
+                      {suggestions?.map((suggestion, index) => (
+                        <li
+                          key={index}
+                          onClick={() => {
+                            handleSuggestionClick(suggestion);
+                            console.log("alo");
+                          }}
+                        >
+                          {suggestion.place_name}
+                        </li>
+                      ))}
+                    </ul>
                     <IconButton
                       className="mapBtn"
                       color="info"
@@ -422,15 +478,19 @@ const ProviderAddPage = () => {
                       if (e === null) {
                         setType("");
                         setStandardVisible(false);
+                        setStandardFinErr(false);
+                        setTypeFinErr(true);
                         return;
                       }
                       if (e.value === "HOTEL" || e.value === "RESTAURANT") {
-                        setType(e.value);
                         setStandardVisible(true);
+                        setStandardFinErr(true);
                       } else {
-                        setType(e.value);
                         setStandardVisible(false);
+                        setStandardFinErr(false);
                       }
+                      setType(e.value);
+                      setTypeFinErr(false);
                     }}
                     theme={(theme) => ({
                       ...theme,
@@ -444,43 +504,34 @@ const ProviderAddPage = () => {
                 {standardVisible && (
                   <div className="detailItem">
                     <span className="itemKey">Tiêu chuẩn:</span>
-                    <TextField
-                      id="outlined-disabled"
-                      // label="Số người"
+                    <Select
+                      placeholder={"Chọn tiêu chuẩn nhà cung cấp"}
                       className="basic-single"
-                      type="text"
-                      // defaultValue={200000}
-                      placeholder="Nhập tiêu chuẩn xếp hạng sao"
-                      size="small"
+                      classNamePrefix="select"
+                      isDisabled={false}
+                      isClearable={true}
                       name="standard"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="start">sao</InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        width: "15%",
-                        "& label.Mui-focused": {
-                          color: "black",
-                        },
-                        "& .MuiInput-underline:after": {
-                          borderBottomColor: "black",
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "gainsboro",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "black",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "black",
-                          },
-                        },
-                      }}
+                      options={standardOptions}
                       onChange={(e) => {
-                        setStandard(e.target.value);
+                        if (e === null) {
+                          setStandard(null);
+                          setStandardFinErr(true);
+                          return;
+                        }
+                        if (e.value) {
+                          setStandardFinErr(false);
+                        } else {
+                          setStandardFinErr(true);
+                        }
+                        setStandard(e.value);
                       }}
+                      theme={(theme) => ({
+                        ...theme,
+                        colors: {
+                          ...theme.colors,
+                          primary: "#2c3d50",
+                        },
+                      })}
                     />
                   </div>
                 )}
@@ -488,26 +539,73 @@ const ProviderAddPage = () => {
             </div>
           </div>
         </div>
+        <Dialog
+          open={openRedirect}
+          onClose={() => {
+            setOpenRedirect(false);
+          }}
+          maxWidth={false}
+        >
+          <DialogTitle
+            backgroundColor={"#2c3d50"}
+            color={"white"}
+            fontWeight={600}
+          >
+            Thêm thành công
+          </DialogTitle>
+          <DialogContent style={{ width: 400, height: 180 }}>
+            <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+              Bạn có muốn tiếp tục thêm địa điểm?
+            </DialogContentText>
+            <div className="btns-group-dialog">
+              <button
+                className="link confirm"
+                onClick={async () => {
+                  navigate(`/providers/add`);
+                }}
+              >
+                <span>Tiếp tục</span>
+              </button>
+              <button
+                className="link deny"
+                onClick={() => {
+                  navigate(`/providers/${idCreated}`);
+                }}
+              >
+                <span>Trở về</span>
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
         <div className="btn-group">
-          <button
-            className="link reset"
-            onClick={async () => {
-              setFile(null);
-            }}
-          >
-            <RotateLeftIcon />
-            <span>Đặt lại</span>
-          </button>
+          {!nameFinErr &&
+            !imgError &&
+            !addressFinErr &&
+            !phoneFinErr &&
+            !typeFinErr &&
+            !standardFinErr && (
+              <button
+                className="link confirm"
+                onClick={async () => {
+                  handleConfirmClick();
+                }}
+              >
+                <ThumbUpAltIcon />
+                <span>Xác nhận</span>
+              </button>
+            )}
 
-          <button
-            className="link confirm"
-            onClick={async () => {
-              handleConfirmClick();
-            }}
-          >
-            <ThumbUpAltIcon />
-            <span>Xác nhận</span>
-          </button>
+          {(nameFinErr ||
+            imgError ||
+            addressFinErr ||
+            phoneFinErr ||
+            typeFinErr ||
+            standardFinErr) && (
+            <button className="link deny">
+              <ThumbUpAltIcon />
+              <span>Xác nhận</span>
+            </button>
+          )}
         </div>
       </div>
       <Snackbar
