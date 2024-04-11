@@ -27,10 +27,10 @@ const ProductAddPage = () => {
   ];
 
   const periodsOptions = [
-    { value: "AFTERNOON", label: "Chiều" },
-    { value: "EVENING", label: "Tối" },
     { value: "MORNING", label: "Sáng" },
     { value: "NOON", label: "Trưa" },
+    { value: "AFTERNOON", label: "Chiều" },
+    { value: "EVENING", label: "Tối" },
   ];
 
   const [vertical, setVertical] = useState("top");
@@ -154,32 +154,13 @@ const ProductAddPage = () => {
                   <span className="itemKey">Tên:</span>
                   <TextField
                     id="outlined-disabled"
-                    // label="Số người"
                     className="basic-single"
                     type="text"
-                    // defaultValue={200000}
                     placeholder="Nhập tên dịch vụ"
                     size="small"
                     name="name"
                     sx={{
                       width: "15%",
-                      "& label.Mui-focused": {
-                        color: "black",
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottomColor: "black",
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "gainsboro",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "black",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "black",
-                        },
-                      },
                     }}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -212,10 +193,8 @@ const ProductAddPage = () => {
                   <span className="itemKey">Số người đề xuất:</span>
                   <TextField
                     id="outlined-disabled"
-                    // label="Số người"
                     className="basic-single"
                     type="text"
-                    // defaultValue={200000}
                     placeholder="Nhập số người đề xuất"
                     size="small"
                     name="partySize"
@@ -226,23 +205,6 @@ const ProductAddPage = () => {
                     }}
                     sx={{
                       width: "15%",
-                      "& label.Mui-focused": {
-                        color: "black",
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottomColor: "black",
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "gainsboro",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "black",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "black",
-                        },
-                      },
                     }}
                     onChange={(e) => {
                       setParty(e.target.value);
@@ -278,40 +240,32 @@ const ProductAddPage = () => {
                   <span className="itemKey">Giá:</span>
                   <TextField
                     id="outlined-disabled"
-                    // label="Số người"
                     className="basic-single"
                     type="text"
-                    // defaultValue={200000}
                     placeholder="Nhập giá tiền dịch vụ"
                     size="small"
-                    name="standard"
+                    name="price"
+                    value={price}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="start">đ</InputAdornment>
                       ),
+                      inputProps: { max: 10000000 },
                     }}
                     sx={{
                       width: "15%",
-                      "& label.Mui-focused": {
-                        color: "black",
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottomColor: "black",
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "gainsboro",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "black",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "black",
-                        },
-                      },
                     }}
                     onChange={(e) => {
-                      setPrice(e.target.value);
+                      let it = parseInt(e.target.value);
+                      const formattedPrice = e.target.value.toLocaleString(
+                        "vi-VN",
+                        {
+                          style: "currency",
+                          currency: "VND",
+                        }
+                      );
+                      console.log(formattedPrice);
+                      setPrice(formattedPrice);
                     }}
                   />
                 </div>

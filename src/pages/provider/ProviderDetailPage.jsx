@@ -394,7 +394,7 @@ const ProviderDetailPage = () => {
                           </div>
                           <div className="right">
                             <Link
-                              to={`/providers/add-product/${providerId}`}
+                              to={`/providers/${providerId}/add-product`}
                               className="link"
                             >
                               <AddCircleIcon />

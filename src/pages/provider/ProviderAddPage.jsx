@@ -133,7 +133,7 @@ const ProviderAddPage = () => {
       });
 
       setIdCreated(data.createProvider.id);
-      setOpenRedirect(true);
+      navigate(`/providers/${data.createProvider.id}/add-product`);
     } catch (error) {
       console.log(error);
       const msg = localStorage.getItem("errorMsg");
@@ -539,44 +539,6 @@ const ProviderAddPage = () => {
             </div>
           </div>
         </div>
-        <Dialog
-          open={openRedirect}
-          onClose={() => {
-            setOpenRedirect(false);
-          }}
-          maxWidth={false}
-        >
-          <DialogTitle
-            backgroundColor={"#2c3d50"}
-            color={"white"}
-            fontWeight={600}
-          >
-            Thêm thành công
-          </DialogTitle>
-          <DialogContent style={{ width: 400, height: 180 }}>
-            <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-              Bạn có muốn tiếp tục thêm nhà cung cấp?
-            </DialogContentText>
-            <div className="btns-group-dialog">
-              <button
-                className="link confirm"
-                onClick={async () => {
-                  navigate(`/providers/add`);
-                }}
-              >
-                <span>Tiếp tục</span>
-              </button>
-              <button
-                className="link deny"
-                onClick={() => {
-                  navigate(`/providers/${idCreated}`);
-                }}
-              >
-                <span>Trở về</span>
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
         <div className="btn-group">
           {!nameFinErr &&
             !imgError &&

@@ -75,14 +75,19 @@ const App = () => {
                 path=":providerId/product/:productId"
                 element={<ProductDetailPage />}
               />
+              <Route
+                path=":providerId/product/:productId/update"
+                element={<ProductDetailPage />}
+              />
               <Route path="add" element={<ProviderAddPage />} />
               <Route
                 path="update/:providerId"
                 element={<ProviderUpdatePage />}
               />
-              <Route path="add-product">
-                <Route path=":providerId" element={<ProductAddPage />} />
-              </Route>
+              <Route
+                path=":providerId/add-product"
+                element={<ProductAddPage />}
+              />
             </Route>
             <Route path="orders">
               <Route

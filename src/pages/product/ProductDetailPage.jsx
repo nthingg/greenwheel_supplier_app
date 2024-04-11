@@ -52,7 +52,10 @@ const ProductDetailPage = () => {
             </div>
           </div>
           <div className="right">
-            <Link to="/providers/new-product" className="link">
+            <Link
+              to={`/providers/${providerId}/product/${productId}/update`}
+              className="link"
+            >
               <EditIcon />
               <p>Chỉnh sửa</p>
             </Link>
