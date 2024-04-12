@@ -4,7 +4,7 @@ export const LOAD_ORDERS_FILTER = gql`
   query LoadOrders($status: [OrderStatus!]) {
     orders(
       first: 100
-      order: { id: ASC }
+      order: { id: DESC }
       where: { currentStatus: { in: $status } }
     ) {
       nodes {

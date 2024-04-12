@@ -17,7 +17,7 @@ export const LOAD_PRODUCTS = gql`
 
 export const LOAD_PRODUCTS_FILTER = gql`
   query LoadProducts($type: [ProductType!]) {
-    products(first: 100, order: { id: ASC }, where: { type: { in: $type } }) {
+    products(first: 100, order: { id: DESC }, where: { type: { in: $type } }) {
       nodes {
         id
         name
