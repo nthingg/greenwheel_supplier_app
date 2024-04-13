@@ -451,11 +451,10 @@ const OrderDetailPage = () => {
                 <div className="detailItem">
                   <span className="itemKey">Nhà cung cấp:</span>
                   <span className="itemValue">
-                    <a
+                    {/* <a
                       href={`/orders/${order?.id}/provider/${order?.details[0].product.provider.id}`}
-                    >
-                      {order?.details[0].product.provider.name}
-                    </a>
+                    ></a> */}
+                    {order?.details[0].product.provider.name}
                   </span>
                 </div>
                 <div className="detailItem">

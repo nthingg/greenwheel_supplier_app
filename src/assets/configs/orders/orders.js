@@ -47,8 +47,8 @@ export const ordersColumns = [
   },
   {
     field: "name",
-    width: 240,
-    align: "center",
+    width: 200,
+    align: "left",
     headerAlign: "center",
     renderCell: (params) => {
       return (
