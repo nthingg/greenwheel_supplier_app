@@ -54,7 +54,7 @@ const HomePage = () => {
   const [prep, setPrep] = useState(0);
   useEffect(() => {
     if (!loadingPrep && !errorPrep && dataPrep && dataPrep["orders"]) {
-      setCancelled(dataPrep["orders"].totalCount);
+      setPrep(dataPrep["orders"].totalCount);
     }
   }, [dataPrep, loadingPrep, errorPrep]);
 
@@ -72,7 +72,7 @@ const HomePage = () => {
       dataComplained &&
       dataComplained["orders"]
     ) {
-      setCancelled(dataComplained["orders"].totalCount);
+      setComplained(dataComplained["orders"].totalCount);
     }
   }, [dataComplained, loadingComplained, errorComplained]);
 
@@ -85,7 +85,7 @@ const HomePage = () => {
   const [fin, setFin] = useState(0);
   useEffect(() => {
     if (!loadingFin && !errorFin && dataFin && dataFin["orders"]) {
-      setCancelled(dataFin["orders"].totalCount);
+      setFin(dataFin["orders"].totalCount);
     }
   }, [dataFin, loadingFin, errorFin]);
 
