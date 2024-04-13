@@ -215,10 +215,10 @@ const OrderDetailPage = () => {
     let stat = "";
     switch (status) {
       case "RESERVED":
-        stat = "RESERVED";
+        stat = "PREPARED";
         break;
       case "PREPARED":
-        stat = "PREPARED";
+        stat = "SERVED";
         break;
       default:
         break;
@@ -340,14 +340,20 @@ const OrderDetailPage = () => {
                     <p>Huỷ đơn</p>
                   </button>
                 )}
-                {(status === "RESERVED" || status === "PREPARED") &&
-                  cancellable === true && (
-                    <p className="sepa">
-                      <FiberManualRecordIcon
-                        sx={{ fontSize: 20, color: "#2c3d50" }}
-                      />
-                    </p>
-                  )}
+                {status === "RESERVED" && cancellable === true && (
+                  <p className="sepa">
+                    <FiberManualRecordIcon
+                      sx={{ fontSize: 20, color: "#2c3d50" }}
+                    />
+                  </p>
+                )}
+                {servable === true && (
+                  <p className="sepa">
+                    <FiberManualRecordIcon
+                      sx={{ fontSize: 20, color: "#2c3d50" }}
+                    />
+                  </p>
+                )}
                 {status === "RESERVED" && (
                   <button className="prepare" onClick={handleChangeStatus}>
                     <MicrowaveIcon />
@@ -388,7 +394,7 @@ const OrderDetailPage = () => {
                 )}
                 {order?.currentStatus === "PREPARED" && (
                   <a className="status prepared" title="Đã chuẩn bị">
-                    <MicrowaveIcon sx={{ color: "#3498DB" }} />
+                    <MicrowaveIcon />
                   </a>
                 )}
                 {order?.currentStatus === "SERVED" && (
