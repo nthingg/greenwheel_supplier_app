@@ -111,6 +111,7 @@ const OrderDetailPage = () => {
         }
       );
       setDetails(resDetail);
+      console.log(resDetail);
 
       const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
       setDate(
@@ -334,12 +335,14 @@ const OrderDetailPage = () => {
           <div className="right">
             <div className="order-modify">
               <div className="groupBtn">
-                {cancellable === true && status !== "COMPLAINED" && (
-                  <button className="remove" onClick={handleClickOpen}>
-                    <CancelIcon />
-                    <p>Huỷ đơn</p>
-                  </button>
-                )}
+                {cancellable === true &&
+                  status !== "COMPLAINED" &&
+                  status !== "SERVED" && (
+                    <button className="remove" onClick={handleClickOpen}>
+                      <CancelIcon />
+                      <p>Huỷ đơn</p>
+                    </button>
+                  )}
                 {status === "RESERVED" && cancellable === true && (
                   <p className="sepa">
                     <FiberManualRecordIcon
@@ -347,13 +350,14 @@ const OrderDetailPage = () => {
                     />
                   </p>
                 )}
-                {servable === true && (
-                  <p className="sepa">
-                    <FiberManualRecordIcon
-                      sx={{ fontSize: 20, color: "#2c3d50" }}
-                    />
-                  </p>
-                )}
+                {servable === true ||
+                  (status === "PREPARED" && (
+                    <p className="sepa">
+                      <FiberManualRecordIcon
+                        sx={{ fontSize: 20, color: "#2c3d50" }}
+                      />
+                    </p>
+                  ))}
                 {status === "RESERVED" && (
                   <button className="prepare" onClick={handleChangeStatus}>
                     <MicrowaveIcon />
@@ -399,22 +403,22 @@ const OrderDetailPage = () => {
                 )}
                 {order?.currentStatus === "SERVED" && (
                   <a className="status served" title="Đã phục vụ">
-                    <CheckCircleIcon sx={{ color: "#3498DB" }} />
+                    <CheckCircleIcon />
                   </a>
                 )}
                 {order?.currentStatus === "COMPLAINED" && (
                   <a className="status complained" title="Bị phàn nàn">
-                    <FeedbackIcon sx={{ color: "#3498DB" }} />
+                    <FeedbackIcon />
                   </a>
                 )}
                 {order?.currentStatus === "FINISHED" && (
                   <a className="status reserved" title="Hoàn thành">
-                    <BeenhereIcon sx={{ color: "#3498DB" }} />
+                    <BeenhereIcon />
                   </a>
                 )}
                 {order?.currentStatus === "CANCELLED" && (
                   <a className="status reserved" title="Đã hủy">
-                    <CancelIcon sx={{ color: "#3498DB" }} />
+                    <CancelIcon />
                   </a>
                 )}
               </div>
@@ -444,12 +448,6 @@ const OrderDetailPage = () => {
                   <div className="detailItem">
                     <span className="itemKey">Hạn hủy đơn:</span>
                     <span className="itemValue">{finalCancellable}</span>
-                  </div>
-                )}
-                {servable && (
-                  <div className="detailItem">
-                    <span className="itemKey">Bắt đầu phục vụ:</span>
-                    <span className="itemValue">{finalServable}</span>
                   </div>
                 )}
               </div>
@@ -488,6 +486,12 @@ const OrderDetailPage = () => {
                     </a>
                   </span>
                 </div>
+                {servable && (
+                  <div className="detailItem">
+                    <span className="itemKey">Bắt đầu phục vụ:</span>
+                    <span className="itemValue">{finalServable}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

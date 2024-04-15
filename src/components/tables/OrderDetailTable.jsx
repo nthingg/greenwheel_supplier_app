@@ -38,7 +38,7 @@ const OrderDetailTable = ({ details }) => {
           },
           backgroundColor: "white",
         }}
-        getRowId={(row) => row.product.id}
+        getRowId={(row) => row.index}
       />
     </div>
   );

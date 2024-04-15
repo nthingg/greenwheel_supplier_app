@@ -1,6 +1,6 @@
 export const detailsColumns = [
   {
-    field: "id",
+    field: "index",
     width: 70,
     align: "center",
     headerAlign: "center",
