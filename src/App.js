@@ -95,6 +95,10 @@ const App = () => {
                 element={token ? <OrderPage /> : <Navigate to="/login" />}
               />
               <Route
+                path="status/:sbs"
+                element={<OrderPage />}
+              />
+              <Route
                 path=":orderId/provider/:providerId"
                 element={<ProviderDetailPage />}
               />

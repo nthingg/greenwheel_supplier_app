@@ -5,8 +5,9 @@ import React, { useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { providersColumns } from "../../assets/configs/providers/providers";
+import { providerTotalColumns } from "../../assets/configs/providers/providerTotal";
 
-const ProviderTable = ({ providers }) => {
+const ProviderTable = ({ providers, totalProviders }) => {
   const navigate = useNavigate();
   const [anchorId, setAnchorId] = useState(null);
   const [anchor, setAnchor] = useState(null);
@@ -96,26 +97,125 @@ const ProviderTable = ({ providers }) => {
       renderHeader: () => <span>THAO TÁC</span>,
     },
   ];
+  const actionTotalColumn = [
+    {
+      field: "action",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        const isSelected = anchorId === params.row.node.id; // Check if the current row is selected
+        const handleClick = (event) => {
+          setAnchorId(isSelected ? null : params.row.node.id); // Toggle the selected row
+          setAnchor(event.currentTarget);
+        };
+        const handleClose = () => {
+          setAnchorId(null);
+        };
+
+        return (
+          <div>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={isSelected ? "long-menu" : undefined}
+              aria-expanded={isSelected ? "true" : undefined}
+              aria-haspopup="true"
+              onClick={handleClick}
+            >
+              <MoreHorizIcon />
+            </IconButton>
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                "aria-labelledby": "long-button",
+              }}
+              anchorEl={anchor}
+              open={isSelected}
+              onClose={handleClose}
+              PaperProps={{
+                style: {
+                  maxHeight: ITEM_HEIGHT * 4.5,
+                  width: "12ch",
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem
+                  key={option}
+                  selected={false}
+                  onClick={() => {
+                    handleClose();
+                    switch (option) {
+                      case "Xem":
+                        handleDetailClick();
+                        break;
+                      case "Chỉnh sửa":
+                        handleEditClick();
+                        break;
+                      default:
+                        break;
+                    }
+                  }}
+                  style={{ fontSize: "14px", fontWeight: 600 }}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        );
+      },
+      renderHeader: () => <span>THAO TÁC</span>,
+    },
+  ];
   return (
-    <div className="provider-table">
-      <DataGrid
-        rows={providers}
-        columns={providersColumns.concat(actionColumn)}
-        rowSelection={false}
-        pagination
-        autoPageSize={true}
-        showColumnVerticalBorder={true}
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#2c3d50",
-            color: "white",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightStyle: "none",
-          },
-        }}
-      />
+    <div>
+      {providers && (
+        <div className="provider-table">
+          <DataGrid
+            rows={providers}
+            columns={providersColumns.concat(actionColumn)}
+            rowSelection={false}
+            pagination
+            autoPageSize={true}
+            showColumnVerticalBorder={true}
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2c3d50",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightStyle: "none",
+              },
+            }}
+          />
+        </div>
+      )}
+      {totalProviders && (
+        <div className="provider-table">
+          <DataGrid
+            rows={totalProviders}
+            columns={providerTotalColumns.concat(actionTotalColumn)}
+            rowSelection={false}
+            pagination
+            autoPageSize={true}
+            showColumnVerticalBorder={true}
+            getRowId={(row) => row.node.id}
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2c3d50",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightStyle: "none",
+              },
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

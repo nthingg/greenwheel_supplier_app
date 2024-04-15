@@ -20,12 +20,88 @@ export const LOAD_SUPPLIERS = gql`
   }
 `;
 
+export const LOAD_NUMBER_TYPE = gql`
+  query ProviderType($type: ProviderType!, $searchTerm: String) {
+    providers(where: { type: { eq: $type } }, searchTerm: $searchTerm) {
+      totalCount
+    }
+  }
+`
+
+export const LOAD_NUMBERS_TOTAL = gql`
+  query NumOfTotalProvider($searchTerm: String) {
+    providers(searchTerm: $searchTerm) {
+      totalCount
+    }
+  }
+`
+
+export const LOAD_PROVIDERS_TOTAL_INIT = gql`
+  query LoadInitTotalProviders($searchTerm: String) {
+    providers(first: 100, order: { id: DESC }, searchTerm: $searchTerm) {
+      edges {
+        node {
+          id
+          name
+          phone
+          address
+          balance
+          isActive
+          account {
+            isMale
+            isActive
+            createdAt
+          }
+          type
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`
+
+export const LOAD_PROVIDERS_TOTAL = gql`
+  query LoadTotalProviders($searchTerm: String, $cursor: String) {
+    providers(
+      first: 100
+      after: $cursor
+      order: { id: DESC }
+      searchTerm: $searchTerm
+    ) {
+      edges {
+        node {
+          id
+          name
+          phone
+          address
+          balance
+          isActive
+          account {
+            isMale
+            isActive
+            createdAt
+          }
+          type
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`
+
 export const LOAD_SUPPLIERS_FILTER = gql`
-  query LoadProviders($status: [ProviderType!]) {
+  query LoadProviders($status: [ProviderType!], $searchTerm: String) {
     providers(
       first: 100
       order: { id: DESC }
       where: { type: { in: $status } }
+      searchTerm: $searchTerm
     ) {
       nodes {
         id

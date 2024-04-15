@@ -29,6 +29,35 @@ export const LOAD_ORDERS_FILTER = gql`
   }
 `;
 
+export const LOAD_ORDERS_FILTER_SEARCH = gql`
+  query LoadOrders($status: [OrderStatus!], $id: Int) {
+    orders(
+      first: 100
+      order: { id: DESC }
+      where: { currentStatus: { in: $status }, id: { eq: $id } }
+    ) {
+      nodes {
+        id
+        total
+        currentStatus
+        createdAt
+        traces {
+          status
+          modifiedAt
+        }
+        provider {
+          name
+        }
+        account {
+          name
+          phone
+          avatarPath
+        }
+      }
+    }
+  }
+`;
+
 export const LOAD_ORDERS = gql`
   {
     orders(first: 100, order: { id: ASC }) {

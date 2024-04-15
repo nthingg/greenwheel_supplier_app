@@ -6,19 +6,33 @@ import "../../assets/scss/shared.scss";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import ProviderTable from "../../components/tables/ProviderTable";
-import { LOAD_SUPPLIERS_FILTER } from "../../services/graphql/provider";
+import {
+  LOAD_PROVIDERS_TOTAL,
+  LOAD_PROVIDERS_TOTAL_INIT,
+  LOAD_SUPPLIERS_FILTER,
+  LOAD_NUMBERS_TOTAL,
+  LOAD_NUMBER_TYPE,
+} from "../../services/graphql/provider";
 import { IconButton } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import LocalDiningIcon from "@mui/icons-material/LocalDining";
 import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
-import BedIcon from "@mui/icons-material/Bed";
 import BuildIcon from "@mui/icons-material/Build";
 import Slider from "react-slick";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import HotelIcon from '@mui/icons-material/Hotel';
+import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
+import TwoWheelerIcon from '@mui/icons-material/TwoWheeler';
+import NightShelterIcon from '@mui/icons-material/NightShelter';
+import { type } from "@testing-library/user-event/dist/type";
 
 const ProviderPage = () => {
   const suppType = [
@@ -34,6 +48,21 @@ const ProviderPage = () => {
   ];
   const [selectedDiv, setSelectedDiv] = useState(0);
   const [selectStatus, setSelectedStatus] = useState(suppType);
+  const [ememergency, setEmergency] = useState(0);
+  const [foodStall, setFoodStall] = useState(0);
+  const [grocery, setGrocery] = useState(0);
+  const [hotel, setHotel] = useState(0);
+  const [motel, setMotel] = useState(0);
+  const [repair, setRepair] = useState(0);
+  const [restaurant, setRestaurant] = useState(0);
+  const [taxi, setTaxi] = useState(0);
+  const [vehicleRental, setVehicleRental] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    fetchTotalProvider(null);
+    fetchProviderType(null);
+  }, [])
   const handleClick = (index) => {
     setSelectedDiv(index);
     switch (index) {
@@ -73,9 +102,103 @@ const ProviderPage = () => {
     refetch();
   };
 
+  const [totalProvider, setTotalProvider] = useState([]);
+  const [getTotalProvider, { }] = useLazyQuery(LOAD_PROVIDERS_TOTAL);
+  const [getTotalProviderInit, { }] = useLazyQuery(LOAD_PROVIDERS_TOTAL_INIT);
+  const [getNumberProviderType, { }] = useLazyQuery(LOAD_NUMBER_TYPE);
+
+  const fetchTotalProvider = async (searchTerm) => {
+    const { data } = await getTotalProviderInit({
+      variables: {
+        searchTerm: searchTerm
+      }
+    });
+    let providerData = data.providers.edges;
+
+    if (data.providers.pageInfo.hasNextPage === true) {
+      let check = true;
+      let currentEndCursor = data.providers.pageInfo.endCursor;
+      while (check) {
+        const { data: dataRefetch } = await getTotalProvider({
+          variables: { cursor: currentEndCursor, searchTerm: searchTerm },
+        });
+
+        providerData = providerData.concat(
+          dataRefetch.providers.edges
+        );
+
+        if (dataRefetch.providers.pageInfo.hasNextPage === true) {
+          currentEndCursor = dataRefetch.providers.pageInfo.endCursor;
+        } else {
+          check = false;
+        }
+      }
+    }
+
+    let res = providerData.map((node, index) => {
+      const { __typename, ...rest } = node;
+      return { ...rest, index: index + 1 }; // Add the index to the object
+    });
+    setTotalProvider(res);
+    setIsLoading(false);
+  }
+
+  const fetchProviderType = async (searchTerm) => {
+    suppType.forEach(async (type, index) => {
+      const { data } = await getNumberProviderType({
+        variables: {
+          type: type,
+          searchTerm: searchTerm
+        }
+      });
+      const totalCount = data.providers.totalCount;
+      switch (index) {
+        case 0: {
+          setEmergency(totalCount);
+          break;
+        }
+        case 1: {
+          setFoodStall(totalCount);
+          break;
+        }
+        case 2: {
+          setGrocery(totalCount);
+          break;
+        }
+        case 3: {
+          setHotel(totalCount);
+          break;
+        }
+        case 4: {
+          setMotel(totalCount);
+          break;
+        }
+        case 5: {
+          setRepair(totalCount);
+          break;
+        }
+        case 6: {
+          setRestaurant(totalCount);
+          break;
+        }
+        case 7: {
+          setTaxi(totalCount);
+          break;
+        }
+        case 8: {
+          setVehicleRental(totalCount);
+          break;
+        }
+      }
+    });
+    
+    setIsLoading(false);
+  }
+
   const { error, loading, data, refetch } = useQuery(LOAD_SUPPLIERS_FILTER, {
     variables: {
       status: selectStatus,
+      searchTerm: searchTerm
     },
   });
   const [suppliers, setSuppliers] = useState([]);
@@ -88,6 +211,26 @@ const ProviderPage = () => {
       setSuppliers(res);
     }
   }, [data, loading, error]);
+
+  const [totals, setTotals] = useState(0);
+  const { error: errTotal, loading: loadTotal, data: dataTotal } = useQuery(LOAD_NUMBERS_TOTAL, {
+    variables: {
+      searchTerm: searchTerm
+    }
+  })
+  useEffect(() => {
+    if (!loadTotal && !errTotal && dataTotal && dataTotal["providers"]["totalCount"]) {
+      setTotals(dataTotal.providers.totalCount);
+    }
+  }, [loadTotal, errTotal, dataTotal])
+
+  const handleSearchSubmit = () => {
+    const searchTerm = document.getElementById('floatingValue').value;
+    setSearchTerm(searchTerm);
+    refetch();
+    fetchTotalProvider(searchTerm);
+    fetchProviderType(searchTerm);
+  }
 
   var settings = {
     dots: false,
@@ -112,9 +255,14 @@ const ProviderPage = () => {
             className={"form-control"}
             id="floatingValue"
             name="value"
-            placeholder="Tìm kiếm ..."
+            placeholder="Nhập tên nhà cung cấp..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearchSubmit();
+              }
+            }}
           />
-          <button className="link">
+          <button className="link" onClick={handleSearchSubmit}>
             <SearchIcon />
           </button>
         </div>
@@ -123,13 +271,17 @@ const ProviderPage = () => {
             <AddCircleIcon />
             <span>Thêm nhà cung cấp</span>
           </Link>
-          <button className="link">
+          {/* <button className="link">
             <FilterAltIcon />
-          </button>
+          </button> */}
           <button
             className="link"
             onClick={() => {
+              setIsLoading(true);
+              setSearchTerm(null);
               refetch();
+              fetchProviderType(null);
+              fetchTotalProvider(null);
             }}
           >
             <RefreshIcon />
@@ -142,9 +294,8 @@ const ProviderPage = () => {
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
               <div
                 key={index}
-                className={`icon-item ${
-                  selectedDiv === index ? "selected" : ""
-                }`}
+                className={`icon-item ${selectedDiv === index ? "selected" : ""
+                  }`}
                 onClick={() => {
                   handleClick(index);
                 }}
@@ -153,44 +304,57 @@ const ProviderPage = () => {
                 {index === 0 && (
                   <FormatListBulletedIcon sx={{ color: "#3498DB" }} />
                 )}
-                {index === 1 && <LocalDiningIcon sx={{ color: "#3498DB" }} />}
-                {index === 2 && <BedIcon sx={{ color: "#3498DB" }} />}
+                {index === 1 && <MedicalServicesIcon sx={{ color: "#aa3226" }} />}
+                {index === 2 && <LocalDiningIcon sx={{ color: "#7f6d6b" }} />}
                 {index === 3 && (
-                  <EmojiFoodBeverageIcon sx={{ color: "#3498DB" }} />
+                  <StorefrontIcon sx={{ color: "#227d3a" }} />
                 )}
-                {index === 4 && <BuildIcon sx={{ color: "#3498DB" }} />}
+                {index === 4 && <HotelIcon sx={{ color: "#333f4b" }} />}
                 {index === 5 && (
-                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                  <NightShelterIcon sx={{ color: "#333f4b" }} />
                 )}
                 {index === 6 && (
-                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                  <BuildIcon sx={{ color: "#88939f" }} />
                 )}
                 {index === 7 && (
-                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                  <RestaurantIcon sx={{ color: "#7f6d6b" }} />
                 )}
                 {index === 8 && (
-                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                  <LocalTaxiIcon sx={{ color: "#416f31" }} />
                 )}
                 {index === 9 && (
-                  <DirectionsCarFilledIcon sx={{ color: "#3498DB" }} />
+                  <TwoWheelerIcon sx={{ color: "#3498DB" }} />
                 )}
                 <span>
-                  {index === 0 && "Tất cả"}
-                  {index === 1 && "Cứu hộ"}
-                  {index === 2 && "Quán ăn"}
-                  {index === 3 && "Tạp hóa"}
-                  {index === 4 && "Khách sạn"}
-                  {index === 5 && "Nhà nghỉ"}
-                  {index === 6 && "Tiệm sửa"}
-                  {index === 7 && "Nhà hàng"}
-                  {index === 8 && "Taxi"}
-                  {index === 9 && "Thuê xe"}
+                  {index === 0 && `Tất cả (${totals})`}
+                  {index === 1 && `Cứu hộ (${ememergency})`}
+                  {index === 2 && `Quán ăn (${foodStall})`}
+                  {index === 3 && `Tạp hóa (${grocery})`}
+                  {index === 4 && `Khách sạn (${hotel})`}
+                  {index === 5 && `Nhà nghỉ (${motel})`}
+                  {index === 6 && `Tiệm sửa (${repair})`}
+                  {index === 7 && `Nhà hàng (${restaurant})`}
+                  {index === 8 && `Taxi (${taxi})`}
+                  {index === 9 && `Thuê xe (${vehicleRental})`}
                 </span>
               </div>
             ))}
           </Slider>
         </div>
-        <ProviderTable providers={suppliers} />
+        {isLoading && (
+          <div className="loading">
+            <RestartAltIcon
+              sx={{
+                fontSize: 80,
+                color: "#2c3d50",
+              }}
+            />
+          </div>
+        )}
+        {!isLoading && (selectedDiv === 0 ?
+          <ProviderTable totalProviders={totalProvider} /> :
+          <ProviderTable providers={suppliers} />)
+        }
       </div>
     </div>
   );

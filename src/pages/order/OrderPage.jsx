@@ -23,27 +23,38 @@ import {
   LOAD_NUMBERS_SERVED,
   LOAD_ORDERS,
   LOAD_ORDERS_FILTER,
+  LOAD_ORDERS_FILTER_SEARCH,
 } from "../../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import BeenhereIcon from "@mui/icons-material/Beenhere";
+import { useParams } from "react-router-dom";
 
 const OrderPage = () => {
+  const { sbs } = useParams();
   const orderStatus = [
     "RESERVED",
     "PREPARED",
     "SERVED",
-    "CANCELLED",
-    "COMPLAINED",
     "FINISHED",
+    "COMPLAINED",
+    "CANCELLED",
   ];
-  const [selectedDiv, setSelectedDiv] = useState(0);
-  const [selectStatus, setSelectedStatus] = useState(orderStatus[0]);
+  const [selectedDiv, setSelectedDiv] = useState(
+    sbs ? parseInt(sbs, 10) : 0
+  );
+  const [selectStatus, setSelectedStatus] = useState(
+    orderStatus[sbs ? parseInt(sbs, 10) : 0]
+  );
+  const [orderQuery, setorderQuery] = useState(LOAD_ORDERS_FILTER);
+  const [searchTerm, setSearchTerm] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
 
   const handleClick = (index) => {
@@ -94,6 +105,7 @@ const OrderPage = () => {
       dataReserve["orders"]
     ) {
       setReserved(dataReserve["orders"].totalCount);
+      setIsLoading(false);
     }
   }, [dataReserve, loadingReserve, errReserve]);
 
@@ -172,9 +184,10 @@ const OrderPage = () => {
     }
   }, [dataTemp, loadingTemp, errorTemp]);
 
-  const { error, loading, data, refetch } = useQuery(LOAD_ORDERS_FILTER, {
+  const { error, loading, data, refetch } = useQuery(orderQuery, {
     variables: {
       status: selectStatus,
+      id: searchTerm
     },
   });
 
@@ -184,10 +197,52 @@ const OrderPage = () => {
         const { __typename, ...rest } = node;
         return { ...rest, index: index + 1 }; // Add the index to the object
       });
-      console.log(res);
       setOrders(res);
     }
   }, [data, loading, error]);
+
+  const handleSearchSubmit = () => {
+    const searchTerm = document.getElementById('floatingValue').value;
+    const searchTermInt = parseInt(searchTerm);
+    setorderQuery(LOAD_ORDERS_FILTER_SEARCH);
+    setSearchTerm(searchTermInt);
+    refetch();
+    setReserved(0);
+    setPrep(0);
+    setCancelled(0);
+    setTemp(0);
+    setComplained(0);
+    refetchPrep(0);
+    setFin(0);
+    console.log(selectStatus[0]);
+    switch (selectStatus) {
+      case "RESERVED": {
+        setReserved(1);
+        break;
+      }
+      case "PREPARED": {
+        setPrep(1);
+        break;
+      }
+      case "SERVED": {
+        setTemp(1);
+        break;
+      }
+      case "FINISHED": {
+        setFin(1);
+        break;
+      }
+      case "COMPLAINED": {
+        setComplained(1);
+        break;
+      }
+      case "CANCELLED": {
+        setCancelled(1);
+        break;
+      }
+    }
+    setIsLoading(false);
+  }
 
   var settings = {
     dots: false,
@@ -212,9 +267,19 @@ const OrderPage = () => {
             className={"form-control"}
             id="floatingValue"
             name="value"
-            placeholder="Tìm kiếm ..."
+            placeholder="Nhập mã đơn hàng..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setIsLoading(true);
+                handleSearchSubmit();
+              }
+            }}
           />
-          <button className="link">
+          <button className="link" 
+          onClick={() => {
+            setIsLoading(true);
+            handleSearchSubmit();
+          }}>
             <SearchIcon />
           </button>
         </div>
@@ -228,6 +293,8 @@ const OrderPage = () => {
           <button
             className="link"
             onClick={() => {
+              setSearchTerm(null);
+              setIsLoading(true);
               refetch();
               refetchCancelled();
               refetchTemp();
@@ -235,6 +302,9 @@ const OrderPage = () => {
               refetchPrep();
               refetchFin();
               refetchReserve();
+              setTimeout(() => {
+                setIsLoading(false);
+              }, 3000);
             }}
           >
             <RefreshIcon />
@@ -247,9 +317,8 @@ const OrderPage = () => {
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
-                className={`icon-item ${
-                  selectedDiv === index ? "selected" : ""
-                }`}
+                className={`icon-item ${selectedDiv === index ? "selected" : ""
+                  }`}
                 onClick={() => {
                   handleClick(index);
                 }}
@@ -259,23 +328,35 @@ const OrderPage = () => {
                   <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
                 )}
                 {index === 1 && <MicrowaveIcon sx={{ color: "#3498DB" }} />}
-                {index === 2 && <CheckCircleIcon sx={{ color: "#3498DB" }} />}
-                {index === 3 && <CancelIcon sx={{ color: "#3498DB" }} />}
+                {index === 2 && <CheckCircleIcon sx={{ color: "#28b463" }} />}
+                {index === 3 && <BeenhereIcon sx={{ color: "#28b463" }} />}
                 {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
-                {index === 5 && <BeenhereIcon sx={{ color: "#3498DB" }} />}
+                {index === 5 && <CancelIcon sx={{ color: "#e74c3c" }} />}
                 <span>
                   {index === 0 && `Đã đặt (${reserved})`}
                   {index === 1 && `Chuẩn bị (${prep})`}
                   {index === 2 && `Phục vụ (${temp})`}
-                  {index === 3 && `Bị hủy (${cancelled})`}
+                  {index === 3 && `Hoàn tất (${fin})`}
                   {index === 4 && `Bị phản ánh (${complained})`}
-                  {index === 5 && `Hoàn tất (${fin})`}
+                  {index === 5 && `Bị hủy (${cancelled})`}
                 </span>
               </div>
             ))}
           </Slider>
         </div>
-        <OrderTable orders={orders} />
+        {isLoading && (
+          <div className="loading">
+            <RestartAltIcon
+              sx={{
+                fontSize: 80,
+                color: "#2c3d50",
+              }}
+            />
+          </div>
+        )}
+        {!isLoading && (
+          <OrderTable orders={orders} />
+        )}
       </div>
     </div>
   );

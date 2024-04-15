@@ -40,6 +40,7 @@
                 }
                 button:hover {
                     background-color: #1c2833;
+                    cursor: pointer;
                 }
             }
         }
@@ -78,9 +79,13 @@
                             justify-content: center;
                         }
 
+                        .left p:hover {
+                            cursor: pointer;
+                        }
+
                         .right {
                             .btn {
-                                cursor: text;
+                                cursor: pointer;
 
                                 &.success {
                                     background-color: #2ecc71;

@@ -15,7 +15,6 @@ const SideBar = () => {
   const navigate = useNavigate();
 
   const role = localStorage.getItem("role");
-  console.log(role);
 
   return (
     <div className="sidebar">

@@ -111,7 +111,6 @@ const OrderDetailPage = () => {
         }
       );
       setDetails(resDetail);
-      console.log(resDetail);
 
       const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
       setDate(
