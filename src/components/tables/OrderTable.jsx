@@ -32,10 +32,10 @@ const OrderTable = ({ orders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        const isSelected = anchorId === params.row.id; // Check if the current row is selected
+        const isSelected = anchorId === params.row.node.id; // Check if the current row.node is selected
         const handleClick = (event) => {
-          setAnchorId(isSelected ? null : params.row.id); // Toggle the selected row
-          setAnchorStatus(params.row.currentStatus);
+          setAnchorId(isSelected ? null : params.row.node.id); // Toggle the selected row.node
+          setAnchorStatus(params.row.node.currentStatus);
           setAnchor(event.currentTarget);
         };
         const handleClose = () => {
@@ -69,7 +69,7 @@ const OrderTable = ({ orders }) => {
                 },
               }}
             >
-              {(params.row.currentStatus === "RESERVED"
+              {(params.row.node.currentStatus === "RESERVED"
                 ? options
                 : viewOption
               ).map((option) => (
@@ -110,6 +110,7 @@ const OrderTable = ({ orders }) => {
         pagination
         autoPageSize
         showColumnVerticalBorder={true}
+        getRowId={(row) => row.node.id}
         sx={{
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: "#2c3d50",
