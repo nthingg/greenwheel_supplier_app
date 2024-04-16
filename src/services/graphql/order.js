@@ -1,57 +1,99 @@
 import { gql } from "@apollo/client";
 
-export const LOAD_ORDERS_FILTER = gql`
-  query LoadOrders($status: [OrderStatus!]) {
+export const LOAD_ORDERS_FILTER_INIT = gql`
+  query LoadOrdersInit($status: [OrderStatus!]) {
     orders(
       first: 100
       order: { id: DESC }
       where: { currentStatus: { in: $status } }
     ) {
-      nodes {
-        id
-        total
-        currentStatus
-        createdAt
-        traces {
-          status
-          modifiedAt
+      edges {
+        node {
+          id
+          total
+          currentStatus
+          createdAt
+          traces {
+            status
+            modifiedAt
+          }
+          provider {
+            name
+          }
+          account {
+            name
+            phone
+            avatarPath
+          }
         }
-        provider {
-          name
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+export const LOAD_ORDERS_FILTER = gql`
+  query LoadOrders($status: [OrderStatus!], $cursor: String) {
+    orders(
+      first: 100
+      after: $cursor
+      order: { id: DESC }
+      where: { currentStatus: { in: $status } }
+    ) {
+      edges {
+        node {
+          id
+          total
+          currentStatus
+          createdAt
+          traces {
+            status
+            modifiedAt
+          }
+          provider {
+            name
+          }
+          account {
+            name
+            phone
+            avatarPath
+          }
         }
-        account {
-          name
-          phone
-          avatarPath
-        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
 `;
 
 export const LOAD_ORDERS_FILTER_SEARCH = gql`
-  query LoadOrders($status: [OrderStatus!], $id: Int) {
+  query LoadOrdersSearch($status: [OrderStatus!], $id: Int) {
     orders(
-      first: 100
-      order: { id: DESC }
       where: { currentStatus: { in: $status }, id: { eq: $id } }
     ) {
-      nodes {
-        id
-        total
-        currentStatus
-        createdAt
-        traces {
-          status
-          modifiedAt
-        }
-        provider {
-          name
-        }
-        account {
-          name
-          phone
-          avatarPath
+      edges {
+        node {
+          id
+          total
+          currentStatus
+          createdAt
+          traces {
+            status
+            modifiedAt
+          }
+          provider {
+            name
+          }
+          account {
+            name
+            phone
+            avatarPath
+          }
         }
       }
     }
@@ -113,6 +155,17 @@ export const LOAD_DETAIL_ORDER = gql`
     }
   }
 `;
+
+export const LOAD_NUMBERS_ORDERS = gql`
+  query OrderType($status: OrderStatus) {
+    orders(where: {
+      currentStatus: {
+        eq: $status
+      }
+    })
+    {totalCount}
+  }
+`
 
 export const LOAD_NUMBERS_COMPLAINED = gql`
   {

@@ -19,7 +19,7 @@ export const ordersColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      return <div>{params.row.id.toString().padStart(9, "0")}</div>;
+      return <div>{params.row.node.id.toString().padStart(9, "0")}</div>;
     },
     renderHeader: () => <span>MÃ ĐƠN</span>,
   },
@@ -29,7 +29,7 @@ export const ordersColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      const date = new Date(params.row.createdAt);
+      const date = new Date(params.row.node.createdAt);
 
       const formattedDateTime = date.toLocaleString("en-GB");
       const formattedDate = formattedDateTime.substring(
@@ -56,13 +56,13 @@ export const ordersColumns = [
           <img
             className="cellImg"
             src={
-              params.row.account.avatarPath === null
+              params.row.node.account.avatarPath === null
                 ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                : `https://d38ozmgi8b70tu.cloudfront.net${params.row.account.avatarPath}`
+                : `https://d38ozmgi8b70tu.cloudfront.net${params.row.node.account.avatarPath}`
             }
             alt="avatar"
           />
-          {params.row.account.name}
+          {params.row.node.account.name}
         </div>
       );
     },
@@ -109,8 +109,8 @@ export const ordersColumns = [
         return formattedParts.join("");
       }
 
-      if (params.row.account.phone !== null) {
-        return <div>{formatPhoneNumberCen(params.row.account.phone)}</div>;
+      if (params.row.node.account.phone !== null) {
+        return <div>{formatPhoneNumberCen(params.row.node.account.phone)}</div>;
       } else {
         return <div>Không có</div>;
       }
@@ -121,7 +121,7 @@ export const ordersColumns = [
   //   field: "supplierName",
   //   width: 240,
   //   renderCell: (params) => {
-  //     return <div>{params.row.supplier.name}</div>;
+  //     return <div>{params.row.node.supplier.name}</div>;
   //   },
   //   renderHeader: () => <span>Nhà cung cấp</span>,
   // },
@@ -131,7 +131,7 @@ export const ordersColumns = [
   //   align: "center",
   //   headerAlign: "center",
   //   renderCell: (params) => {
-  //     switch (params.row.currentStatus) {
+  //     switch (params.row.node.currentStatus) {
   //       case "RESERVED":
   //         return <div className={`cellWithStatus confirmed`}>Đã chấp nhận</div>;
   //       case "CANCELLED":
@@ -151,7 +151,7 @@ export const ordersColumns = [
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
-      const amount = params.row.total;
+      const amount = params.row.node.total;
       const formattedPrice = amount.toLocaleString("vi-VN") + "đ";
       return <div className="prodPrice">{formattedPrice}</div>;
     },

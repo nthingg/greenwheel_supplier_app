@@ -11,18 +11,20 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import { IconButton } from "@mui/material";
 //graphql
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
   LOAD_NUMBERS_CANCELLED,
   LOAD_NUMBERS_COMPLAINED,
   LOAD_NUMBERS_FINISHED,
+  LOAD_NUMBERS_ORDERS,
   LOAD_NUMBERS_PREPARED,
   LOAD_NUMBERS_RESERVED,
   LOAD_NUMBERS_SERVED,
   LOAD_ORDERS,
   LOAD_ORDERS_FILTER,
+  LOAD_ORDERS_FILTER_INIT,
   LOAD_ORDERS_FILTER_SEARCH,
 } from "../../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
@@ -56,27 +58,50 @@ const OrderPage = () => {
   const [searchTerm, setSearchTerm] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
+  const [searchedOrder, setSerchedOrder] = useState(null);
+
+  useEffect(() => {
+    fetchOrder(orderStatus[0]);
+    fetchOrderStatus();
+  }, []);
 
   const handleClick = (index) => {
     setSelectedDiv(index);
+    setIsLoading(true);
     switch (index) {
       case 0:
         setSelectedStatus([orderStatus[0]]);
+        if (searchTerm) {
+          handleSearchSubmit(orderStatus[0]);
+        }
+        else {
+          fetchOrder([orderStatus[0]]);
+        }
         break;
       case 1:
         setSelectedStatus([orderStatus[1]]);
+        if (searchTerm) {
+          handleSearchSubmit(orderStatus[1]);
+        }
+        else {
+          fetchOrder([orderStatus[1]]);
+        }
         break;
       case 2:
         setSelectedStatus([orderStatus[2]]);
+        fetchOrder([orderStatus[2]]);
         break;
       case 3:
         setSelectedStatus([orderStatus[3]]);
+        fetchOrder([orderStatus[3]]);
         break;
       case 4:
         setSelectedStatus([orderStatus[4]]);
+        fetchOrder([orderStatus[4]]);
         break;
       case 5:
         setSelectedStatus([orderStatus[5]]);
+        fetchOrder([orderStatus[5]]);
         break;
       default:
         break;
@@ -89,6 +114,86 @@ const OrderPage = () => {
     refetchFin();
     refetchReserve();
   };
+
+  const [getOrderInit, { }] = useLazyQuery(LOAD_ORDERS_FILTER_INIT);
+  const [getOrder, { }] = useLazyQuery(LOAD_ORDERS_FILTER);
+  const [searchOrder, { }] = useLazyQuery(LOAD_ORDERS_FILTER_SEARCH);
+  const [getOrderStatus, { }] = useLazyQuery(LOAD_NUMBERS_ORDERS);
+
+  const fetchOrder = async (selectStatus) => {
+    const { data } = await getOrderInit({
+      variables: {
+        status: selectStatus
+      }
+    });
+    let ordersData = data.orders.edges;
+
+    if (data.orders.pageInfo.hasNextPage === true) {
+      let check = true;
+      let currentEndCursor = data.orders.pageInfo.endCursor;
+      while (check) {
+        const { data: dataRefetch } = await getOrder({
+          variables: { cursor: currentEndCursor, status: selectStatus },
+        });
+
+        ordersData = ordersData.concat(
+          dataRefetch.orders.edges
+        );
+
+        if (dataRefetch.orders.pageInfo.hasNextPage === true) {
+          currentEndCursor = dataRefetch.orders.pageInfo.endCursor;
+        } else {
+          check = false;
+        }
+      }
+    }
+
+    let res = ordersData.map((node, index) => {
+      const { __typename, ...rest } = node;
+      return { ...rest, index: index + 1 }; // Add the index to the object
+    });
+    setOrders(res);
+    setIsLoading(false);
+  };
+
+  const fetchOrderStatus = async () => {
+    orderStatus.forEach(async (status, index) => {
+      const { data } = await getOrderStatus({
+        variables: {
+          status: status
+        }
+      });
+      const totalCount = data.orders.totalCount;
+      switch (index) {
+        case 0: {
+          setReserved(totalCount);
+          break;
+        }
+        case 1: {
+          setPrep(totalCount);
+          break;
+        }
+        case 2: {
+          setTemp(totalCount);
+          break;
+        }
+        case 3: {
+          setFin(totalCount);
+          break;
+        }
+        case 4: {
+          setComplained(totalCount);
+          break;
+        }
+        case 5: {
+          setCancelled(totalCount);
+          break;
+        }
+      }
+    });
+
+    setIsLoading(false);
+  }
 
   const {
     error: errReserve,
@@ -105,7 +210,6 @@ const OrderPage = () => {
       dataReserve["orders"]
     ) {
       setReserved(dataReserve["orders"].totalCount);
-      setIsLoading(false);
     }
   }, [dataReserve, loadingReserve, errReserve]);
 
@@ -201,12 +305,30 @@ const OrderPage = () => {
     }
   }, [data, loading, error]);
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = async (selectStatus) => {
     const searchTerm = document.getElementById('floatingValue').value;
     const searchTermInt = parseInt(searchTerm);
-    setorderQuery(LOAD_ORDERS_FILTER_SEARCH);
     setSearchTerm(searchTermInt);
-    refetch();
+
+    const { data } = await searchOrder({
+      variables: {
+        status: selectStatus,
+        id: searchTermInt
+      }
+    })
+
+    if (data.orders.edges.length != 0) {
+      console.log("calling");
+      const orderData = data.orders.edges;
+      setSerchedOrder(orderData);
+    }
+    else {
+      setSerchedOrder([]);
+    }
+    setIsLoading(false);
+  }
+
+  const changeCount = () => {
     setReserved(0);
     setPrep(0);
     setCancelled(0);
@@ -214,34 +336,35 @@ const OrderPage = () => {
     setComplained(0);
     refetchPrep(0);
     setFin(0);
-    console.log(selectStatus[0]);
-    switch (selectStatus) {
-      case "RESERVED": {
-        setReserved(1);
-        break;
-      }
-      case "PREPARED": {
-        setPrep(1);
-        break;
-      }
-      case "SERVED": {
-        setTemp(1);
-        break;
-      }
-      case "FINISHED": {
-        setFin(1);
-        break;
-      }
-      case "COMPLAINED": {
-        setComplained(1);
-        break;
-      }
-      case "CANCELLED": {
-        setCancelled(1);
-        break;
+    if (searchedOrder) {
+      const status = searchedOrder[0].node.currentStatus;
+      switch (status) {
+        case "RESERVED": {
+          setReserved(1);
+          break;
+        }
+        case "PREPARED": {
+          setPrep(1);
+          break;
+        }
+        case "SERVED": {
+          setTemp(1);
+          break;
+        }
+        case "FINISHED": {
+          setFin(1);
+          break;
+        }
+        case "COMPLAINED": {
+          setComplained(1);
+          break;
+        }
+        case "CANCELLED": {
+          setCancelled(1);
+          break;
+        }
       }
     }
-    setIsLoading(false);
   }
 
   var settings = {
@@ -271,15 +394,17 @@ const OrderPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 setIsLoading(true);
-                handleSearchSubmit();
+                handleSearchSubmit(selectStatus);
+                changeCount();
               }
             }}
           />
-          <button className="link" 
-          onClick={() => {
-            setIsLoading(true);
-            handleSearchSubmit();
-          }}>
+          <button className="link"
+            onClick={() => {
+              setIsLoading(true);
+              handleSearchSubmit(selectStatus);
+              changeCount();
+            }}>
             <SearchIcon />
           </button>
         </div>
@@ -294,6 +419,7 @@ const OrderPage = () => {
             className="link"
             onClick={() => {
               setSearchTerm(null);
+              setSerchedOrder(null);
               setIsLoading(true);
               refetch();
               refetchCancelled();
@@ -302,9 +428,8 @@ const OrderPage = () => {
               refetchPrep();
               refetchFin();
               refetchReserve();
-              setTimeout(() => {
-                setIsLoading(false);
-              }, 3000);
+              fetchOrder(selectStatus);
+              fetchOrderStatus();
             }}
           >
             <RefreshIcon />
@@ -355,7 +480,9 @@ const OrderPage = () => {
           </div>
         )}
         {!isLoading && (
-          <OrderTable orders={orders} />
+          searchedOrder ?
+            <OrderTable orders={searchedOrder} /> :
+            <OrderTable orders={orders} />
         )}
       </div>
     </div>
