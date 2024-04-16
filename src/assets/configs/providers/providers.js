@@ -115,34 +115,4 @@ export const providersColumns = [
     },
     renderHeader: () => <span>TRUY CẬP</span>,
   },
-  {
-    field: "status",
-    headerName: "Trạng thái",
-    width: 140,
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      let check = false;
-      if (params.row.account !== null) {
-        check = true;
-      }
-      return (
-        <Switch
-          checked={params.row.isActive}
-          onChange={() => {}}
-          disabled={check}
-          inputProps={{ "aria-label": "controlled" }}
-          sx={{
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              color: "#2c3d50",
-            },
-            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: "#2c3d50",
-            },
-          }}
-        />
-      );
-    },
-    renderHeader: () => <span>TRẠNG THÁI</span>,
-  },
 ];

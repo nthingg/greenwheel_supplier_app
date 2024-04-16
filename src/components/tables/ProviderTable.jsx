@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem, Switch } from "@mui/material";
 import { providersColumns } from "../../assets/configs/providers/providers";
 import { providerTotalColumns } from "../../assets/configs/providers/providerTotal";
 
@@ -26,6 +26,36 @@ const ProviderTable = ({ providers, totalProviders }) => {
   };
 
   const actionColumn = [
+    {
+      field: "status",
+      headerName: "Trạng thái",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        let check = false;
+        if (params.row.account !== null) {
+          check = true;
+        }
+        return (
+          <Switch
+            checked={params.row.isActive}
+            onChange={() => {}}
+            disabled={check}
+            inputProps={{ "aria-label": "controlled" }}
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: "#2c3d50",
+              },
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: "#2c3d50",
+              },
+            }}
+          />
+        );
+      },
+      renderHeader: () => <span>TRẠNG THÁI</span>,
+    },
     {
       field: "action",
       width: 140,
@@ -98,6 +128,36 @@ const ProviderTable = ({ providers, totalProviders }) => {
     },
   ];
   const actionTotalColumn = [
+    {
+      field: "status",
+      headerName: "Trạng thái",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        let check = false;
+        if (params.row.node.account !== null) {
+          check = true;
+        }
+        return (
+          <Switch
+            checked={params.row.node.isActive}
+            onChange={() => {}}
+            disabled={check}
+            inputProps={{ "aria-label": "controlled" }}
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: "#2c3d50",
+              },
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: "#2c3d50",
+              },
+            }}
+          />
+        );
+      },
+      renderHeader: () => <span>TRẠNG THÁI</span>,
+    },
     {
       field: "action",
       width: 140,

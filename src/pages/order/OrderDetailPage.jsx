@@ -334,7 +334,7 @@ const OrderDetailPage = () => {
           <div className="right">
             <div className="order-modify">
               <div className="groupBtn">
-                {cancellable === true &&
+                {cancellable &&
                   status !== "COMPLAINED" &&
                   status !== "SERVED" &&
                   status !== "FINISHED" &&
