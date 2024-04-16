@@ -101,7 +101,7 @@ const SideBar = () => {
             {role === "STAFF" && (
               <div className="left">
                 <img
-                  src="https://imgs2.dab3games.com/among-us-2-online355.png"
+                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                   className="user_image"
                   alt="Profile"
                 ></img>

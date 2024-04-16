@@ -117,7 +117,7 @@ const App = () => {
             ></Route>
           </Routes>
         </main>
-        <Fab
+        {/* <Fab
           onClick={() => {
             if (open) {
               setOpen(false);
@@ -129,7 +129,7 @@ const App = () => {
           style={{ right: 10, top: 10, position: "fixed", zIndex: 1600 }}
         >
           <NotificationsActiveIcon />
-        </Fab>
+        </Fab> */}
         <Dialog
           open={open}
           onClose={() => {
