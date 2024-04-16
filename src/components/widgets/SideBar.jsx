@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../assets/scss/sidebar.scss";
 import Dashboard from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
@@ -10,11 +10,37 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MapIcon from "@mui/icons-material/Map";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useLazyQuery } from "@apollo/client";
+import { LOAD_DETAIL_PROVIDER } from "../../services/graphql/provider";
 
 const SideBar = () => {
   const navigate = useNavigate();
 
   const role = localStorage.getItem("role");
+  const providerId = localStorage.getItem("providerId");
+  const [provider, setProvider] = useState(null);
+
+  const [getProvider, { error, loading, data }] =
+    useLazyQuery(LOAD_DETAIL_PROVIDER);
+
+  const fetchData = async () => {
+    try {
+      let providerId = localStorage.getItem("providerId");
+
+      const { data: dataProvider } = await getProvider({
+        variables: {
+          id: parseInt(providerId, 10),
+        },
+      });
+      setProvider(dataProvider["providers"]["nodes"][0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="sidebar">
@@ -39,10 +65,24 @@ const SideBar = () => {
                   <span>Quản lý đơn hàng</span>
                 </li>
               </NavLink>
+            </>
+          )}
+          {!providerId && (
+            <>
               <NavLink to="/providers" style={{ textDecoration: "none" }}>
                 <li>
                   <StoreIcon className="icon" />
                   <span>Quản lý nhà cung cấp</span>
+                </li>
+              </NavLink>
+            </>
+          )}
+          {providerId && (
+            <>
+              <NavLink to="/profile" style={{ textDecoration: "none" }}>
+                <li>
+                  <StoreIcon className="icon" />
+                  <span>Hồ sơ nhà cung cấp</span>
                 </li>
               </NavLink>
             </>
@@ -72,7 +112,7 @@ const SideBar = () => {
             {role === "PROVIDER" && (
               <div className="user_info">
                 <span className="name">Provider</span>
-                <span className="role">ABC Restaurant</span>
+                <span className="role">{provider?.name}</span>
               </div>
             )}
             <button
@@ -80,6 +120,7 @@ const SideBar = () => {
               type="button"
               onClick={(e) => {
                 localStorage.removeItem("staffToken");
+                localStorage.removeItem("providerId");
                 navigate("/");
                 navigate(0);
               }}

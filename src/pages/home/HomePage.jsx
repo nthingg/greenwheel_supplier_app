@@ -6,7 +6,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { useQuery } from "@apollo/client";
 import {
   LOAD_NUMBERS_CANCELLED,
@@ -132,6 +132,8 @@ const HomePage = () => {
     return () => clearInterval(timer); // Cleanup function to stop the timer when the component unmounts
   }, []);
 
+  const providerId = localStorage.getItem("providerId");
+
   return (
     <div className="home">
       {isLoading && (
@@ -183,17 +185,21 @@ const HomePage = () => {
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng được đặt</div>
                   <div className="item-body">
-                    <div className="left"
+                    <div
+                      className="left"
                       onClick={() => {
-                        navigate("/orders")
-                      }}>
+                        navigate("/orders");
+                      }}
+                    >
                       <p>{reserved}</p>
                     </div>
                     <div className="right">
-                      <div className="btn info"
-                      onClick={() => {
-                        navigate("/orders")
-                      }}>
+                      <div
+                        className="btn info"
+                        onClick={() => {
+                          navigate("/orders");
+                        }}
+                      >
                         <InfoIcon sx={{ color: "white" }} />
                       </div>
                     </div>
@@ -204,17 +210,21 @@ const HomePage = () => {
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng chuẩn bị</div>
                   <div className="item-body">
-                    <div className="left"
+                    <div
+                      className="left"
                       onClick={() => {
-                        navigate("/orders/status/1")
-                      }}>
+                        navigate("/orders/status/1");
+                      }}
+                    >
                       <p>{prep}</p>
                     </div>
                     <div className="right">
-                      <div className="btn temp"
-                      onClick={() => {
-                        navigate("/orders/status/1")
-                      }}>
+                      <div
+                        className="btn temp"
+                        onClick={() => {
+                          navigate("/orders/status/1");
+                        }}
+                      >
                         <ErrorOutlineOutlinedIcon sx={{ color: "white" }} />
                       </div>
                     </div>
@@ -225,18 +235,24 @@ const HomePage = () => {
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng phục vụ</div>
                   <div className="item-body">
-                    <div className="left"
+                    <div
+                      className="left"
                       onClick={() => {
-                        navigate("/orders/status/2")
-                      }}>
+                        navigate("/orders/status/2");
+                      }}
+                    >
                       <p>{temp}</p>
                     </div>
                     <div className="right">
-                      <div className="btn success"
-                      onClick={() => {
-                        navigate("/orders/status/2")
-                      }}>
-                        <CheckCircleOutlineOutlinedIcon sx={{ color: "white" }} />
+                      <div
+                        className="btn success"
+                        onClick={() => {
+                          navigate("/orders/status/2");
+                        }}
+                      >
+                        <CheckCircleOutlineOutlinedIcon
+                          sx={{ color: "white" }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -246,17 +262,21 @@ const HomePage = () => {
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng bị hủy</div>
                   <div className="item-body">
-                    <div className="left"
+                    <div
+                      className="left"
                       onClick={() => {
-                        navigate("/orders/status/5")
-                      }}>
+                        navigate("/orders/status/5");
+                      }}
+                    >
                       <p>{cancelled}</p>
                     </div>
                     <div className="right">
-                      <div className="btn cancel"
-                      onClick={() => {
-                        navigate("/orders/status/5")
-                      }}>
+                      <div
+                        className="btn cancel"
+                        onClick={() => {
+                          navigate("/orders/status/5");
+                        }}
+                      >
                         <CancelOutlinedIcon sx={{ color: "white" }} />
                       </div>
                     </div>
@@ -267,17 +287,21 @@ const HomePage = () => {
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng bị phản ánh</div>
                   <div className="item-body">
-                    <div className="left"
+                    <div
+                      className="left"
                       onClick={() => {
-                        navigate("/orders/status/4")
-                      }}>
+                        navigate("/orders/status/4");
+                      }}
+                    >
                       <p>{complained}</p>
                     </div>
                     <div className="right">
-                      <div className="btn info"
-                      onClick={() => {
-                        navigate("/orders/status/4")
-                      }}>
+                      <div
+                        className="btn info"
+                        onClick={() => {
+                          navigate("/orders/status/4");
+                        }}
+                      >
                         <InfoIcon sx={{ color: "white" }} />
                       </div>
                     </div>
@@ -287,46 +311,67 @@ const HomePage = () => {
               <div className="item-container success">
                 <div className="item-top">
                   <div className="item-title">Số đơn hàng hoàn tất</div>
-                  <div className="item-body"
+                  <div
+                    className="item-body"
                     onClick={() => {
-                      navigate("/orders/status/3")
-                    }}>
+                      navigate("/orders/status/3");
+                    }}
+                  >
                     <div className="left">
                       <p>{fin}</p>
                     </div>
                     <div className="right">
-                      <div className="btn success"
-                      onClick={() => {
-                        navigate("/orders/status/3")
-                      }}>
-                        <CheckCircleOutlineOutlinedIcon sx={{ color: "white" }} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="item-container info">
-                <div className="item-top">
-                  <div className="item-title">Số lượng nhà cung cấp</div>
-                  <div className="item-body">
-                    <div className="left"
-                      onClick={() => {
-                        navigate("/providers")
-                      }}>
-                      <p>{supp}</p>
-                    </div>
-                    <div className="right">
-                      <div className="btn info"
+                      <div
+                        className="btn success"
                         onClick={() => {
-                          navigate("/providers")
-                        }}>
-                        <InfoIcon sx={{ color: "white" }} />
+                          navigate("/orders/status/3");
+                        }}
+                      >
+                        <CheckCircleOutlineOutlinedIcon
+                          sx={{ color: "white" }}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="item-container info" style={{ border: "none" }}></div>
+              {!providerId && (
+                <div className="item-container info">
+                  <div className="item-top">
+                    <div className="item-title">Số lượng nhà cung cấp</div>
+                    <div className="item-body">
+                      <div
+                        className="left"
+                        onClick={() => {
+                          navigate("/providers");
+                        }}
+                      >
+                        <p>{supp}</p>
+                      </div>
+                      <div className="right">
+                        <div
+                          className="btn info"
+                          onClick={() => {
+                            navigate("/providers");
+                          }}
+                        >
+                          <InfoIcon sx={{ color: "white" }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div
+                className="item-container info"
+                style={{ border: "none" }}
+              ></div>
+              {providerId && (
+                <div
+                  className="item-container info"
+                  style={{ border: "none" }}
+                ></div>
+              )}
             </div>
           </div>
         </div>

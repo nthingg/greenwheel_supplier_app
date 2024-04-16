@@ -27,6 +27,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import ProviderUpdatePage from "./pages/provider/ProviderUpdatePage";
+import ProviderProfilePage from "./pages/profile/ProviderProfilePage";
 
 const App = () => {
   const role = localStorage.getItem("role");
@@ -54,10 +55,12 @@ const App = () => {
               element={token ? <HomePage /> : <Navigate to="/login" />}
             ></Route>
             <Route path="login" element={<LoginPage />}></Route>
-            {/* <Route
-                path="profile"
-                element={token ? <ProfilePage /> : <Navigate to="/login" />}
-              ></Route> */}
+            <Route
+              path="profile"
+              element={
+                token ? <ProviderProfilePage /> : <Navigate to="/login" />
+              }
+            ></Route>
             <Route path="products">
               <Route
                 index
@@ -94,10 +97,7 @@ const App = () => {
                 index
                 element={token ? <OrderPage /> : <Navigate to="/login" />}
               />
-              <Route
-                path="status/:sbs"
-                element={<OrderPage />}
-              />
+              <Route path="status/:sbs" element={<OrderPage />} />
               <Route
                 path=":orderId/provider/:providerId"
                 element={<ProviderDetailPage />}

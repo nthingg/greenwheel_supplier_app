@@ -57,6 +57,10 @@ const LoginPage = () => {
       const newToken = data["staffRequestAuthorize"]["accessToken"];
       const decoded = jwtDecode(newToken);
 
+      if (decoded.provider_id) {
+        localStorage.setItem("providerId", decoded.provider_id);
+      }
+
       if (
         decoded[
           "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"

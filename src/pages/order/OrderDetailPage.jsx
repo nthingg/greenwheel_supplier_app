@@ -336,7 +336,9 @@ const OrderDetailPage = () => {
               <div className="groupBtn">
                 {cancellable === true &&
                   status !== "COMPLAINED" &&
-                  status !== "SERVED" && (
+                  status !== "SERVED" &&
+                  status !== "FINISHED" &&
+                  status !== "CANCELLED" && (
                     <button className="remove" onClick={handleClickOpen}>
                       <CancelIcon />
                       <p>Huỷ đơn</p>
@@ -407,17 +409,17 @@ const OrderDetailPage = () => {
                 )}
                 {order?.currentStatus === "COMPLAINED" && (
                   <a className="status complained" title="Bị phàn nàn">
-                    <FeedbackIcon />
+                    <FeedbackIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
                 {order?.currentStatus === "FINISHED" && (
                   <a className="status reserved" title="Hoàn thành">
-                    <BeenhereIcon />
+                    <BeenhereIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
                 {order?.currentStatus === "CANCELLED" && (
                   <a className="status reserved" title="Đã hủy">
-                    <CancelIcon />
+                    <CancelIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
               </div>
