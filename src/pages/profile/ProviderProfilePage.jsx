@@ -248,7 +248,7 @@ const ProviderProfilePage = () => {
                 </div>
               </div>
               <div className="right">
-                <Link to={`/providers/update/${provider?.id}`} className="link">
+                <Link to={`/profile/update/${provider?.id}`} className="link">
                   <EditIcon />
                   <p>Chỉnh sửa</p>
                 </Link>

@@ -98,21 +98,30 @@ const SideBar = () => {
       <div className="bottom" style={{ marginTop: "auto" }}>
         <div className="user_container">
           <div className="left">
-            <img
-              src="https://imgs2.dab3games.com/among-us-2-online355.png"
-              className="user_image"
-              alt="Profile"
-            ></img>
             {role === "STAFF" && (
-              <div className="user_info">
-                <span className="name">Provider</span>
-                <span className="role">BTSS Provider</span>
+              <div className="left">
+                <img
+                  src="https://imgs2.dab3games.com/among-us-2-online355.png"
+                  className="user_image"
+                  alt="Profile"
+                ></img>
+                <div className="user_info">
+                  <span className="name">Provider</span>
+                  <span className="role">BTSS Provider</span>
+                </div>
               </div>
             )}
             {role === "PROVIDER" && (
-              <div className="user_info">
-                <span className="name">Provider</span>
-                <span className="role">{provider?.name}</span>
+              <div className="left">
+                <img
+                  src={`https://d38ozmgi8b70tu.cloudfront.net${provider?.imagePath}`}
+                  className="user_image"
+                  alt="Profile"
+                ></img>
+                <div className="user_info">
+                  <span className="name">Provider</span>
+                  <span className="role">{provider?.name}</span>
+                </div>
               </div>
             )}
             <button
