@@ -12,6 +12,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useLazyQuery } from "@apollo/client";
 import { LOAD_DETAIL_PROVIDER } from "../../services/graphql/provider";
+import { Fastfood } from "@mui/icons-material";
 
 const SideBar = () => {
   const navigate = useNavigate();
@@ -27,12 +28,14 @@ const SideBar = () => {
     try {
       let providerId = localStorage.getItem("providerId");
 
-      const { data: dataProvider } = await getProvider({
-        variables: {
-          id: parseInt(providerId, 10),
-        },
-      });
-      setProvider(dataProvider["providers"]["nodes"][0]);
+      if (providerId) {
+        const { data: dataProvider } = await getProvider({
+          variables: {
+            id: parseInt(providerId, 10),
+          },
+        });
+        setProvider(dataProvider["providers"]["nodes"][0]);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -78,6 +81,14 @@ const SideBar = () => {
             </>
           )}
           {providerId && (
+            <NavLink to="/products" style={{ textDecoration: "none" }}>
+              <li>
+                <Fastfood className="icon" />
+                <span>Quản lý dịch vụ</span>
+              </li>
+            </NavLink>
+          )}
+          {providerId && (
             <>
               <NavLink to="/profile" style={{ textDecoration: "none" }}>
                 <li>
@@ -87,12 +98,6 @@ const SideBar = () => {
               </NavLink>
             </>
           )}
-          {/* <NavLink to="/products" style={{ textDecoration: "none" }}>
-            <li>
-              <FastfoodIcon className="icon" />
-              <span>Quản lý dịch vụ</span>
-            </li>
-          </NavLink> */}
         </ul>
       </div>
       <div className="bottom" style={{ marginTop: "auto" }}>

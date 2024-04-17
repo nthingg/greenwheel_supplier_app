@@ -7,7 +7,7 @@ export const LOAD_PRODUCTS = gql`
         id
         name
         isAvailable
-        imageUrl
+        imagePath
         price
         type
       }
@@ -22,7 +22,7 @@ export const LOAD_PRODUCTS_FILTER = gql`
         id
         name
         isAvailable
-        imageUrl
+        imagePath
         price
         type
         partySize

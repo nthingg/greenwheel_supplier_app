@@ -16,6 +16,7 @@ import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import { IconButton } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { LOAD_PRODUCTS_FILTER } from "../../services/graphql/product";
 
 const ProductPage = () => {
@@ -23,6 +24,7 @@ const ProductPage = () => {
 
   const [selectedDiv, setSelectedDiv] = useState(0);
   const [selectType, setSelectedType] = useState(productType);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleClick = (index) => {
     setSelectedDiv(index);
@@ -69,6 +71,7 @@ const ProductPage = () => {
       });
       setProducts(res);
     }
+    setIsLoading(false);
   }, [data, loading, error]);
 
   return (
@@ -140,7 +143,19 @@ const ProductPage = () => {
             </div>
           ))}
         </div>
-        <ProductTable products={products} />
+        {isLoading && (
+          <div className="loading">
+            <RestartAltIcon
+              sx={{
+                fontSize: 80,
+                color: "#2c3d50",
+              }}
+            />
+          </div>
+        )}
+        {!isLoading && (
+          <ProductTable products={products} />
+        )}
       </div>
     </div>
   );

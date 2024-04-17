@@ -22,7 +22,6 @@ import {
   LOAD_NUMBERS_PREPARED,
   LOAD_NUMBERS_RESERVED,
   LOAD_NUMBERS_SERVED,
-  LOAD_ORDERS,
   LOAD_ORDERS_FILTER,
   LOAD_ORDERS_FILTER_INIT,
   LOAD_ORDERS_FILTER_SEARCH,
@@ -58,7 +57,6 @@ const OrderPage = () => {
   const [searchTerm, setSearchTerm] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  const [searchedOrder, setSerchedOrder] = useState(null);
 
   useEffect(() => {
     fetchOrder(orderStatus[0]);
@@ -117,7 +115,7 @@ const OrderPage = () => {
 
   const [getOrderInit, { }] = useLazyQuery(LOAD_ORDERS_FILTER_INIT);
   const [getOrder, { }] = useLazyQuery(LOAD_ORDERS_FILTER);
-  const [searchOrder, { }] = useLazyQuery(LOAD_ORDERS_FILTER_SEARCH);
+  const [search, { }] = useLazyQuery(LOAD_ORDERS_FILTER_SEARCH);
   const [getOrderStatus, { }] = useLazyQuery(LOAD_NUMBERS_ORDERS);
 
   const fetchOrder = async (selectStatus) => {
@@ -195,6 +193,26 @@ const OrderPage = () => {
     setIsLoading(false);
   }
 
+  const searchOrder = async (searchTerm) => {
+    const { data } = await search({
+      variables: {
+        currentStatus: selectStatus,
+        id: searchTerm
+      }
+    })
+
+    const orders = data.orders.edges;
+
+    let res = orders.map((node, index) => {
+      const { __typename, ...rest } = node;
+      return { ...rest, index: index + 1 };
+    });
+
+    setOrders(res);
+    setIsLoading(false);
+    return res;
+  }
+
   const {
     error: errReserve,
     loading: loadingReserve,
@@ -211,7 +229,7 @@ const OrderPage = () => {
     ) {
       setReserved(dataReserve["orders"].totalCount);
     }
-  }, [dataReserve, loadingReserve, errReserve]);
+  }, [dataReserve, loadingReserve, errReserve, searchTerm]);
 
   const {
     error: errorCancelled,
@@ -229,7 +247,7 @@ const OrderPage = () => {
     ) {
       setCancelled(dataCancelled["orders"].totalCount);
     }
-  }, [dataCancelled, loadingCancelled, errorCancelled]);
+  }, [dataCancelled, loadingCancelled, errorCancelled, searchTerm]);
 
   const {
     error: errorPrep,
@@ -242,7 +260,7 @@ const OrderPage = () => {
     if (!loadingPrep && !errorPrep && dataPrep && dataPrep["orders"]) {
       setPrep(dataPrep["orders"].totalCount);
     }
-  }, [dataPrep, loadingPrep, errorPrep]);
+  }, [dataPrep, loadingPrep, errorPrep, searchTerm]);
 
   const {
     error: errorComplained,
@@ -260,7 +278,7 @@ const OrderPage = () => {
     ) {
       setComplained(dataComplained["orders"].totalCount);
     }
-  }, [dataComplained, loadingComplained, errorComplained]);
+  }, [dataComplained, loadingComplained, errorComplained, searchTerm]);
 
   const {
     error: errorFin,
@@ -273,7 +291,7 @@ const OrderPage = () => {
     if (!loadingFin && !errorFin && dataFin && dataFin["orders"]) {
       setFin(dataFin["orders"].totalCount);
     }
-  }, [dataFin, loadingFin, errorFin]);
+  }, [dataFin, loadingFin, errorFin, searchTerm]);
 
   const {
     error: errorTemp,
@@ -286,7 +304,7 @@ const OrderPage = () => {
     if (!loadingTemp && !errorTemp && dataTemp && dataTemp["orders"]) {
       setTemp(dataTemp["orders"].totalCount);
     }
-  }, [dataTemp, loadingTemp, errorTemp]);
+  }, [dataTemp, loadingTemp, errorTemp, searchTerm]);
 
   const { error, loading, data, refetch } = useQuery(orderQuery, {
     variables: {
@@ -305,30 +323,28 @@ const OrderPage = () => {
     }
   }, [data, loading, error]);
 
-  const handleSearchSubmit = async (selectStatus) => {
+  const handleSearchSubmit = async () => {
+    setIsLoading(true);
     const searchTerm = document.getElementById('floatingValue').value;
-    const searchTermInt = parseInt(searchTerm);
-    setSearchTerm(searchTermInt);
+    if (!searchTerm) {
+      setIsLoading(false);
+      return;
+    }
+    if (!isNaN(searchTerm)) {
+      const searchTermInt = parseInt(searchTerm);
+      setSearchTerm(searchTermInt);
 
-    const { data } = await searchOrder({
-      variables: {
-        status: selectStatus,
-        id: searchTermInt
+      const res = await searchOrder();
+      if (res[0]) {
+        const order = res[0].node;
+        changeCount(order.status);
+      } else {
+        changeCount(null);
       }
-    })
-
-    if (data.orders.edges.length != 0) {
-      console.log("calling");
-      const orderData = data.orders.edges;
-      setSerchedOrder(orderData);
     }
-    else {
-      setSerchedOrder([]);
-    }
-    setIsLoading(false);
   }
 
-  const changeCount = () => {
+  const changeCount = (status) => {
     setReserved(0);
     setPrep(0);
     setCancelled(0);
@@ -336,8 +352,7 @@ const OrderPage = () => {
     setComplained(0);
     refetchPrep(0);
     setFin(0);
-    if (searchedOrder) {
-      const status = searchedOrder[0].node.currentStatus;
+    if (status) {
       switch (status) {
         case "RESERVED": {
           setReserved(1);
@@ -393,7 +408,6 @@ const OrderPage = () => {
             placeholder="Nhập mã đơn hàng..."
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                setIsLoading(true);
                 handleSearchSubmit(selectStatus);
                 changeCount();
               }
@@ -401,7 +415,6 @@ const OrderPage = () => {
           />
           <button className="link"
             onClick={() => {
-              setIsLoading(true);
               handleSearchSubmit(selectStatus);
               changeCount();
             }}>
@@ -419,7 +432,6 @@ const OrderPage = () => {
             className="link"
             onClick={() => {
               setSearchTerm(null);
-              setSerchedOrder(null);
               setIsLoading(true);
               refetch();
               refetchCancelled();
@@ -429,7 +441,6 @@ const OrderPage = () => {
               refetchFin();
               refetchReserve();
               fetchOrder(selectStatus);
-              fetchOrderStatus();
             }}
           >
             <RefreshIcon />
@@ -479,11 +490,9 @@ const OrderPage = () => {
             />
           </div>
         )}
-        {!isLoading && (
-          searchedOrder ?
-            <OrderTable orders={searchedOrder} /> :
-            <OrderTable orders={orders} />
-        )}
+        {!isLoading &&
+          <OrderTable orders={orders} />
+        }
       </div>
     </div>
   );
