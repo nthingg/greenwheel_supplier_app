@@ -27,6 +27,7 @@ import {
   StepContent,
   Snackbar,
   Alert,
+  Tooltip,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -69,6 +70,15 @@ const OrderDetailPage = () => {
   const [finalServable, setFinalServable] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  const handleConfirm = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
 
   const handleClick = () => {
     setSnackbarOpen(true);
@@ -94,6 +104,17 @@ const OrderDetailPage = () => {
     },
   });
 
+  const [clock, setClock] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setClock(new Date());
+      console.log(new Date().toLocaleString());
+    }, 1000); // Update every second
+
+    return () => clearInterval(timer); // Cleanup function to stop the timer when the component unmounts
+  }, []);
+
   useEffect(() => {
     if (
       !loading &&
@@ -112,6 +133,9 @@ const OrderDetailPage = () => {
       );
       setDetails(resDetail);
 
+      const serveDayIndexes = data["orders"]["nodes"][0]["serveDates"];
+      setHighlitedDays(serveDayIndexes);
+
       const date = new Date(data["orders"]["nodes"][0]["createdAt"]);
       setDate(
         date.toLocaleDateString("vi-VN", {
@@ -119,34 +143,21 @@ const OrderDetailPage = () => {
         })
       );
 
-      const serveDayIndexes = data["orders"]["nodes"][0]["serveDates"];
-
-      console.log(serveDayIndexes);
-
-      // const newDatesList = serveDayIndexes.map((index) => {
-      //   const newDate = new Date(startDate);
-      //   newDate.setDate(newDate.getDate() + index);
-      //   return newDate.toISOString().slice(0, 10); // Format as YYYY-MM-DD
-      // });
-
-      setHighlitedDays(serveDayIndexes);
-
+      let today = new Date();
       const threeDaysLater = new Date(date.getTime() + 3 * 24 * 60 * 60 * 1000); // Add 3 days in milliseconds
-      const today = new Date();
-      setCancellable(threeDaysLater > today);
-      setFinalCancellable(
-        threeDaysLater.toLocaleDateString("vi-VN", {
-          timeZone: "UTC",
-        })
-      );
 
-      const start = new Date(data["orders"]["nodes"][0]["plan"]["startDate"]);
-      setServable(start <= today);
-      setFinalServable(
-        start.toLocaleDateString("vi-VN", {
-          timeZone: "UTC",
-        })
-      );
+      const formattedDate = threeDaysLater.toLocaleTimeString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+
+      setCancellable(threeDaysLater >= today);
+      setFinalCancellable(formattedDate);
+
+      console.log(formattedDate);
+      console.log(today);
+      console.log(threeDaysLater >= today);
 
       if (data["orders"]["nodes"][0].traces.length > 1) {
         const reason = data["orders"]["nodes"][0].traces[1].description;
@@ -338,38 +349,34 @@ const OrderDetailPage = () => {
                   status !== "COMPLAINED" &&
                   status !== "SERVED" &&
                   status !== "FINISHED" &&
+                  status !== "PREPARED" &&
                   status !== "CANCELLED" && (
-                    <button className="remove" onClick={handleClickOpen}>
-                      <CancelIcon />
-                      <p>Huỷ đơn</p>
-                    </button>
+                    <Tooltip title={<h2>Hạn hủy: {finalCancellable}</h2>}>
+                      <button className="remove" onClick={handleClickOpen}>
+                        <CancelIcon />
+                        <p>Huỷ đơn</p>
+                      </button>
+                    </Tooltip>
                   )}
-                {status === "RESERVED" && cancellable === true && (
+                {status === "RESERVED" && cancellable && (
                   <p className="sepa">
                     <FiberManualRecordIcon
                       sx={{ fontSize: 20, color: "#2c3d50" }}
                     />
                   </p>
                 )}
-                {servable === true ||
-                  (status === "PREPARED" && (
-                    <p className="sepa">
-                      <FiberManualRecordIcon
-                        sx={{ fontSize: 20, color: "#2c3d50" }}
-                      />
-                    </p>
-                  ))}
-                {status === "RESERVED" && (
-                  <button className="prepare" onClick={handleChangeStatus}>
-                    <MicrowaveIcon />
-                    <p>Chuẩn bị</p>
-                  </button>
-                )}
-                {status === "PREPARED" && servable && (
-                  <button className="edit" onClick={handleChangeStatus}>
-                    <CheckCircleIcon />
-                    <p>Phục vụ</p>
-                  </button>
+                {status === "RESERVED" && cancellable && (
+                  <Tooltip title={<h2>Phục vụ trước: {finalCancellable}</h2>}>
+                    <button
+                      className="prepare"
+                      onClick={() => {
+                        handleConfirm();
+                      }}
+                    >
+                      <MicrowaveIcon />
+                      <p>Chuẩn bị</p>
+                    </button>
+                  </Tooltip>
                 )}
               </div>
             </div>
@@ -445,12 +452,6 @@ const OrderDetailPage = () => {
                   <span className="itemKey">Ngày tạo:</span>
                   <span className="itemValue">{date}</span>
                 </div>
-                {cancellable && (
-                  <div className="detailItem">
-                    <span className="itemKey">Hạn hủy đơn:</span>
-                    <span className="itemValue">{finalCancellable}</span>
-                  </div>
-                )}
               </div>
               <div className="right">
                 <div className="detailItem">
@@ -487,12 +488,6 @@ const OrderDetailPage = () => {
                     </a>
                   </span>
                 </div>
-                {servable && (
-                  <div className="detailItem">
-                    <span className="itemKey">Bắt đầu phục vụ:</span>
-                    <span className="itemValue">{finalServable}</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -517,7 +512,19 @@ const OrderDetailPage = () => {
                   backgroundColor: "#f8f9f9",
                 }}
               >
-                <OrderDetailTable details={details} />
+                <div className="info-container">
+                  <div className="left">
+                    <OrderDetailTable details={details} />
+                  </div>
+                  <div className="right">
+                    <div className="header-info">
+                      <p>Ghi chú</p>
+                    </div>
+                    <div className="body-info">
+                      {!order?.note ? "Không có ghi chú" : order?.note}
+                    </div>
+                  </div>
+                </div>
               </AccordionDetails>
             </Accordion>
           </div>
@@ -577,33 +584,56 @@ const OrderDetailPage = () => {
               </AccordionDetails>
             </Accordion>
           </div>
-          <div className="bottom">
-            <Accordion sx={{ boxShadow: "none", width: 1400 }}>
-              <AccordionSummary
-                sx={{
-                  fontSize: 24,
-                  backgroundColor: "#2c3d50",
-                  color: "white",
-                  borderRadius: "10px",
-                  fontWeight: "600",
-                }}
-                expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                Mô tả
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  backgroundColor: "#f8f9f9",
-                }}
-              >
-                {order?.note === "" ? "Không có ghi chú" : order?.note}
-              </AccordionDetails>
-            </Accordion>
-          </div>
         </div>
       </div>
+      <Dialog
+        open={openConfirm}
+        onClose={() => {
+          setOpenConfirm(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle
+          backgroundColor={"#2c3d50"}
+          color={"white"}
+          fontWeight={600}
+        >
+          Xác nhận thay đổi
+        </DialogTitle>
+        <DialogContent style={{ width: 400, height: 180 }}>
+          {order?.currentStatus === "RESERVED" && (
+            <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+              Bạn có chắc muốn chuẩn bị đơn này?
+            </DialogContentText>
+          )}
+          {order?.currentStatus === "PREPARED" && (
+            <DialogContentText style={{ padding: "20px 0 10px 0" }}>
+              Bạn có chắc muốn phục vụ đơn này?
+            </DialogContentText>
+          )}
+
+          <div className="btns-group-dialog">
+            <button
+              className="link deny"
+              onClick={() => {
+                setOpenConfirm(false);
+              }}
+            >
+              <span>Không</span>
+            </button>
+            <button
+              className="link confirm"
+              onClick={async () => {
+                setOpenConfirm(false);
+                handleChangeStatus();
+              }}
+            >
+              <span>Có</span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog
         open={open}
         onClose={() => {
@@ -703,30 +733,6 @@ const OrderDetailPage = () => {
             Hủy
           </Button>
           <Button onClick={handleClose}>Xác nhận</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={openReason}
-        onClose={() => {
-          setOpenReason(false);
-        }}
-      >
-        <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>
-          Lý do hủy bỏ
-        </DialogTitle>
-        <DialogContent style={{ width: 500 }}>
-          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Lý do cụ thể được đưa ra cho việc hủy đơn hàng:
-          </DialogContentText>
-          <DialogContentText
-            style={{ padding: "20px 0 10px 0", fontWeight: "bold" }}
-          >
-            {reasonCancelled == null ? "Không có" : reasonCancelled}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseReason}>Xác nhận</Button>
         </DialogActions>
       </Dialog>
 

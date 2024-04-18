@@ -73,9 +73,7 @@ export const LOAD_ORDERS_FILTER = gql`
 
 export const LOAD_ORDERS_FILTER_SEARCH = gql`
   query LoadOrdersSearch($status: [OrderStatus!], $id: Int) {
-    orders(
-      where: { currentStatus: { in: $status }, id: { eq: $id } }
-    ) {
+    orders(where: { currentStatus: { in: $status }, id: { eq: $id } }) {
       edges {
         node {
           id
@@ -132,7 +130,7 @@ export const LOAD_DETAIL_ORDER = gql`
           status
         }
         plan {
-          startDate
+          utcStartAt
         }
         serveDates
         details {
@@ -158,14 +156,11 @@ export const LOAD_DETAIL_ORDER = gql`
 
 export const LOAD_NUMBERS_ORDERS = gql`
   query OrderType($status: OrderStatus) {
-    orders(where: {
-      currentStatus: {
-        eq: $status
-      }
-    })
-    {totalCount}
+    orders(where: { currentStatus: { eq: $status } }) {
+      totalCount
+    }
   }
-`
+`;
 
 export const LOAD_NUMBERS_COMPLAINED = gql`
   {

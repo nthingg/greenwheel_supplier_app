@@ -30,7 +30,7 @@ import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -47,9 +47,7 @@ const OrderPage = () => {
     "COMPLAINED",
     "CANCELLED",
   ];
-  const [selectedDiv, setSelectedDiv] = useState(
-    sbs ? parseInt(sbs, 10) : 0
-  );
+  const [selectedDiv, setSelectedDiv] = useState(sbs ? parseInt(sbs, 10) : 0);
   const [selectStatus, setSelectedStatus] = useState(
     orderStatus[sbs ? parseInt(sbs, 10) : 0]
   );
@@ -71,8 +69,7 @@ const OrderPage = () => {
         setSelectedStatus([orderStatus[0]]);
         if (searchTerm) {
           handleSearchSubmit(orderStatus[0]);
-        }
-        else {
+        } else {
           fetchOrder([orderStatus[0]]);
         }
         break;
@@ -80,8 +77,7 @@ const OrderPage = () => {
         setSelectedStatus([orderStatus[1]]);
         if (searchTerm) {
           handleSearchSubmit(orderStatus[1]);
-        }
-        else {
+        } else {
           fetchOrder([orderStatus[1]]);
         }
         break;
@@ -113,16 +109,24 @@ const OrderPage = () => {
     refetchReserve();
   };
 
-  const [getOrderInit, { }] = useLazyQuery(LOAD_ORDERS_FILTER_INIT);
-  const [getOrder, { }] = useLazyQuery(LOAD_ORDERS_FILTER);
-  const [search, { }] = useLazyQuery(LOAD_ORDERS_FILTER_SEARCH);
-  const [getOrderStatus, { }] = useLazyQuery(LOAD_NUMBERS_ORDERS);
+  const [getOrderInit, {}] = useLazyQuery(LOAD_ORDERS_FILTER_INIT, {
+    fetchPolicy: "no-cache",
+  });
+  const [getOrder, {}] = useLazyQuery(LOAD_ORDERS_FILTER, {
+    fetchPolicy: "no-cache",
+  });
+  const [search, {}] = useLazyQuery(LOAD_ORDERS_FILTER_SEARCH, {
+    fetchPolicy: "no-cache",
+  });
+  const [getOrderStatus, {}] = useLazyQuery(LOAD_NUMBERS_ORDERS, {
+    fetchPolicy: "no-cache",
+  });
 
   const fetchOrder = async (selectStatus) => {
     const { data } = await getOrderInit({
       variables: {
-        status: selectStatus
-      }
+        status: selectStatus,
+      },
     });
     let ordersData = data.orders.edges;
 
@@ -134,9 +138,7 @@ const OrderPage = () => {
           variables: { cursor: currentEndCursor, status: selectStatus },
         });
 
-        ordersData = ordersData.concat(
-          dataRefetch.orders.edges
-        );
+        ordersData = ordersData.concat(dataRefetch.orders.edges);
 
         if (dataRefetch.orders.pageInfo.hasNextPage === true) {
           currentEndCursor = dataRefetch.orders.pageInfo.endCursor;
@@ -158,8 +160,8 @@ const OrderPage = () => {
     orderStatus.forEach(async (status, index) => {
       const { data } = await getOrderStatus({
         variables: {
-          status: status
-        }
+          status: status,
+        },
       });
       const totalCount = data.orders.totalCount;
       switch (index) {
@@ -191,15 +193,15 @@ const OrderPage = () => {
     });
 
     setIsLoading(false);
-  }
+  };
 
   const searchOrder = async (searchTerm) => {
     const { data } = await search({
       variables: {
         currentStatus: selectStatus,
-        id: searchTerm
-      }
-    })
+        id: searchTerm,
+      },
+    });
 
     const orders = data.orders.edges;
 
@@ -211,7 +213,7 @@ const OrderPage = () => {
     setOrders(res);
     setIsLoading(false);
     return res;
-  }
+  };
 
   const {
     error: errReserve,
@@ -309,7 +311,7 @@ const OrderPage = () => {
   const { error, loading, data, refetch } = useQuery(orderQuery, {
     variables: {
       status: selectStatus,
-      id: searchTerm
+      id: searchTerm,
     },
   });
 
@@ -325,7 +327,7 @@ const OrderPage = () => {
 
   const handleSearchSubmit = async () => {
     setIsLoading(true);
-    const searchTerm = document.getElementById('floatingValue').value;
+    const searchTerm = document.getElementById("floatingValue").value;
     if (!searchTerm) {
       setIsLoading(false);
       return;
@@ -342,7 +344,7 @@ const OrderPage = () => {
         changeCount(null);
       }
     }
-  }
+  };
 
   const changeCount = (status) => {
     setReserved(0);
@@ -380,7 +382,7 @@ const OrderPage = () => {
         }
       }
     }
-  }
+  };
 
   var settings = {
     dots: false,
@@ -407,17 +409,19 @@ const OrderPage = () => {
             name="value"
             placeholder="Nhập mã đơn hàng..."
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 handleSearchSubmit(selectStatus);
                 changeCount();
               }
             }}
           />
-          <button className="link"
+          <button
+            className="link"
             onClick={() => {
               handleSearchSubmit(selectStatus);
               changeCount();
-            }}>
+            }}
+          >
             <SearchIcon />
           </button>
         </div>
@@ -453,8 +457,9 @@ const OrderPage = () => {
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
-                className={`icon-item ${selectedDiv === index ? "selected" : ""
-                  }`}
+                className={`icon-item ${
+                  selectedDiv === index ? "selected" : ""
+                }`}
                 onClick={() => {
                   handleClick(index);
                 }}
@@ -490,9 +495,7 @@ const OrderPage = () => {
             />
           </div>
         )}
-        {!isLoading &&
-          <OrderTable orders={orders} />
-        }
+        {!isLoading && <OrderTable orders={orders} />}
       </div>
     </div>
   );
