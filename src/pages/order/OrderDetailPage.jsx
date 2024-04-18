@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
 import OrderDetailTable from "../../components/tables/OrderDetailTable";
 import BeenhereIcon from "@mui/icons-material/Beenhere";
+import PaidIcon from "@mui/icons-material/Paid";
+import DescriptionIcon from "@mui/icons-material/Description";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
@@ -41,8 +43,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import {
   CANCEL_ORDER,
-  CHANGE_STATUS_ORDER,
   LOAD_DETAIL_ORDER,
+  PREPARE_ORDER,
 } from "../../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import FeedbackIcon from "@mui/icons-material/Feedback";
@@ -88,10 +90,8 @@ const OrderDetailPage = () => {
     setSnackbarOpen(false);
   };
 
-  const [
-    change,
-    { data: changeData, loading: changeLoading, error: changeError },
-  ] = useMutation(CHANGE_STATUS_ORDER);
+  const [prepare, { data: dataPrep, loading: loadingPrep, error: errorPrep }] =
+    useMutation(PREPARE_ORDER);
 
   const [
     cancel,
@@ -223,25 +223,10 @@ const OrderDetailPage = () => {
   };
 
   const handleChangeStatus = async () => {
-    let stat = "";
-    switch (status) {
-      case "RESERVED":
-        stat = "PREPARED";
-        break;
-      case "PREPARED":
-        stat = "SERVED";
-        break;
-      default:
-        break;
-    }
-
     try {
-      const { data } = await change({
+      const { data } = await prepare({
         variables: {
-          input: {
-            orderId: parseInt(orderId, 10),
-            status: stat,
-          },
+          id: parseInt(orderId, 10),
         },
       });
       refetch();
@@ -401,7 +386,7 @@ const OrderDetailPage = () => {
                 )}
                 {order?.currentStatus === "RESERVED" && (
                   <a className="status reserved" title="Đã đặt">
-                    <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
+                    <DescriptionIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
                 {order?.currentStatus === "PREPARED" && (
@@ -421,7 +406,7 @@ const OrderDetailPage = () => {
                 )}
                 {order?.currentStatus === "FINISHED" && (
                   <a className="status reserved" title="Hoàn thành">
-                    <BeenhereIcon sx={{ color: "#3498DB" }} />
+                    <PaidIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
                 {order?.currentStatus === "CANCELLED" && (

@@ -223,16 +223,13 @@
     margin: 30px auto 0 auto;
 
     .cellWithStatus {
-        padding: 5px;
-        border-radius: 5px;
+        padding-top: 8px;
 
         &.PERMANENT_STOP {
-            background-color: rgba(255, 0, 0, 0.05);
             color: crimson;
         }
 
         &.AVAILABLE {
-            background-color: rgba(0, 128, 0, 0.05);
             color: green;
         }
     }

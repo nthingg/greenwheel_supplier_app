@@ -236,14 +236,14 @@ const ProviderDetailPage = () => {
                       <ArrowForwardIosIcon />
                       <p>Chi tiết đơn hàng</p>
                       <ArrowForwardIosIcon />
-                      <p>Chi tiết nhà cung cấp</p>
+                      <p>{provider?.name}</p>
                     </div>
                   )}
                   {!orderId && (
                     <div className="return-body">
                       <p>Danh sách nhà cung cấp</p>
                       <ArrowForwardIosIcon />
-                      <p>Chi tiết nhà cung cấp</p>
+                      <p>{provider?.name}</p>
                     </div>
                   )}
                 </div>
@@ -359,7 +359,10 @@ const ProviderDetailPage = () => {
                   provider?.type !== "TAXI" &&
                   provider?.type !== "EMERGENCY" &&
                   provider?.type !== "GROCERY" && (
-                    <Accordion sx={{ boxShadow: "none", width: 1400 }}>
+                    <Accordion
+                      sx={{ boxShadow: "none", width: 1400 }}
+                      expanded={true}
+                    >
                       <AccordionSummary
                         sx={{
                           fontSize: 24,

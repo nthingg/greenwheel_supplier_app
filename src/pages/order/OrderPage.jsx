@@ -10,6 +10,8 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import { IconButton } from "@mui/material";
+import PaidIcon from "@mui/icons-material/Paid";
+import DescriptionIcon from "@mui/icons-material/Description";
 //graphql
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -465,12 +467,10 @@ const OrderPage = () => {
                 }}
               >
                 {/* Replace with appropriate icons */}
-                {index === 0 && (
-                  <HourglassTopRoundedIcon sx={{ color: "#3498DB" }} />
-                )}
-                {index === 1 && <MicrowaveIcon sx={{ color: "#3498DB" }} />}
+                {index === 0 && <DescriptionIcon sx={{ color: "#3498DB" }} />}
+                {index === 1 && <MicrowaveIcon sx={{ color: "#F1C40F" }} />}
                 {index === 2 && <CheckCircleIcon sx={{ color: "#28b463" }} />}
-                {index === 3 && <BeenhereIcon sx={{ color: "#28b463" }} />}
+                {index === 3 && <PaidIcon sx={{ color: "#28b463" }} />}
                 {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
                 {index === 5 && <CancelIcon sx={{ color: "#e74c3c" }} />}
                 <span>

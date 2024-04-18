@@ -27,21 +27,17 @@
     }
 
     .cellWithStatus {
-        padding: 5px;
-        border-radius: 5px;
+        padding: 8px;
 
         &.confirmed {
-            background-color: rgba(0, 128, 0, 0.05);
             color: green;
         }
 
         &.temporary {
-            background-color: rgba(126, 128, 0, 0.05);
             color: goldenrod;
         }
 
         &.cancelled {
-            background-color: rgba(255, 0, 0, 0.05);
             color: crimson;
         }
     }

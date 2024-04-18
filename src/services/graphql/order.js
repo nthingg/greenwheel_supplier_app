@@ -280,9 +280,9 @@ export const CANCEL_ORDER = gql`
   }
 `;
 
-export const CHANGE_STATUS_ORDER = gql`
-  mutation changeStatus($input: OrderChangeStatusInput!) {
-    changeOrderStatus(dto: $input) {
+export const PREPARE_ORDER = gql`
+  mutation prepOrder($id: Int!) {
+    prepareOrder(orderId: $id) {
       id
     }
   }

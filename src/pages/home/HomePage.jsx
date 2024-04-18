@@ -7,6 +7,12 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DescriptionIcon from "@mui/icons-material/Description";
+import MicrowaveIcon from "@mui/icons-material/Microwave";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PaidIcon from "@mui/icons-material/Paid";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { useQuery } from "@apollo/client";
 import {
   LOAD_NUMBERS_CANCELLED,
@@ -183,7 +189,7 @@ const HomePage = () => {
             <div className="item-list">
               <div className="item-container info">
                 <div className="item-top">
-                  <div className="item-title">Số đơn hàng được đặt</div>
+                  <div className="item-title">Số đơn hàng đã đặt</div>
                   <div className="item-body">
                     <div
                       className="left"
@@ -200,7 +206,7 @@ const HomePage = () => {
                           navigate("/orders");
                         }}
                       >
-                        <InfoIcon sx={{ color: "white" }} />
+                        <DescriptionIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>
@@ -225,7 +231,7 @@ const HomePage = () => {
                           navigate("/orders/status/1");
                         }}
                       >
-                        <ErrorOutlineOutlinedIcon sx={{ color: "white" }} />
+                        <MicrowaveIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>
@@ -250,9 +256,7 @@ const HomePage = () => {
                           navigate("/orders/status/2");
                         }}
                       >
-                        <CheckCircleOutlineOutlinedIcon
-                          sx={{ color: "white" }}
-                        />
+                        <CheckCircleIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>
@@ -277,7 +281,7 @@ const HomePage = () => {
                           navigate("/orders/status/5");
                         }}
                       >
-                        <CancelOutlinedIcon sx={{ color: "white" }} />
+                        <CancelIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>
@@ -302,7 +306,7 @@ const HomePage = () => {
                           navigate("/orders/status/4");
                         }}
                       >
-                        <InfoIcon sx={{ color: "white" }} />
+                        <FeedbackIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>
@@ -327,9 +331,7 @@ const HomePage = () => {
                           navigate("/orders/status/3");
                         }}
                       >
-                        <CheckCircleOutlineOutlinedIcon
-                          sx={{ color: "white" }}
-                        />
+                        <PaidIcon sx={{ color: "white" }} />
                       </div>
                     </div>
                   </div>

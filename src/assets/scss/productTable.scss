@@ -1,5 +1,5 @@
 .productTable {
-    height: 360px;
+    height: 372px;
     width: fit-content;
     margin: 0 auto;
 
@@ -25,21 +25,17 @@
     }
 
     .cellWithStatus {
-        padding: 5px;
-        border-radius: 5px;
+        padding: 8px;
 
         &.PERMANENT_STOP {
-            background-color: rgba(255, 0, 0, 0.05);
             color: crimson;
         }
 
         &.AVAILABLE {
-            background-color: rgba(0, 128, 0, 0.05);
             color: green;
         }
 
         &.TEMPORARY_STOP {
-            background-color: rgb(255, 255, 221);
             color: yellow;
         }
     }
