@@ -81,14 +81,6 @@ const SideBar = () => {
             </>
           )}
           {providerId && (
-            <NavLink to="/products" style={{ textDecoration: "none" }}>
-              <li>
-                <Fastfood className="icon" />
-                <span>Quản lý dịch vụ</span>
-              </li>
-            </NavLink>
-          )}
-          {providerId && (
             <>
               <NavLink to="/profile" style={{ textDecoration: "none" }}>
                 <li>
