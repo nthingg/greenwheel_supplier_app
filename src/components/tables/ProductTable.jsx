@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Menu, MenuItem } from "@mui/material";
+import { productTotalColumns } from "../../assets/configs/products/productTotal";
 
-const ProductTable = ({ products }) => {
+const ProductTable = ({ products, productTotal }) => {
   const navigate = useNavigate();
   const [anchorId, setAnchorId] = useState(null);
   const [anchor, setAnchor] = useState(null);
@@ -98,7 +99,8 @@ const ProductTable = ({ products }) => {
   ];
   return (
     <div className="productTable">
-      <DataGrid
+      {products && (
+        <DataGrid
         rows={products}
         columns={productsColumns.concat(actionColumn)}
         rowSelection={false}
@@ -117,6 +119,28 @@ const ProductTable = ({ products }) => {
           backgroundColor: "white",
         }}
       />
+      )}
+      {productTotal && (
+        <DataGrid
+        rows={productTotal}
+        columns={productTotalColumns.concat(actionColumn)}
+        rowSelection={false}
+        pagination
+        autoPageSize
+        showColumnVerticalBorder={true}
+        sx={{
+          "& .MuiDataGrid-columnHeader": {
+            backgroundColor: "#2c3d50",
+            color: "white",
+            fontWeight: "bold",
+          },
+          "& .MuiDataGrid-columnHeader--withRightBorder": {
+            borderRightStyle: "none",
+          },
+          backgroundColor: "white",
+        }}
+      />
+      )}
     </div>
   );
 };

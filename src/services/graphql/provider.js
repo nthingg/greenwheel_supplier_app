@@ -147,8 +147,15 @@ export const LOAD_DETAIL_PROVIDER = gql`
 `;
 
 export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
-  query GetProductByProviderId($id: Int!, $type: [ProductType!]) {
-    products(where: { provider: { id: { eq: $id } }, type: { in: $type } }) {
+  query GetProductByProviderId(
+    $id: Int!
+    $type: [ProductType!]
+    $searchTerm: String
+  ) {
+    products(
+      where: { provider: { id: { eq: $id } }, type: { in: $type } }
+      searchTerm: $searchTerm
+    ) {
       nodes {
         id
         name

@@ -54,6 +54,7 @@ const ProviderDetailPage = () => {
   const [position, setPosition] = useState(null);
   const [open, setOpen] = useState(false);
   const [phoneHide, setPhoneHide] = useState("");
+  const [searchTerm, setSearchTerm] = useState(null);
 
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
@@ -133,6 +134,12 @@ const ProviderDetailPage = () => {
     setOpen(false);
   };
 
+  const handleSearchSubmit = () => {
+    const search = document.getElementById('floatingValue').value;
+    setSearchTerm(search);
+    refetchProducts();
+  }
+
   var settings = {
     dots: false,
     infinite: false,
@@ -177,7 +184,9 @@ const ProviderDetailPage = () => {
     variables: {
       id: parseInt(providerId, 10),
       type: selectStatus,
+      searchTerm: searchTerm
     },
+    fetchPolicy: "network-only"
   });
   useEffect(() => {
     if (
@@ -389,9 +398,14 @@ const ProviderDetailPage = () => {
                               className={"form-control"}
                               id="floatingValue"
                               name="value"
-                              placeholder="Tìm kiếm ..."
+                              placeholder="Nhập tên dịch vụ..."
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSearchSubmit();
+                                }
+                              }}
                             />
-                            <button className="link">
+                            <button className="link" onClick={handleSearchSubmit}>
                               <SearchIcon />
                             </button>
                           </div>
@@ -403,15 +417,16 @@ const ProviderDetailPage = () => {
                               <AddCircleIcon />
                               <span>Thêm dịch vụ</span>
                             </Link>
-                            <button className="link">
+                            {/* <button className="link">
                               <CloudDownloadIcon />
                             </button>
                             <button className="link">
                               <FilterAltIcon />
-                            </button>
+                            </button> */}
                             <button
                               className="link"
                               onClick={() => {
+                                setSearchTerm(null);
                                 refetchProducts();
                               }}
                             >
@@ -424,9 +439,8 @@ const ProviderDetailPage = () => {
                             {[0, 1, 2, 3, 4, 5].map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${
-                                  selectedDiv === index ? "selected" : ""
-                                }`}
+                                className={`icon-item ${selectedDiv === index ? "selected" : ""
+                                  }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}
@@ -462,7 +476,7 @@ const ProviderDetailPage = () => {
                                   {index === 0 && "Tất cả"}
                                   {index === 1 && "Thức uống"}
                                   {index === 2 && "Lều trại"}
-                                  {index === 3 && "Thức ăn"}
+                                  {index === 3 && "Đồ ăn"}
                                   {index === 4 && "Phòng nghỉ"}
                                   {index === 5 && "Phương tiện"}
                                 </span>
@@ -470,7 +484,10 @@ const ProviderDetailPage = () => {
                             ))}
                           </Slider>
                         </div>
-                        <ProductTable products={products} />
+                        {selectedDiv === 0 &&
+                          <ProductTable productTotal={products} />}
+                        {selectedDiv !== 0 &&
+                          <ProductTable products={products} />}
                       </AccordionDetails>
                     </Accordion>
                   )}

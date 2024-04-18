@@ -1,6 +1,6 @@
 import { Switch } from "@mui/material";
 
-export const productsColumns = [
+export const productTotalColumns = [
   {
     field: "index",
     width: 100,
@@ -18,6 +18,22 @@ export const productsColumns = [
       return <div>{params.row.name}</div>;
     },
     renderHeader: () => <span>Tên dịch vụ</span>,
+  },
+  {
+    field: "type",
+    width: 100,
+    align: "center",
+    renderCell: (params) => {
+      const productType = {
+        "BEVERAGE": "Thức uống",
+        "CAMP": "Lều trại",
+        "FOOD": "Đồ ăn",
+        "ROOM": "Phòng nghỉ",
+        "VEHICLE": "Phương tiện",
+      }
+      return <div>{productType[params.row.type]}</div>;
+    },
+    renderHeader: () => <span>Loại dịch vụ</span>,
   },
   {
     field: "price",
