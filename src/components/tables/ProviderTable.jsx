@@ -250,6 +250,15 @@ const ProviderTable = ({ providers, totalProviders }) => {
                 borderRightStyle: "none",
               },
             }}
+            localeText={{
+              MuiTablePagination: {
+                labelDisplayedRows: ({ from, to, count }) =>
+                  `${from} - ${to} trong ${
+                    count === -1 ? `nhiều hơn ${to}` : count
+                  }`,
+              },
+              noRowsLabel: "Không có dữ liệu",
+            }}
           />
         </div>
       )}
@@ -272,6 +281,15 @@ const ProviderTable = ({ providers, totalProviders }) => {
               "& .MuiDataGrid-columnHeader--withRightBorder": {
                 borderRightStyle: "none",
               },
+            }}
+            localeText={{
+              MuiTablePagination: {
+                labelDisplayedRows: ({ from, to, count }) =>
+                  `${from} - ${to} trong ${
+                    count === -1 ? `nhiều hơn ${to}` : count
+                  }`,
+              },
+              noRowsLabel: "Không có dữ liệu",
             }}
           />
         </div>

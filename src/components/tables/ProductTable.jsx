@@ -101,45 +101,63 @@ const ProductTable = ({ products, productTotal }) => {
     <div className="productTable">
       {products && (
         <DataGrid
-        rows={products}
-        columns={productsColumns.concat(actionColumn)}
-        rowSelection={false}
-        pagination
-        autoPageSize
-        showColumnVerticalBorder={true}
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#2c3d50",
-            color: "white",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightStyle: "none",
-          },
-          backgroundColor: "white",
-        }}
-      />
+          rows={products}
+          columns={productsColumns.concat(actionColumn)}
+          rowSelection={false}
+          pagination
+          autoPageSize
+          showColumnVerticalBorder={true}
+          sx={{
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: "#2c3d50",
+              color: "white",
+              fontWeight: "bold",
+            },
+            "& .MuiDataGrid-columnHeader--withRightBorder": {
+              borderRightStyle: "none",
+            },
+            backgroundColor: "white",
+          }}
+          localeText={{
+            MuiTablePagination: {
+              labelDisplayedRows: ({ from, to, count }) =>
+                `${from} - ${to} trong ${
+                  count === -1 ? `nhiều hơn ${to}` : count
+                }`,
+            },
+            noRowsLabel: "Không có dữ liệu",
+          }}
+        />
       )}
       {productTotal && (
         <DataGrid
-        rows={productTotal}
-        columns={productTotalColumns.concat(actionColumn)}
-        rowSelection={false}
-        pagination
-        autoPageSize
-        showColumnVerticalBorder={true}
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#2c3d50",
-            color: "white",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightStyle: "none",
-          },
-          backgroundColor: "white",
-        }}
-      />
+          rows={productTotal}
+          columns={productTotalColumns.concat(actionColumn)}
+          rowSelection={false}
+          pagination
+          autoPageSize
+          showColumnVerticalBorder={true}
+          sx={{
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: "#2c3d50",
+              color: "white",
+              fontWeight: "bold",
+            },
+            "& .MuiDataGrid-columnHeader--withRightBorder": {
+              borderRightStyle: "none",
+            },
+            backgroundColor: "white",
+          }}
+          localeText={{
+            MuiTablePagination: {
+              labelDisplayedRows: ({ from, to, count }) =>
+                `${from} - ${to} trong ${
+                  count === -1 ? `nhiều hơn ${to}` : count
+                }`,
+            },
+            noRowsLabel: "Không có dữ liệu",
+          }}
+        />
       )}
     </div>
   );
