@@ -1,30 +1,14 @@
 import "../../assets/scss/providers.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Menu, MenuItem, Switch } from "@mui/material";
 import { providersColumns } from "../../assets/configs/providers/providers";
 import { providerTotalColumns } from "../../assets/configs/providers/providerTotal";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const ProviderTable = ({ providers, totalProviders }) => {
-  const navigate = useNavigate();
-  const [anchorId, setAnchorId] = useState(null);
-  const [anchor, setAnchor] = useState(null);
-
-  const options = ["Xem", "Chỉnh sửa"];
-  const ITEM_HEIGHT = 48;
-
-  const handleDetailClick = () => {
-    navigate(`/providers/${anchorId}`);
-  };
-
-  const handleEditClick = () => {
-    // Logic for "Xác nhận" option
-    console.log("Xác nhận clicked");
-    // Add your specific code here
-  };
-
   const actionColumn = [
     {
       field: "status",
@@ -33,15 +17,10 @@ const ProviderTable = ({ providers, totalProviders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        let check = false;
-        if (params.row.account !== null) {
-          check = true;
-        }
         return (
           <Switch
             checked={params.row.isActive}
             onChange={() => {}}
-            disabled={check}
             inputProps={{ "aria-label": "controlled" }}
             sx={{
               "& .MuiSwitch-switchBase.Mui-checked": {
@@ -62,69 +41,18 @@ const ProviderTable = ({ providers, totalProviders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        const isSelected = anchorId === params.row.id; // Check if the current row is selected
-        const handleClick = (event) => {
-          setAnchorId(isSelected ? null : params.row.id); // Toggle the selected row
-          setAnchor(event.currentTarget);
-        };
-        const handleClose = () => {
-          setAnchorId(null);
-        };
-
         return (
-          <div>
-            <IconButton
-              aria-label="more"
-              id="long-button"
-              aria-controls={isSelected ? "long-menu" : undefined}
-              aria-expanded={isSelected ? "true" : undefined}
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <MoreHorizIcon />
+          <NavLink
+            to={`/providers/${params.row.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <IconButton color="info">
+              <VisibilityIcon />
             </IconButton>
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                "aria-labelledby": "long-button",
-              }}
-              anchorEl={anchor}
-              open={isSelected}
-              onClose={handleClose}
-              PaperProps={{
-                style: {
-                  maxHeight: ITEM_HEIGHT * 4.5,
-                  width: "12ch",
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem
-                  key={option}
-                  selected={false}
-                  onClick={() => {
-                    handleClose();
-                    switch (option) {
-                      case "Xem":
-                        handleDetailClick();
-                        break;
-                      case "Chỉnh sửa":
-                        handleEditClick();
-                        break;
-                      default:
-                        break;
-                    }
-                  }}
-                  style={{ fontSize: "14px", fontWeight: 600 }}
-                >
-                  {option}
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
+          </NavLink>
         );
       },
-      renderHeader: () => <span>THAO TÁC</span>,
+      renderHeader: () => <span>CHI TIẾT</span>,
     },
   ];
   const actionTotalColumn = [
@@ -135,15 +63,10 @@ const ProviderTable = ({ providers, totalProviders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        let check = false;
-        if (params.row.node.account !== null) {
-          check = true;
-        }
         return (
           <Switch
             checked={params.row.node.isActive}
             onChange={() => {}}
-            disabled={check}
             inputProps={{ "aria-label": "controlled" }}
             sx={{
               "& .MuiSwitch-switchBase.Mui-checked": {
@@ -164,69 +87,18 @@ const ProviderTable = ({ providers, totalProviders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        const isSelected = anchorId === params.row.node.id; // Check if the current row is selected
-        const handleClick = (event) => {
-          setAnchorId(isSelected ? null : params.row.node.id); // Toggle the selected row
-          setAnchor(event.currentTarget);
-        };
-        const handleClose = () => {
-          setAnchorId(null);
-        };
-
         return (
-          <div>
-            <IconButton
-              aria-label="more"
-              id="long-button"
-              aria-controls={isSelected ? "long-menu" : undefined}
-              aria-expanded={isSelected ? "true" : undefined}
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <MoreHorizIcon />
+          <NavLink
+            to={`/providers/${params.row.node.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <IconButton color="info">
+              <VisibilityIcon />
             </IconButton>
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                "aria-labelledby": "long-button",
-              }}
-              anchorEl={anchor}
-              open={isSelected}
-              onClose={handleClose}
-              PaperProps={{
-                style: {
-                  maxHeight: ITEM_HEIGHT * 4.5,
-                  width: "12ch",
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem
-                  key={option}
-                  selected={false}
-                  onClick={() => {
-                    handleClose();
-                    switch (option) {
-                      case "Xem":
-                        handleDetailClick();
-                        break;
-                      case "Chỉnh sửa":
-                        handleEditClick();
-                        break;
-                      default:
-                        break;
-                    }
-                  }}
-                  style={{ fontSize: "14px", fontWeight: 600 }}
-                >
-                  {option}
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
+          </NavLink>
         );
       },
-      renderHeader: () => <span>THAO TÁC</span>,
+      renderHeader: () => <span>CHI TIẾT</span>,
     },
   ];
   return (
