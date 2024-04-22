@@ -200,7 +200,7 @@ const OrderPage = () => {
   const searchOrder = async (searchTerm) => {
     const { data } = await search({
       variables: {
-        currentStatus: selectStatus,
+        status: selectStatus,
         id: searchTerm,
       },
     });
@@ -338,10 +338,10 @@ const OrderPage = () => {
       const searchTermInt = parseInt(searchTerm);
       setSearchTerm(searchTermInt);
 
-      const res = await searchOrder();
+      const res = await searchOrder(searchTermInt);
       if (res[0]) {
         const order = res[0].node;
-        changeCount(order.status);
+        changeCount(order.currentStatus);
       } else {
         changeCount(null);
       }

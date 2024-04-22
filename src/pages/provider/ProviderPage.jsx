@@ -309,9 +309,9 @@ const ProviderPage = () => {
                 {index === 3 && (
                   <StorefrontIcon sx={{ color: "#227d3a" }} />
                 )}
-                {index === 4 && <HotelIcon sx={{ color: "#333f4b" }} />}
+                {index === 4 && <HotelIcon sx={{ color: "#3498DB" }} />}
                 {index === 5 && (
-                  <NightShelterIcon sx={{ color: "#333f4b" }} />
+                  <NightShelterIcon sx={{ color: "#3498DB" }} />
                 )}
                 {index === 6 && (
                   <BuildIcon sx={{ color: "#88939f" }} />
