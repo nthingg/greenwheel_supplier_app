@@ -430,7 +430,6 @@ const OrderPage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSearchSubmit();
-                changeCount();
               }
             }}
           />
@@ -438,7 +437,6 @@ const OrderPage = () => {
             className="link"
             onClick={() => {
               handleSearchSubmit();
-              changeCount();
             }}
           >
             <SearchIcon />
@@ -455,6 +453,7 @@ const OrderPage = () => {
             className="link"
             onClick={() => {
               setSearchTerm(null);
+              document.getElementById("floatingValue").value = "";
               setIsLoading(true);
               refetch();
               refetchCancelled();
