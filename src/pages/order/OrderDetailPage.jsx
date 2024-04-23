@@ -351,7 +351,7 @@ const OrderDetailPage = () => {
                   </p>
                 )}
                 {status === "RESERVED" && cancellable && (
-                  <Tooltip title={<h2>Phục vụ trước: {finalCancellable}</h2>}>
+                  <Tooltip title={<h2>Tự phục vụ sau: {finalCancellable}</h2>}>
                     <button
                       className="prepare"
                       onClick={() => {
