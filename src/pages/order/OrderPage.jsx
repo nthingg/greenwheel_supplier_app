@@ -70,7 +70,7 @@ const OrderPage = () => {
       case 0:
         setSelectedStatus([orderStatus[0]]);
         if (searchTerm) {
-          handleSearchSubmit(orderStatus[0]);
+          searchOrder(orderStatus[0], searchTerm);
         } else {
           fetchOrder([orderStatus[0]]);
         }
@@ -78,26 +78,42 @@ const OrderPage = () => {
       case 1:
         setSelectedStatus([orderStatus[1]]);
         if (searchTerm) {
-          handleSearchSubmit(orderStatus[1]);
+          searchOrder(orderStatus[1], searchTerm);
         } else {
-          fetchOrder([orderStatus[1]]);
+          fetchOrder(orderStatus[1], [orderStatus[1]]);
         }
         break;
       case 2:
         setSelectedStatus([orderStatus[2]]);
-        fetchOrder([orderStatus[2]]);
+        if (searchTerm) {
+          searchOrder(orderStatus[2], searchTerm);
+        } else {
+          fetchOrder([orderStatus[2]]);
+        }
         break;
       case 3:
         setSelectedStatus([orderStatus[3]]);
-        fetchOrder([orderStatus[3]]);
+        if (searchTerm) {
+          searchOrder(orderStatus[3], searchTerm);
+        } else {
+          fetchOrder([orderStatus[3]]);
+        }
         break;
       case 4:
         setSelectedStatus([orderStatus[4]]);
-        fetchOrder([orderStatus[4]]);
+        if (searchTerm) {
+          searchOrder(orderStatus[4], searchTerm);
+        } else {
+          fetchOrder([orderStatus[4]]);
+        }
         break;
       case 5:
         setSelectedStatus([orderStatus[5]]);
-        fetchOrder([orderStatus[5]]);
+        if (searchTerm) {
+          searchOrder(orderStatus[5], searchTerm);
+        } else {
+          fetchOrder([orderStatus[5]]);
+        }
         break;
       default:
         break;
@@ -197,7 +213,7 @@ const OrderPage = () => {
     setIsLoading(false);
   };
 
-  const searchOrder = async (searchTerm) => {
+  const searchOrder = async (selectStatus, searchTerm) => {
     const { data } = await search({
       variables: {
         status: selectStatus,
@@ -335,16 +351,17 @@ const OrderPage = () => {
       return;
     }
     if (!isNaN(searchTerm)) {
-      const searchTermInt = parseInt(searchTerm);
+      const searchTermInt = parseInt(searchTerm, 10);
       setSearchTerm(searchTermInt);
 
-      const res = await searchOrder(searchTermInt);
+      const res = await searchOrder(orderStatus, searchTermInt);
       if (res[0]) {
         const order = res[0].node;
         changeCount(order.currentStatus);
       } else {
         changeCount(null);
       }
+      await searchOrder(selectStatus, searchTermInt);
     }
   };
 
@@ -412,7 +429,7 @@ const OrderPage = () => {
             placeholder="Nhập mã đơn hàng..."
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleSearchSubmit(selectStatus);
+                handleSearchSubmit();
                 changeCount();
               }
             }}
@@ -420,7 +437,7 @@ const OrderPage = () => {
           <button
             className="link"
             onClick={() => {
-              handleSearchSubmit(selectStatus);
+              handleSearchSubmit();
               changeCount();
             }}
           >
