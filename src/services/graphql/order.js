@@ -19,6 +19,9 @@ export const LOAD_ORDERS_FILTER_INIT = gql`
           }
           provider {
             name
+            account {
+              id
+            }
           }
           account {
             name
@@ -55,6 +58,9 @@ export const LOAD_ORDERS_FILTER = gql`
           }
           provider {
             name
+            account {
+              id
+            }
           }
           account {
             name
@@ -86,6 +92,9 @@ export const LOAD_ORDERS_FILTER_SEARCH = gql`
           }
           provider {
             name
+            account {
+              id
+            }
           }
           account {
             name

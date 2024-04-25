@@ -6,6 +6,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { VisibilityOff } from "@mui/icons-material";
 
 const OrderTable = ({ orders }) => {
   const actionColumn = [
@@ -16,15 +17,22 @@ const OrderTable = ({ orders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
+        if (params.row.node.provider.account) {
+          return (
+            <NavLink
+              to={`/orders/${params.row.node.id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <IconButton color="info">
+                <VisibilityIcon />
+              </IconButton>
+            </NavLink>
+          );
+        }
         return (
-          <NavLink
-            to={`/orders/${params.row.node.id}`}
-            style={{ textDecoration: "none" }}
-          >
-            <IconButton color="info">
-              <VisibilityIcon />
-            </IconButton>
-          </NavLink>
+          <IconButton color="info" disabled={true}>
+            <VisibilityOff />
+          </IconButton>
         );
       },
       renderHeader: () => <span>CHI TIẾT</span>,
@@ -54,8 +62,7 @@ const OrderTable = ({ orders }) => {
         localeText={{
           MuiTablePagination: {
             labelDisplayedRows: ({ from, to, count }) =>
-              `${from} - ${to} trong ${
-                count === -1 ? `nhiều hơn ${to}` : count
+              `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
               }`,
           },
           noRowsLabel: "Không có dữ liệu",

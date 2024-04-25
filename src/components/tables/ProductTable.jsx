@@ -99,10 +99,11 @@ const ProductTable = ({ products, productTotal }) => {
   ];
   return (
     <div className="productTable">
+      {console.log(products)}
       {products && (
         <DataGrid
           rows={products}
-          columns={productsColumns.concat(actionColumn)}
+          columns={products[0]?.provider.account ? productsColumns : productsColumns.concat(actionColumn)}
           rowSelection={false}
           pagination
           autoPageSize
@@ -132,7 +133,7 @@ const ProductTable = ({ products, productTotal }) => {
       {productTotal && (
         <DataGrid
           rows={productTotal}
-          columns={productTotalColumns.concat(actionColumn)}
+          columns={productTotal[0]?.provider.account ? productTotalColumns : productTotalColumns.concat(actionColumn)}
           rowSelection={false}
           pagination
           autoPageSize

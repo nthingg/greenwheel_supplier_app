@@ -28,6 +28,9 @@ export const LOAD_PRODUCTS_FILTER = gql`
         partySize
         provider {
           id
+          account {
+            id
+          }
         }
       }
     }
