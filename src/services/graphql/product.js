@@ -59,3 +59,9 @@ export const ADD_PRODUCT = gql`
     }
   }
 `;
+
+export const UDPATE_PRODUCT = gql`
+  mutation updateProduct($dto: ProductUpdateInput!) {
+    updateProduct(dto: $dto)
+  }
+`;

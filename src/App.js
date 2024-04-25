@@ -29,6 +29,7 @@ import { useState } from "react";
 import ProviderUpdatePage from "./pages/provider/ProviderUpdatePage";
 import ProviderProfilePage from "./pages/profile/ProviderProfilePage";
 import ProviderProfileUpdatePage from "./pages/profile/ProviderProfileUpdatePage";
+import ProductUpdatePage from "./pages/product/ProductUpdatePage";
 
 const App = () => {
   const role = localStorage.getItem("role");
@@ -67,13 +68,15 @@ const App = () => {
                 path="update/:providerId"
                 element={<ProviderProfileUpdatePage />}
               />
-            </Route>
-            <Route path="products">
               <Route
-                index
-                element={token ? <ProductPage /> : <Navigate to="/login" />}
+                path="product/:productId"
+                element={<ProductDetailPage />}
               />
-              <Route path=":productId" element={<ProductDetailPage />} />
+              <Route
+                path="product/:productId/update"
+                element={<ProductUpdatePage />}
+              />
+              <Route path="add-product" element={<ProductAddPage />} />
             </Route>
             <Route path="providers">
               <Route
@@ -87,7 +90,7 @@ const App = () => {
               />
               <Route
                 path=":providerId/product/:productId/update"
-                element={<ProductDetailPage />}
+                element={<ProductUpdatePage />}
               />
               <Route path="add" element={<ProviderAddPage />} />
               <Route

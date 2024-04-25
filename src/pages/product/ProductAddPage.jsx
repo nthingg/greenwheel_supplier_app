@@ -15,6 +15,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_PRODUCT } from "../../services/graphql/product";
 
 const ProductAddPage = () => {
+  const providerLogId = localStorage.getItem("providerId");
   const { providerId } = useParams();
   const navigate = useNavigate();
 
@@ -96,20 +97,40 @@ const ProductAddPage = () => {
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to={`/providers/${providerId}`} className="navigateButton">
-                <ArrowCircleLeftIcon />
-                <p>Trở về</p>
-              </Link>
+              {providerLogId && (
+                <Link to={`/profile`} className="navigateButton">
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
+              {!providerLogId && (
+                <Link
+                  to={`/providers/${providerId}`}
+                  className="navigateButton"
+                >
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
             </div>
             <div className="return-title">
-              <div className="return-header">Thêm thông tin dịch vụ</div>
-              <div className="return-body">
-                <p>Danh sách nhà cung cấp</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết nhà cung cấp</p>
-                <ArrowForwardIosIcon />
-                <p>Thêm dịch vụ</p>
-              </div>
+              <div className="return-header">Thêm dịch vụ</div>
+              {providerLogId && (
+                <div className="return-body">
+                  <p>Hồ sơ nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>Thêm dịch vụ</p>
+                </div>
+              )}
+              {!providerLogId && (
+                <div className="return-body">
+                  <p>Danh sách nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>Chi tiết nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>Thêm dịch vụ</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { LOAD_DETAIL_PRODUCT } from "../../services/graphql/product";
 
 const ProductDetailPage = () => {
   const { providerId, productId } = useParams();
+  const providerLogId = localStorage.getItem("providerId");
   console.log(productId);
   const [product, setProduct] = useState(null);
   const { error, loading, data } = useQuery(LOAD_DETAIL_PRODUCT, {
@@ -35,30 +36,61 @@ const ProductDetailPage = () => {
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to={`/providers/${providerId}`} className="navigateButton">
-                <ArrowCircleLeftIcon />
-                <p>Trở về</p>
-              </Link>
+              {providerLogId && (
+                <Link to={`/profile`} className="navigateButton">
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
+              {!providerLogId && (
+                <Link
+                  to={`/providers/${providerId}`}
+                  className="navigateButton"
+                >
+                  <ArrowCircleLeftIcon />
+                  <p>Trở về</p>
+                </Link>
+              )}
             </div>
             <div className="return-title">
-              <div className="return-header">Thông tin chi tiết dịch vụ</div>
-              <div className="return-body">
-                <p>Danh sách nhà cung cấp</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết nhà cung cấp</p>
-                <ArrowForwardIosIcon />
-                <p>Chi tiết dịch vụ</p>
-              </div>
+              <div className="return-header">Chi tiết dịch vụ</div>
+              {providerLogId && (
+                <div className="return-body">
+                  <p>Hồ sơ nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>{product?.name}</p>
+                </div>
+              )}
+              {!providerLogId && (
+                <div className="return-body">
+                  <p>Danh sách nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>Chi tiết nhà cung cấp</p>
+                  <ArrowForwardIosIcon />
+                  <p>{product?.name}</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="right">
-            <Link
-              to={`/providers/${providerId}/product/${productId}/update`}
-              className="link"
-            >
-              <EditIcon />
-              <p>Chỉnh sửa</p>
-            </Link>
+            {providerLogId && (
+              <Link
+                to={`/profile/product/${productId}/update`}
+                className="link"
+              >
+                <EditIcon />
+                <p>Chỉnh sửa</p>
+              </Link>
+            )}
+            {!providerLogId && (
+              <Link
+                to={`/providers/${providerId}/product/${productId}/update`}
+                className="link"
+              >
+                <EditIcon />
+                <p>Chỉnh sửa</p>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -115,21 +147,6 @@ const ProductDetailPage = () => {
                       ? "sản phẩm"
                       : "ngày"}
                   </span>
-                </span>
-              </div>
-              <div className="detailItem">
-                <span className="itemKey">Trạng thái:</span>
-                <span className="itemValue">
-                  {(() => {
-                    switch (product?.isAvailable) {
-                      case true:
-                        return "Đang phục vụ";
-                      case false:
-                        return "Ngưng ngưng phục vụ";
-                      default:
-                        return "Khác";
-                    }
-                  })()}
                 </span>
               </div>
               <div className="detailItem">

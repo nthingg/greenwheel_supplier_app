@@ -139,11 +139,11 @@ const ProviderDetailPage = () => {
 
   const handleSearchSubmit = () => {
     setIsLoading(true);
-    const search = document.getElementById('floatingValue').value;
+    const search = document.getElementById("floatingValue").value;
     setSearchTerm(search);
     fetchProdCount(search);
     refetchProducts();
-  }
+  };
 
   var settings = {
     dots: false,
@@ -193,7 +193,7 @@ const ProviderDetailPage = () => {
           totalCount
         }
       }
-    `
+    `;
     try {
       const result = await client.query({ query, fetchPolicy: "network-only" });
       return result.data;
@@ -203,7 +203,7 @@ const ProviderDetailPage = () => {
       console.log(msg);
       localStorage.removeItem("errorMsg");
     }
-  }
+  };
 
   const fetchProdCount = async (searchTerm) => {
     const prodTotalCount = await queryProdCount(`[${prodType}]`, searchTerm);
@@ -257,7 +257,7 @@ const ProviderDetailPage = () => {
     sortedArr.unshift(0);
     setFilter(sortedArr);
     setIsLoading(false);
-  }
+  };
 
   useEffect(() => {
     fetchProdCount(searchTerm);
@@ -272,9 +272,9 @@ const ProviderDetailPage = () => {
     variables: {
       id: parseInt(providerId, 10),
       type: selectStatus,
-      searchTerm: searchTerm
+      searchTerm: searchTerm,
     },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
   useEffect(() => {
     if (
@@ -488,12 +488,15 @@ const ProviderDetailPage = () => {
                               name="value"
                               placeholder="Nhập tên dịch vụ..."
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
+                                if (e.key === "Enter") {
                                   handleSearchSubmit();
                                 }
                               }}
                             />
-                            <button className="link" onClick={handleSearchSubmit}>
+                            <button
+                              className="link"
+                              onClick={handleSearchSubmit}
+                            >
                               <SearchIcon />
                             </button>
                           </div>
@@ -515,7 +518,8 @@ const ProviderDetailPage = () => {
                               className="link"
                               onClick={() => {
                                 setIsLoading(true);
-                                document.getElementById('floatingValue').value = "";
+                                document.getElementById("floatingValue").value =
+                                  "";
                                 setSearchTerm("");
                                 fetchProdCount("");
                                 refetchProducts();
@@ -530,8 +534,9 @@ const ProviderDetailPage = () => {
                             {filter.map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${selectedDiv === index ? "selected" : ""
-                                  }`}
+                                className={`icon-item ${
+                                  selectedDiv === index ? "selected" : ""
+                                }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}
@@ -585,10 +590,12 @@ const ProviderDetailPage = () => {
                             />
                           </div>
                         )}
-                        {!isLoading && selectedDiv === 0 &&
-                          <ProductTable productTotal={products} />}
-                        {!isLoading && selectedDiv !== 0 &&
-                          <ProductTable products={products} />}
+                        {!isLoading && selectedDiv === 0 && (
+                          <ProductTable productTotal={products} />
+                        )}
+                        {!isLoading && selectedDiv !== 0 && (
+                          <ProductTable products={products} />
+                        )}
                       </AccordionDetails>
                     </Accordion>
                   )}

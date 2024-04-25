@@ -7,7 +7,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { productTotalColumns } from "../../assets/configs/products/productTotal";
 
-const ProductTable = ({ products, productTotal }) => {
+const ProductTable = ({ products, productTotal, profile }) => {
   const navigate = useNavigate();
   const [anchorId, setAnchorId] = useState(null);
   const [anchor, setAnchor] = useState(null);
@@ -38,7 +38,13 @@ const ProductTable = ({ products, productTotal }) => {
         };
 
         const handleDetailClick = () => {
-          navigate(`/providers/${params.row.provider.id}/product/${anchorId}`);
+          if (profile) {
+            navigate(`/profile/product/${anchorId}`);
+          } else {
+            navigate(
+              `/providers/${params.row.provider.id}/product/${anchorId}`
+            );
+          }
         };
 
         return (
