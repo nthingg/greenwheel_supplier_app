@@ -310,7 +310,7 @@ const ProviderUpdatePage = () => {
         <div className="navigation">
           <div className="left">
             <div className="return-btn">
-              <Link to="/providers" className="navigateButton">
+              <Link to={`/providers/${providerId}`} className="navigateButton">
                 <ArrowCircleLeftIcon />
                 <p>Trở về</p>
               </Link>

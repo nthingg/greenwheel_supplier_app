@@ -6,7 +6,7 @@ import StaticMap from "../../components/map/StaticMap";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -44,6 +44,7 @@ import {
   LOAD_DETAIL_PROVIDER,
   GET_PRODUCT_BY_PROVIDER_FILTER,
 } from "../../services/graphql/provider";
+import client from "../../services/apollo/config";
 
 const ProviderDetailPage = () => {
   const navigate = useNavigate();
@@ -54,7 +55,8 @@ const ProviderDetailPage = () => {
   const [position, setPosition] = useState(null);
   const [open, setOpen] = useState(false);
   const [phoneHide, setPhoneHide] = useState("");
-  const [searchTerm, setSearchTerm] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState([0, 1, 2, 3, 4, 5]);
 
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
@@ -137,6 +139,7 @@ const ProviderDetailPage = () => {
   const handleSearchSubmit = () => {
     const search = document.getElementById('floatingValue').value;
     setSearchTerm(search);
+    fetchProdCount(search);
     refetchProducts();
   }
 
@@ -175,6 +178,88 @@ const ProviderDetailPage = () => {
   }, [data, loading, error]);
 
   //products
+  const [beverage, setBeverage] = useState(0);
+  const [camp, setCamp] = useState(0);
+  const [food, setFood] = useState(0);
+  const [room, setRoom] = useState(0);
+  const [vehicle, setVehicle] = useState(0);
+  const [total, setTotal] = useState(0);
+  const queryProdCount = async (typeQuery, searchTerm) => {
+    const query = gql`
+      query {
+        products(where: { type: { in: ${typeQuery} } providerId: { eq: ${providerId} } }, searchTerm: "${searchTerm}") {
+          totalCount
+        }
+      }
+    `
+    try {
+      const result = await client.query({ query, fetchPolicy: "network-only" });
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      console.log(msg);
+      localStorage.removeItem("errorMsg");
+    }
+  }
+
+  const fetchProdCount = async (searchTerm) => {
+    const prodTotalCount = await queryProdCount(`[${prodType}]`, searchTerm);
+    setTotal(prodTotalCount.products.totalCount);
+    const filterObject = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+
+    for (let i = 0; i < prodType.length; i++) {
+      const prodTypeCount = await queryProdCount(prodType[i], searchTerm);
+      switch (i) {
+        case 0: {
+          setBeverage(prodTypeCount.products.totalCount);
+          filterObject["1"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 1: {
+          setCamp(prodTypeCount.products.totalCount);
+          filterObject["2"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 2: {
+          setFood(prodTypeCount.products.totalCount);
+          filterObject["3"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 3: {
+          setRoom(prodTypeCount.products.totalCount);
+          filterObject["4"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 4: {
+          setVehicle(prodTypeCount.products.totalCount);
+          filterObject["5"] = prodTypeCount.products.totalCount;
+          break;
+        }
+      }
+    }
+
+    const sortedObj = Object.entries(filterObject).sort((a, b) => b[1] - a[1]);
+    const sortedArr = [];
+
+    for (const arr of sortedObj) {
+      sortedArr.push(parseInt(arr[0]));
+    }
+
+    sortedArr.unshift(0);
+    setFilter(sortedArr);
+  }
+
+  useEffect(() => {
+    fetchProdCount(searchTerm);
+  }, []);
+
   const {
     error: errorProducts,
     loading: loadingProducts,
@@ -426,7 +511,8 @@ const ProviderDetailPage = () => {
                             <button
                               className="link"
                               onClick={() => {
-                                setSearchTerm(null);
+                                setSearchTerm("");
+                                fetchProdCount("");
                                 refetchProducts();
                               }}
                             >
@@ -436,7 +522,7 @@ const ProviderDetailPage = () => {
                         </div>
                         <div className="icon-row">
                           <Slider {...settings}>
-                            {[0, 1, 2, 3, 4, 5].map((index) => (
+                            {filter.map((index) => (
                               <div
                                 key={index}
                                 className={`icon-item ${selectedDiv === index ? "selected" : ""
@@ -473,12 +559,12 @@ const ProviderDetailPage = () => {
                                   />
                                 )}
                                 <span>
-                                  {index === 0 && "Tất cả"}
-                                  {index === 1 && "Thức uống"}
-                                  {index === 2 && "Lều trại"}
-                                  {index === 3 && "Đồ ăn"}
-                                  {index === 4 && "Phòng nghỉ"}
-                                  {index === 5 && "Phương tiện"}
+                                  {index === 0 && `Tất cả (${total})`}
+                                  {index === 1 && `Thức uống (${beverage})`}
+                                  {index === 2 && `Lều trại (${camp})`}
+                                  {index === 3 && `Đồ ăn (${food})`}
+                                  {index === 4 && `Phòng nghỉ (${room})`}
+                                  {index === 5 && `Phương tiện (${vehicle})`}
                                 </span>
                               </div>
                             ))}
