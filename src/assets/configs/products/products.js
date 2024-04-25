@@ -26,6 +26,9 @@ export const productsColumns = [
     headerAlign: "center",
     renderCell: (params) => {
       const formattedPrice = params.row.price.toLocaleString("vi-VN") + "đ";
+      if (params.row.provider.account) {
+        return <div className="prodPrice" style={{ paddingRight: "74px" }}>*******</div>;
+      }
       return <div className="prodPrice">{formattedPrice}</div>;
     },
     renderHeader: () => <span>Đơn giá</span>,
@@ -40,7 +43,7 @@ export const productsColumns = [
       return (
         <Switch
           checked={params.row.isAvailable}
-          onChange={() => {}}
+          onChange={() => { }}
           inputProps={{ "aria-label": "controlled" }}
           sx={{
             "& .MuiSwitch-switchBase.Mui-checked": {

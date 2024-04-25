@@ -167,6 +167,9 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
         periods
         provider {
           id
+          account {
+            id
+          }
         }
       }
     }
