@@ -56,6 +56,7 @@ const ProviderDetailPage = () => {
   const [open, setOpen] = useState(false);
   const [phoneHide, setPhoneHide] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState([0, 1, 2, 3, 4, 5]);
 
   function formatPhoneNumberCen(phoneNumber) {
@@ -137,6 +138,7 @@ const ProviderDetailPage = () => {
   };
 
   const handleSearchSubmit = () => {
+    setIsLoading(true);
     const search = document.getElementById('floatingValue').value;
     setSearchTerm(search);
     fetchProdCount(search);
@@ -254,6 +256,7 @@ const ProviderDetailPage = () => {
 
     sortedArr.unshift(0);
     setFilter(sortedArr);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -511,6 +514,8 @@ const ProviderDetailPage = () => {
                             <button
                               className="link"
                               onClick={() => {
+                                setIsLoading(true);
+                                document.getElementById('floatingValue').value = "";
                                 setSearchTerm("");
                                 fetchProdCount("");
                                 refetchProducts();
@@ -570,9 +575,19 @@ const ProviderDetailPage = () => {
                             ))}
                           </Slider>
                         </div>
-                        {selectedDiv === 0 &&
+                        {isLoading && (
+                          <div className="loading">
+                            <RestartAltIcon
+                              sx={{
+                                fontSize: 80,
+                                color: "#2c3d50",
+                              }}
+                            />
+                          </div>
+                        )}
+                        {!isLoading && selectedDiv === 0 &&
                           <ProductTable productTotal={products} />}
-                        {selectedDiv !== 0 &&
+                        {!isLoading && selectedDiv !== 0 &&
                           <ProductTable products={products} />}
                       </AccordionDetails>
                     </Accordion>

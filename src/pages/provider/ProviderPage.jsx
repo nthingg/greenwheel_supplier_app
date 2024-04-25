@@ -111,7 +111,8 @@ const ProviderPage = () => {
     const { data } = await getTotalProviderInit({
       variables: {
         searchTerm: searchTerm
-      }
+      },
+      fetchPolicy: "network-only"
     });
     let providerData = data.providers.edges;
 
@@ -121,6 +122,7 @@ const ProviderPage = () => {
       while (check) {
         const { data: dataRefetch } = await getTotalProvider({
           variables: { cursor: currentEndCursor, searchTerm: searchTerm },
+          fetchPolicy: "network-only"
         });
 
         providerData = providerData.concat(
@@ -149,7 +151,8 @@ const ProviderPage = () => {
         variables: {
           type: type,
           searchTerm: searchTerm
-        }
+        },
+        fetchPolicy: "network-only"
       });
       const totalCount = data.providers.totalCount;
       switch (index) {
@@ -191,7 +194,7 @@ const ProviderPage = () => {
         }
       }
     });
-    
+
     setIsLoading(false);
   }
 
@@ -200,6 +203,7 @@ const ProviderPage = () => {
       status: selectStatus,
       searchTerm: searchTerm
     },
+    fetchPolicy: "network-only"
   });
   const [suppliers, setSuppliers] = useState([]);
   useEffect(() => {
@@ -225,6 +229,7 @@ const ProviderPage = () => {
   }, [loadTotal, errTotal, dataTotal])
 
   const handleSearchSubmit = () => {
+    setIsLoading(true);
     const searchTerm = document.getElementById('floatingValue').value;
     setSearchTerm(searchTerm);
     refetch();
@@ -278,6 +283,7 @@ const ProviderPage = () => {
             className="link"
             onClick={() => {
               setIsLoading(true);
+              document.getElementById('floatingValue').value = "";
               setSearchTerm(null);
               refetch();
               fetchProviderType(null);
