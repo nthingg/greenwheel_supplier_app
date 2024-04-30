@@ -9,6 +9,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { VisibilityOff } from "@mui/icons-material";
 
 const OrderTable = ({ orders }) => {
+  const providerId = localStorage.getItem("providerId");
+  const tempOrderColumns = [...ordersColumns];
+  tempOrderColumns.pop();
+
   const actionColumn = [
     {
       field: "action",
@@ -17,33 +21,44 @@ const OrderTable = ({ orders }) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        if (params.row.node.provider.account) {
+        if (params.row.node.provider.account && !providerId) {
           return (
-            <NavLink
-              to={`/orders/${params.row.node.id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <IconButton color="info">
-                <VisibilityIcon />
-              </IconButton>
-            </NavLink>
+            <IconButton color="info" disabled={true}>
+              <VisibilityOff />
+            </IconButton>
           );
         }
         return (
-          <IconButton color="info" disabled={true}>
-            <VisibilityOff />
-          </IconButton>
+          <NavLink
+            to={`/orders/${params.row.node.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <IconButton color="info">
+              <VisibilityIcon />
+            </IconButton>
+          </NavLink>
         );
       },
       renderHeader: () => <span>CHI TIẾT</span>,
     },
   ];
 
+  const providerColumn = [{
+    field: "providerName",
+    width: 210,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      return <div>{params.row.node.provider.name}</div>;
+    },
+    renderHeader: () => <span>NHÀ CUNG CẤP</span>,
+  }];
+
   return (
     <div className="transactionTable">
       <DataGrid
         rows={orders}
-        columns={ordersColumns.concat(actionColumn)}
+        columns={providerId ? ordersColumns.concat(actionColumn) : tempOrderColumns.concat(providerColumn).concat(ordersColumns[ordersColumns.length - 1]).concat(actionColumn)}
         rowSelection={false}
         pagination
         autoPageSize

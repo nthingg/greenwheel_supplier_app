@@ -59,7 +59,7 @@ const OrderPage = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    fetchOrder(orderStatus[0]);
+    fetchOrder(orderStatus[sbs ? parseInt(sbs, 10) : 0]);
     fetchOrderStatus();
   }, []);
 

@@ -1,5 +1,7 @@
 import { Switch } from "@mui/material";
 
+const providerId = localStorage.getItem("providerId");
+
 export const productTotalColumns = [
   {
     field: "index",
@@ -42,7 +44,7 @@ export const productTotalColumns = [
     headerAlign: "center",
     renderCell: (params) => {
       const formattedPrice = params.row.price.toLocaleString("vi-VN") + "đ";
-      if (params.row.provider.account) {
+      if (params.row.provider.account && !providerId) {
         return <div className="prodPrice" style={{ paddingRight: "74px" }}>*******</div>;
       }
       return <div className="prodPrice">{formattedPrice}</div>;

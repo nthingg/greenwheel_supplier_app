@@ -9,6 +9,7 @@ import { productTotalColumns } from "../../assets/configs/products/productTotal"
 
 const ProductTable = ({ products, productTotal, profile }) => {
   const navigate = useNavigate();
+  const providerId = localStorage.getItem("providerId");
   const [anchorId, setAnchorId] = useState(null);
   const [anchor, setAnchor] = useState(null);
 
@@ -109,7 +110,7 @@ const ProductTable = ({ products, productTotal, profile }) => {
       {products && (
         <DataGrid
           rows={products}
-          columns={products[0]?.provider.account ? productsColumns : productsColumns.concat(actionColumn)}
+          columns={(products[0]?.provider.account && !providerId) ? productsColumns : productsColumns.concat(actionColumn)}
           rowSelection={false}
           pagination
           autoPageSize

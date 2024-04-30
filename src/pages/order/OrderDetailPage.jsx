@@ -109,7 +109,7 @@ const OrderDetailPage = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setClock(new Date());
-      console.log(new Date().toLocaleString());
+      // console.log(new Date().toLocaleString());
     }, 1000); // Update every second
 
     return () => clearInterval(timer); // Cleanup function to stop the timer when the component unmounts
