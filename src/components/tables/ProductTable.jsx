@@ -18,7 +18,11 @@ const ProductTable = ({ products, productTotal, profile }) => {
 
   const handleEditClick = () => {
     // Logic for "Xác nhận" option
-    console.log("Xác nhận clicked");
+    if (providerId) {      
+      navigate(`/profile/product/${anchorId}/update`);      
+    } else {
+      navigate(`/product/${anchorId}/update`);
+    }
     // Add your specific code here
   };
 
@@ -129,8 +133,7 @@ const ProductTable = ({ products, productTotal, profile }) => {
           localeText={{
             MuiTablePagination: {
               labelDisplayedRows: ({ from, to, count }) =>
-                `${from} - ${to} trong ${
-                  count === -1 ? `nhiều hơn ${to}` : count
+                `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
                 }`,
             },
             noRowsLabel: "Không có dữ liệu",
@@ -140,7 +143,7 @@ const ProductTable = ({ products, productTotal, profile }) => {
       {productTotal && (
         <DataGrid
           rows={productTotal}
-          columns={productTotal[0]?.provider.account ? productTotalColumns : productTotalColumns.concat(actionColumn)}
+          columns={(productTotal[0]?.provider.account && !providerId) ? productTotalColumns : productTotalColumns.concat(actionColumn)}
           rowSelection={false}
           pagination
           autoPageSize
@@ -159,8 +162,7 @@ const ProductTable = ({ products, productTotal, profile }) => {
           localeText={{
             MuiTablePagination: {
               labelDisplayedRows: ({ from, to, count }) =>
-                `${from} - ${to} trong ${
-                  count === -1 ? `nhiều hơn ${to}` : count
+                `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
                 }`,
             },
             noRowsLabel: "Không có dữ liệu",

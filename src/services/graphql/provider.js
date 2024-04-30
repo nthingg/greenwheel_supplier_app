@@ -153,6 +153,7 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
     $searchTerm: String
   ) {
     products(
+      order: { id: DESC }
       where: { provider: { id: { eq: $id } }, type: { in: $type } }
       searchTerm: $searchTerm
     ) {

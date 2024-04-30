@@ -6,7 +6,7 @@ import StaticMap from "../../components/map/StaticMap";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -44,15 +44,20 @@ import {
   LOAD_DETAIL_PROVIDER,
   GET_PRODUCT_BY_PROVIDER_FILTER,
 } from "../../services/graphql/provider";
+import client from "../../services/apollo/config";
 
 const ProviderProfilePage = () => {
   const navigate = useNavigate();
+  let providerId = localStorage.getItem("providerId");
 
   const [provider, setProvider] = useState(null);
   const [products, setProducts] = useState([]);
   const [position, setPosition] = useState(null);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [phoneHide, setPhoneHide] = useState("");
+  const [filter, setFilter] = useState([0, 1, 2, 3, 4, 5]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   function formatPhoneNumberCen(phoneNumber) {
     // Replace leading "+84" with "0" (if present)
@@ -97,27 +102,27 @@ const ProviderProfilePage = () => {
     switch (index) {
       case 0:
         setSelectedStatus(prodType);
-        fetchData();
+        fetchData(prodType, searchTerm);
         break;
       case 1:
         setSelectedStatus([prodType[0]]);
-        fetchData();
+        fetchData([prodType[0]], searchTerm);
         break;
       case 2:
         setSelectedStatus([prodType[1]]);
-        fetchData();
+        fetchData([prodType[1]], searchTerm);
         break;
       case 3:
         setSelectedStatus([prodType[2]]);
-        fetchData();
+        fetchData([prodType[2]], searchTerm);
         break;
       case 4:
         setSelectedStatus([prodType[3]]);
-        fetchData();
+        fetchData([prodType[3]], searchTerm);
         break;
       case 4:
         setSelectedStatus([prodType[4]]);
-        fetchData();
+        fetchData([prodType[4]], searchTerm);
         break;
       default:
         break;
@@ -184,10 +189,8 @@ const ProviderProfilePage = () => {
   //     }
   //   }, [dataProducts, loadingProducts, errorProducts]);
 
-  const fetchData = async () => {
+  const fetchData = async (status, searchTerm) => {
     try {
-      let providerId = localStorage.getItem("providerId");
-
       const { data: dataProvider } = await getProvider({
         variables: {
           id: parseInt(providerId, 10),
@@ -206,7 +209,8 @@ const ProviderProfilePage = () => {
       const { data: dataProducts } = await getProducts({
         variables: {
           id: parseInt(providerId, 10),
-          type: selectStatus,
+          type: status,
+          searchTerm: searchTerm
         },
       });
       let res = dataProducts.products.nodes.map((node, index) => {
@@ -214,14 +218,103 @@ const ProviderProfilePage = () => {
         return { ...rest, index: index + 1 }; // Add the index to the object
       });
       setProducts(res);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const [beverage, setBeverage] = useState(0);
+  const [camp, setCamp] = useState(0);
+  const [food, setFood] = useState(0);
+  const [room, setRoom] = useState(0);
+  const [vehicle, setVehicle] = useState(0);
+  const [total, setTotal] = useState(0);
+  const queryProdCount = async (typeQuery, searchTerm) => {
+    const query = gql`
+      query {
+        products(where: { type: { in: ${typeQuery} } providerId: { eq: ${providerId} } }, searchTerm: "${searchTerm}") {
+          totalCount
+        }
+      }
+    `;
+    try {
+      const result = await client.query({ query, fetchPolicy: "network-only" });
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      console.log(msg);
+      localStorage.removeItem("errorMsg");
+    }
+  };
+
+  const fetchProdCount = async (searchTerm) => {
+    const prodTotalCount = await queryProdCount(`[${prodType}]`, searchTerm);
+    setTotal(prodTotalCount.products.totalCount);
+    const filterObject = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+
+    for (let i = 0; i < prodType.length; i++) {
+      const prodTypeCount = await queryProdCount(prodType[i], searchTerm);
+      switch (i) {
+        case 0: {
+          setBeverage(prodTypeCount.products.totalCount);
+          filterObject["1"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 1: {
+          setCamp(prodTypeCount.products.totalCount);
+          filterObject["2"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 2: {
+          setFood(prodTypeCount.products.totalCount);
+          filterObject["3"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 3: {
+          setRoom(prodTypeCount.products.totalCount);
+          filterObject["4"] = prodTypeCount.products.totalCount;
+          break;
+        }
+        case 4: {
+          setVehicle(prodTypeCount.products.totalCount);
+          filterObject["5"] = prodTypeCount.products.totalCount;
+          break;
+        }
+      }
+    }
+
+    const sortedObj = Object.entries(filterObject).sort((a, b) => b[1] - a[1]);
+    const sortedArr = [];
+
+    for (const arr of sortedObj) {
+      sortedArr.push(parseInt(arr[0]));
+    }
+
+    sortedArr.unshift(0);
+    setFilter(sortedArr);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchData(selectStatus);
+    fetchProdCount(searchTerm);
   }, []);
+
+  const handleSearchSubmit = () => {
+    setIsLoading(true);
+    const search = document.getElementById("floatingValue").value;
+    setSearchTerm(search);
+    fetchProdCount(search);
+    fetchData(selectStatus, search);
+  }
 
   return (
     <div>
@@ -389,8 +482,15 @@ const ProviderProfilePage = () => {
                               id="floatingValue"
                               name="value"
                               placeholder="Tìm kiếm ..."
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  handleSearchSubmit();
+                                }
+                              }}
                             />
-                            <button className="link">
+                            <button
+                              className="link"
+                              onClick={handleSearchSubmit}>
                               <SearchIcon />
                             </button>
                           </div>
@@ -399,16 +499,21 @@ const ProviderProfilePage = () => {
                               <AddCircleIcon />
                               <span>Thêm dịch vụ</span>
                             </Link>
-                            <button className="link">
+                            {/* <button className="link">
                               <CloudDownloadIcon />
                             </button>
                             <button className="link">
                               <FilterAltIcon />
-                            </button>
+                            </button> */}
                             <button
                               className="link"
                               onClick={() => {
-                                fetchData();
+                                setIsLoading(true);
+                                document.getElementById("floatingValue").value =
+                                  "";
+                                setSearchTerm("");
+                                fetchProdCount("");
+                                fetchData(selectStatus, "");
                               }}
                             >
                               <RefreshIcon />
@@ -417,12 +522,11 @@ const ProviderProfilePage = () => {
                         </div>
                         <div className="icon-row">
                           <Slider {...settings}>
-                            {[0, 1, 2, 3, 4, 5].map((index) => (
+                            {filter.map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${
-                                  selectedDiv === index ? "selected" : ""
-                                }`}
+                                className={`icon-item ${selectedDiv === index ? "selected" : ""
+                                  }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}
@@ -434,15 +538,15 @@ const ProviderProfilePage = () => {
                                   />
                                 )}
                                 {index === 1 && (
-                                  <LocalDiningIcon sx={{ color: "#3498DB" }} />
+                                  <EmojiFoodBeverageIcon
+                                    sx={{ color: "#3498DB" }}
+                                  />
                                 )}
                                 {index === 2 && (
                                   <BedIcon sx={{ color: "#3498DB" }} />
                                 )}
                                 {index === 3 && (
-                                  <EmojiFoodBeverageIcon
-                                    sx={{ color: "#3498DB" }}
-                                  />
+                                  <LocalDiningIcon sx={{ color: "#3498DB" }} />
                                 )}
                                 {index === 4 && (
                                   <HolidayVillageIcon
@@ -455,18 +559,33 @@ const ProviderProfilePage = () => {
                                   />
                                 )}
                                 <span>
-                                  {index === 0 && "Tất cả"}
-                                  {index === 1 && "Thức uống"}
-                                  {index === 2 && "Lều trại"}
-                                  {index === 3 && "Thức ăn"}
-                                  {index === 4 && "Phòng nghỉ"}
-                                  {index === 5 && "Phương tiện"}
+                                  {index === 0 && `Tất cả (${total})`}
+                                  {index === 1 && `Thức uống (${beverage})`}
+                                  {index === 2 && `Lều trại (${camp})`}
+                                  {index === 3 && `Đồ ăn (${food})`}
+                                  {index === 4 && `Phòng nghỉ (${room})`}
+                                  {index === 5 && `Phương tiện (${vehicle})`}
                                 </span>
                               </div>
                             ))}
                           </Slider>
                         </div>
-                        <ProductTable products={products} profile={1} />
+                        {isLoading && (
+                          <div className="loading">
+                            <RestartAltIcon
+                              sx={{
+                                fontSize: 80,
+                                color: "#2c3d50",
+                              }}
+                            />
+                          </div>
+                        )}
+                        {!isLoading && selectedDiv === 0 && (
+                          <ProductTable productTotal={products} profile={1} />
+                        )}
+                        {!isLoading && selectedDiv !== 0 && (
+                          <ProductTable products={products} profile={1} />
+                        )}
                       </AccordionDetails>
                     </Accordion>
                   )}
