@@ -177,6 +177,19 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
   }
 `;
 
+export const LOAD_PROVIDERS_OPTIONS = gql`
+  query ProviderOptions {
+    providers(first: 100, order: { id: DESC }, where: { orders: { any: true } }) {
+      nodes {
+        id
+        name
+        phone
+      }
+      totalCount
+    }
+  }
+`
+
 export const ADD_PROVIDER = gql`
   mutation createProvider($dto: ProviderCreateInput!) {
     createProvider(dto: $dto) {

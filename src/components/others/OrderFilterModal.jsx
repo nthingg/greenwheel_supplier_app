@@ -9,8 +9,9 @@ import FormControl from "@mui/material/FormControl";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Select from "react-select";
 import { FormLabel } from "@mui/material";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import "../../assets/scss/dialog-filter.scss";
+import { LOAD_PROVIDERS_OPTIONS } from "../../services/graphql/provider";
 
 const style = {
   position: "absolute",
@@ -32,24 +33,24 @@ export default function FilterModal({
   handleModalSubmit,
 }) {
   const [open, setOpen] = React.useState(false);
-  const [travelersOptions, setOptions] = React.useState([]);
+  const [providerOptions, setOptions] = React.useState([]);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-//   const { data, loading, error } = useQuery(LOAD_ACCOUNT_TRAVELERS_OPTIONS);
+  const { data, loading, error } = useQuery(LOAD_PROVIDERS_OPTIONS);
 
-//   React.useEffect(() => {
-//     if (!loading && !error && data && data["accounts"]["nodes"]) {
-//       let res = data.accounts.nodes.map((account, index) => {
-//         const phoneFormatted = account.phone.toString();
-//         return {
-//           value: account.id,
-//           label: `${index + 1}. ${account.name} - 0${phoneFormatted.substring(2).replace(/(\d{3})\d*(\d{3})/, '$1****$2')}`,
-//         };
-//       });
-//       setOptions(res);
-//     }
-//   }, [data, loading, error]);
+  React.useEffect(() => {
+    if (!loading && !error && data && data["providers"]["nodes"]) {
+      let res = data.providers.nodes.map((account, index) => {
+        const phoneFormatted = account.phone.toString();
+        return {
+          value: account.id,
+          label: `${index + 1}. ${account.name} - 0${phoneFormatted.substring(2).replace(/(\d{3})\d*(\d{3})/, '$1****$2')}`,
+        };
+      });
+      setOptions(res);
+    }
+  }, [data, loading, error]);
 
   return (
     <div>
@@ -117,7 +118,7 @@ export default function FilterModal({
               isDisabled={false}
               isClearable={true}
               name="account"
-              options={[]}
+              options={providerOptions}
             //   onChange={async (e) => {
             //     if (e) {
             //       setAccountId(e.value);
