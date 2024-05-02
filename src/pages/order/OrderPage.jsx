@@ -5,7 +5,6 @@ import "../../assets/scss/filter.scss";
 import "../../assets/scss/shared.scss";
 //icon
 import OrderTable from "../../components/tables/OrderTable";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
@@ -38,6 +37,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import BeenhereIcon from "@mui/icons-material/Beenhere";
 import { useParams } from "react-router-dom";
+import FilterModal from "../../components/others/OrderFilterModal";
 
 const OrderPage = () => {
   const { sbs } = useParams();
@@ -443,12 +443,10 @@ const OrderPage = () => {
           </button>
         </div>
         <div className="right">
-          <button className="link">
-            <FilterAltIcon />
-          </button>
-          <button className="link">
+          <FilterModal />
+          {/* <button className="link">
             <CloudDownloadIcon />
-          </button>
+          </button> */}
           <button
             className="link"
             onClick={() => {

@@ -43,7 +43,7 @@ const ProviderPage = () => {
     "MOTEL",
     "REPAIR",
     "RESTAURANT",
-    "TAXI",
+    // "TAXI",
     "VEHICLE_RENTAL",
   ];
   const [selectedDiv, setSelectedDiv] = useState(0);
@@ -90,11 +90,11 @@ const ProviderPage = () => {
       case 7:
         setSelectedStatus([suppType[6]]);
         break;
-      case 8:
-        setSelectedStatus([suppType[7]]);
-        break;
+      // case 8:
+      //   setSelectedStatus([suppType[7]]);
+      //   break;
       case 9:
-        setSelectedStatus([suppType[8]]);
+        setSelectedStatus([suppType[7]]);
         break;
       default:
         break;
@@ -297,7 +297,7 @@ const ProviderPage = () => {
       <div className="supplierContainer">
         <div className="icon-row">
           <Slider {...settings}>
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
+            {[0, 1, 2, 3, 4, 5, 6, 7, 9].map((index) => (
               <div
                 key={index}
                 className={`icon-item ${selectedDiv === index ? "selected" : ""
@@ -325,9 +325,9 @@ const ProviderPage = () => {
                 {index === 7 && (
                   <RestaurantIcon sx={{ color: "#7f6d6b" }} />
                 )}
-                {index === 8 && (
+                {/* {index === 8 && (
                   <LocalTaxiIcon sx={{ color: "#416f31" }} />
-                )}
+                )} */}
                 {index === 9 && (
                   <TwoWheelerIcon sx={{ color: "#3498DB" }} />
                 )}
@@ -340,7 +340,7 @@ const ProviderPage = () => {
                   {index === 5 && `Nhà nghỉ (${motel})`}
                   {index === 6 && `Tiệm sửa (${repair})`}
                   {index === 7 && `Nhà hàng (${restaurant})`}
-                  {index === 8 && `Taxi (${taxi})`}
+                  {/* {index === 8 && `Taxi (${taxi})`} */}
                   {index === 9 && `Thuê xe (${vehicleRental})`}
                 </span>
               </div>

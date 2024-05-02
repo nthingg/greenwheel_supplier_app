@@ -1,0 +1,27 @@
+.btn-modal-filter {
+    margin: 20px auto 0 auto;
+    text-decoration: none;
+    color: white;
+    background-color: #2c3d50;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    border: none;
+    align-items: center;
+    justify-content: center;
+    transition: 0.4s;
+}
+
+.btn-modal-filter:hover {
+    background-color: #1c2833;
+
+    p {
+        color: white;
+    }
+}
+
+.label-filter {
+    line-height: 40px;
+}
