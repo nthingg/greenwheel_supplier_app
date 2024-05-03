@@ -376,14 +376,14 @@ const OrderDetailPage = () => {
                 <p>Mã đơn #{order?.id.toString().padStart(9, "0")}</p>
               </div>
               <div className="order-status">
-                {order?.currentStatus === "CANCELLED" && (
+                {/* {order?.currentStatus === "CANCELLED" && (
                   <p className="status cancelled">Đã hủy</p>
                 )}
                 {order?.currentStatus === "CANCELLED" && (
                   <a className="reason" onClick={handleClickOpenReason}>
                     Lí do hủy bỏ
                   </a>
-                )}
+                )} */}
                 {order?.currentStatus === "RESERVED" && (
                   <a className="status reserved" title="Đã đặt">
                     <DescriptionIcon sx={{ color: "#3498DB" }} />
@@ -410,8 +410,8 @@ const OrderDetailPage = () => {
                   </a>
                 )}
                 {order?.currentStatus === "CANCELLED" && (
-                  <a className="status reserved" title="Đã hủy">
-                    <CancelIcon sx={{ color: "#3498DB" }} />
+                  <a className="status cancelled" title="Đã hủy">
+                    <CancelIcon />
                   </a>
                 )}
               </div>
