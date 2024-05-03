@@ -26,10 +26,8 @@ const style = {
 };
 
 export default function FilterModal({
-  filterOrder,
-  handleChangeFilter,
-  accountId,
-  setAccountId,
+  providerId,
+  setProviderId,
   handleModalSubmit,
 }) {
   const [open, setOpen] = React.useState(false);
@@ -119,13 +117,13 @@ export default function FilterModal({
               isClearable={true}
               name="account"
               options={providerOptions}
-            //   onChange={async (e) => {
-            //     if (e) {
-            //       setAccountId(e.value);
-            //     } else {
-            //       setAccountId(null);
-            //     }
-            //   }}
+              // onChange={async (e) => {
+              //   if (e) {
+              //     setAccountId(e.value);
+              //   } else {
+              //     setAccountId(null);
+              //   }
+              // }}
               theme={(theme) => ({
                 ...theme,
                 colors: {
@@ -138,8 +136,8 @@ export default function FilterModal({
           <button
             className="btn-modal-filter"
             onClick={() => {
-            //   handleModalSubmit(filterOrder, accountId);
-            //   handleClose();
+              // handleModalSubmit(providerId);
+              // handleClose();
             }}
           >
             Tìm kiếm

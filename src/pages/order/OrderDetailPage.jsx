@@ -68,6 +68,7 @@ const OrderDetailPage = () => {
   const [servable, setServable] = useState(false);
   const [status, setStatus] = useState("");
   const [phone, setPhone] = useState("");
+  const [total, setTotal] = useState(0);
   const [finalCancellable, setFinalCancellable] = useState("");
   const [finalServable, setFinalServable] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -177,6 +178,8 @@ const OrderDetailPage = () => {
 
       setStatus(data["orders"]["nodes"][0]["currentStatus"]);
       console.log(status);
+
+      setTotal(data["orders"]["nodes"][0]["total"]);
     }
   }, [data, loading, error]);
 
@@ -436,6 +439,10 @@ const OrderDetailPage = () => {
                 <div className="detailItem">
                   <span className="itemKey">Ngày tạo:</span>
                   <span className="itemValue">{date}</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Tổng:</span>
+                  <span className="itemValue">{total.toLocaleString("vi-VN") + "đ"}</span>
                 </div>
               </div>
               <div className="right">

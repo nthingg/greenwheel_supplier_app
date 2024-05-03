@@ -12,11 +12,27 @@ export const detailsColumns = [
   {
     field: "name",
     headerName: "TÊN DỊCH VỤ",
-    width: 300,
+    width: 250,
     renderCell: (params) => {
       return <div>{params.row.product.name}</div>;
     },
     renderHeader: () => <span>DỊCH VỤ</span>,
+  },
+  {
+    field: "servesDate",
+    headerName: "NGÀY PHỤC VỤ",
+    width: 200,
+    renderCell: (params) => {
+      const date = new Date(params.row.date);
+
+      const formattedDateTime = date.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      return <div>{formattedDateTime}</div>;
+    },
+    renderHeader: () => <span>NGÀY PHỤC VỤ</span>,
   },
   {
     field: "quantity",
@@ -35,7 +51,7 @@ export const detailsColumns = [
     headerAlign: "center",
     renderCell: (params) => {
       const formattedPrice =
-        params.row.product.price.toLocaleString("vi-VN") + "đ";
+        params.row.price.toLocaleString("vi-VN") + "đ";
       return <div className="prodPrice">{formattedPrice}</div>;
     },
     renderHeader: () => <span>ĐƠN GIÁ</span>,
@@ -47,7 +63,7 @@ export const detailsColumns = [
     headerAlign: "center",
     renderCell: (params) => {
       const formattedPrice =
-        (params.row.product.price * params.row.quantity).toLocaleString(
+        (params.row.total).toLocaleString(
           "vi-VN"
         ) + "đ";
       return <div className="prodPrice">{formattedPrice}</div>;

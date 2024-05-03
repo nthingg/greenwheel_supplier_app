@@ -156,6 +156,8 @@ export const LOAD_DETAIL_ORDER = gql`
           }
           quantity
           price
+          total
+          date
         }
         note
       }
