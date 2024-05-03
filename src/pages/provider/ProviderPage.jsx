@@ -184,11 +184,11 @@ const ProviderPage = () => {
           setRestaurant(totalCount);
           break;
         }
+        // case 7: {
+        //   setTaxi(totalCount);
+        //   break;
+        // }
         case 7: {
-          setTaxi(totalCount);
-          break;
-        }
-        case 8: {
           setVehicleRental(totalCount);
           break;
         }
@@ -357,10 +357,10 @@ const ProviderPage = () => {
             />
           </div>
         )}
-        {!isLoading && (selectedDiv === 0 ?
-          <ProviderTable totalProviders={totalProvider} /> :
-          <ProviderTable providers={suppliers} />)
-        }
+        {!isLoading && selectedDiv === 0 &&
+          <ProviderTable totalProviders={totalProvider} />}
+        {!isLoading && selectedDiv !== 0 &&
+          <ProviderTable providers={suppliers} />}
       </div>
     </div>
   );
