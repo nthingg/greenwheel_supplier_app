@@ -60,11 +60,12 @@ const ProviderPage = () => {
   const [searchTerm, setSearchTerm] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    fetchTotalProvider(null);
     fetchProviderType(null);
+    fetchTotalProvider(null);
   }, [])
   const handleClick = (index) => {
     setSelectedDiv(index);
+    setIsLoading(true);
     switch (index) {
       case 0:
         setSelectedStatus(suppType);
@@ -194,8 +195,6 @@ const ProviderPage = () => {
         }
       }
     });
-
-    setIsLoading(false);
   }
 
   const { error, loading, data, refetch } = useQuery(LOAD_SUPPLIERS_FILTER, {
@@ -213,6 +212,7 @@ const ProviderPage = () => {
         return { ...rest, index: index + 1 }; // Add the index to the object
       });
       setSuppliers(res);
+      setIsLoading(false);
     }
   }, [data, loading, error]);
 
@@ -233,8 +233,8 @@ const ProviderPage = () => {
     const searchTerm = document.getElementById('floatingValue').value;
     setSearchTerm(searchTerm);
     refetch();
-    fetchTotalProvider(searchTerm);
     fetchProviderType(searchTerm);
+    fetchTotalProvider(searchTerm);
   }
 
   var settings = {
