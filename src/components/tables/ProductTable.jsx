@@ -110,7 +110,6 @@ const ProductTable = ({ products, productTotal, profile }) => {
   ];
   return (
     <div className="productTable">
-      {console.log(products)}
       {products && (
         <DataGrid
           rows={products}

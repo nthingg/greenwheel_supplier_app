@@ -358,9 +358,9 @@ const ProviderPage = () => {
           </div>
         )}
         {!isLoading && selectedDiv === 0 &&
-          <ProviderTable totalProviders={totalProvider} />}
+          <ProviderTable totalProviders={totalProvider} refetch={refetch} fetchTotalProvider={fetchTotalProvider} />}
         {!isLoading && selectedDiv !== 0 &&
-          <ProviderTable providers={suppliers} />}
+          <ProviderTable providers={suppliers} refetch={refetch} fetchTotalProvider={fetchTotalProvider} />}
       </div>
     </div>
   );

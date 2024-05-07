@@ -220,3 +220,12 @@ export const UPDATE_PROVIDER = gql`
     }
   }
 `;
+
+export const CHANGE_PROVIDER_STATUS = gql`
+  mutation ChangeProviderStatus($id: Int!) {
+    changeProviderStatus(providerId: $id) {
+      id
+      name
+    }
+  }
+`

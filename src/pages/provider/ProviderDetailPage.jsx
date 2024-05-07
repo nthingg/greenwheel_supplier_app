@@ -6,7 +6,7 @@ import StaticMap from "../../components/map/StaticMap";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -38,18 +38,31 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Switch,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import {
   LOAD_DETAIL_PROVIDER,
   GET_PRODUCT_BY_PROVIDER_FILTER,
+  CHANGE_PROVIDER_STATUS,
 } from "../../services/graphql/provider";
 import client from "../../services/apollo/config";
 
 const ProviderDetailPage = () => {
   const navigate = useNavigate();
   const { providerId, orderId } = useParams();
-
+  //change status
+  const [vertical, setVertical] = useState("top");
+  const [horizontal, setHorizontal] = useState("right");
+  const [errorMsg, setErrMsg] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [okMsg, setOkMsg] = useState(false);
+  const [snackbarOkOpen, setSnackbarOkOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [status, setStatus] = useState(true);
+  //detail
   const [provider, setProvider] = useState(null);
   const [products, setProducts] = useState([]);
   const [position, setPosition] = useState(null);
@@ -137,6 +150,52 @@ const ProviderDetailPage = () => {
     setOpen(false);
   };
 
+  const handleClickError = () => {
+    setSnackbarOpen(true);
+  };
+  const handleCloseSnack = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleClickOk = () => {
+    setSnackbarOkOpen(true);
+  };
+  const handleCloseSnackOk = () => {
+    setSnackbarOkOpen(false);
+  };
+
+  const handleClickOpenConfirm = (id) => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseConfirm = (id) => {
+    setOpenConfirm(false);
+  };
+
+  const [change, { }] = useMutation(CHANGE_PROVIDER_STATUS);
+
+  const handleChangeStatus = async (id) => {
+    try {
+      const { data } = await change({
+        variables: {
+          id: parseInt(providerId, 10),
+        },
+      });
+      setOkMsg(
+        `Thay đổi thành công trạng thái của: ${data.changeProviderStatus.name}`
+      );
+      setStatus(!status);
+      handleClickOk();
+      handleCloseConfirm();
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClickError();
+      localStorage.removeItem("errorMsg");
+    }
+  }
+
   const handleSearchSubmit = () => {
     setIsLoading(true);
     const search = document.getElementById("floatingValue").value;
@@ -176,6 +235,7 @@ const ProviderDetailPage = () => {
       setPhoneHide(
         formatPhoneNumberCen(data["providers"]["nodes"][0]["phone"])
       );
+      setStatus(data["providers"]["nodes"][0].isActive)
     }
   }, [data, loading, error]);
 
@@ -357,13 +417,72 @@ const ProviderDetailPage = () => {
             <div className="prodTitle">
               <div className="provider-header">
                 <p>{provider?.name}</p>
-                <div>
+                {/* <div>
                   {provider?.isActive === false && (
                     <p className="status cancelled">Ngưng hoạt động</p>
                   )}
                   {provider?.isActive === true && (
                     <p className="status confirmed">Đang hoạt động</p>
                   )}
+                </div> */}
+                <div className="provider-status">
+                  <a className="status active" title={status ? "Đang hoạt động" : "Ngưng hoạt động"}>
+                    <Switch
+                      checked={status}
+                      color={status ? "success" : "error"}
+                      onClick={handleClickOpenConfirm}
+                    />
+                  </a>
+                  <Dialog
+                    open={openConfirm}
+                    onClose={handleCloseConfirm}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className="confirmDialog"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      {"Xác nhận"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Bạn có xác nhận muốn đổi trạng thái hiển thị của nhà cung cấp này không?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <button
+                        className="btn-change-status-cancel"
+                        onClick={handleCloseConfirm}
+                        style={{
+                          textDecoration: "none",
+                          color: "rgb(44, 61, 80)",
+                          backgroundColor: "white",
+                          fontSize: "16px",
+                          padding: "10px",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          border: "1px solid",
+                          transition: "0.4s"
+                        }}>
+                        Hủy bỏ
+                      </button>
+                      <button className="btn-change-status-confirm"
+                        onClick={handleChangeStatus}
+                        autoFocus
+                        style={{
+                          textDecoration: "none",
+                          color: "white",
+                          backgroundColor: "#2c3d50",
+                          fontSize: "16px",
+                          padding: "10px",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          border: "none",
+                          transition: "0.4s"
+                        }}>
+                        Đồng ý
+                      </button>
+                    </DialogActions>
+                  </Dialog>
                 </div>
               </div>
             </div>
@@ -534,9 +653,8 @@ const ProviderDetailPage = () => {
                             {filter.map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${
-                                  selectedDiv === index ? "selected" : ""
-                                }`}
+                                className={`icon-item ${selectedDiv === index ? "selected" : ""
+                                  }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}
@@ -628,6 +746,38 @@ const ProviderDetailPage = () => {
               <Button onClick={handleClose}>Đóng</Button>
             </DialogActions>
           </Dialog>
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={snackbarOpen}
+            onClose={handleCloseSnack}
+            autoHideDuration={2000}
+            key={"alert"}
+          >
+            <Alert
+              onClose={handleCloseSnack}
+              severity="error"
+              variant="filled"
+              sx={{ width: "100%" }}
+            >
+              {errorMsg}
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={snackbarOkOpen}
+            onClose={handleCloseSnackOk}
+            autoHideDuration={2000}
+            key={"success"}
+          >
+            <Alert
+              onClose={handleCloseSnackOk}
+              severity="success"
+              variant="filled"
+              sx={{ width: "100%" }}
+            >
+              {okMsg}
+            </Alert>
+          </Snackbar>
         </div>
       )}
     </div>
