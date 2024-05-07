@@ -129,7 +129,7 @@ const App = () => {
             }
           }}
           sx={{ color: "#2c3d50" }}
-          style={{ right: 10, top: 10, position: "fixed", zIndex: 1600 }}
+          style={{ right: 10, bottom: 10, position: "fixed", zIndex: 1600 }}
         >
           <NotificationsActiveIcon />
         </Fab> */}
@@ -139,7 +139,7 @@ const App = () => {
             setOpen(false);
           }}
           PaperProps={{
-            sx: { position: "fixed", top: -20, right: 50, width: 500 },
+            sx: { position: "fixed", bottom: -20, right: 50, width: 500 },
           }}
         >
           <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>

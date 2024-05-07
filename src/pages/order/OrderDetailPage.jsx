@@ -209,9 +209,6 @@ const OrderDetailPage = () => {
     let finalReason = "";
     if (reason !== "") {
       finalReason += reason.charAt(0).toUpperCase() + reason.slice(1);
-      finalReason += `, ${mainReason}`;
-    } else {
-      finalReason = mainReason;
     }
 
     setOpen(false);
@@ -223,7 +220,7 @@ const OrderDetailPage = () => {
             orderId: parseInt(orderId, 10),
             reason: finalReason,
             channel: "VONAGE",
-            otp: otp
+            otp: otp,
           },
         },
       });
@@ -237,7 +234,7 @@ const OrderDetailPage = () => {
       handleClick();
       localStorage.removeItem("errorMsg");
     }
-  }
+  };
 
   const handleProviderCancelClose = async () => {
     let finalReason = "";
@@ -255,7 +252,7 @@ const OrderDetailPage = () => {
         variables: {
           input: {
             orderId: parseInt(orderId, 10),
-            reason: finalReason
+            reason: finalReason,
           },
         },
       });
@@ -364,9 +361,9 @@ const OrderDetailPage = () => {
         variables: {
           input: {
             channel: "VONAGE",
-            orderId: parseInt(orderId, 10)
-          }
-        }
+            orderId: parseInt(orderId, 10),
+          },
+        },
       });
       console.log(sendOtpData);
       setSuccessMsg("Gửi OTP thành công!");
@@ -378,17 +375,19 @@ const OrderDetailPage = () => {
       handleClick();
       localStorage.removeItem("errorMsg");
     }
-  }
+  };
 
   const filterServceDate = (date) => {
     setSelectedDay(date);
     const selectedDate = details.filter((detail) => {
       const detailDate = new Date(detail.date);
       const selectDate = new Date(date);
-      return detailDate.toLocaleDateString() === selectDate.toLocaleDateString()
+      return (
+        detailDate.toLocaleDateString() === selectDate.toLocaleDateString()
+      );
     });
     setFilteredDetail(selectedDate);
-  }
+  };
 
   return (
     <div className="transactionDetail">
@@ -473,27 +472,27 @@ const OrderDetailPage = () => {
                   </a>
                 )}
                 {order?.currentStatus === "PREPARED" && (
-                  <a className="status prepared" title="Đã chuẩn bị">
+                  <a className="status prepared" title="Chuẩn bị">
                     <MicrowaveIcon />
                   </a>
                 )}
                 {order?.currentStatus === "SERVED" && (
-                  <a className="status served" title="Đã phục vụ">
+                  <a className="status served" title="Phục vụ">
                     <CheckCircleIcon />
                   </a>
                 )}
                 {order?.currentStatus === "COMPLAINED" && (
-                  <a className="status complained" title="Bị phàn nàn">
+                  <a className="status reserved" title="Bị phản ánh">
                     <FeedbackIcon sx={{ color: "#3498DB" }} />
                   </a>
                 )}
                 {order?.currentStatus === "FINISHED" && (
-                  <a className="status reserved" title="Hoàn thành">
-                    <PaidIcon sx={{ color: "#3498DB" }} />
+                  <a className="status served" title="Hoàn tất">
+                    <PaidIcon />
                   </a>
                 )}
                 {order?.currentStatus === "CANCELLED" && (
-                  <a className="status cancelled" title="Đã hủy">
+                  <a className="status cancelled" title="Bị hủy">
                     <CancelIcon />
                   </a>
                 )}
@@ -522,7 +521,9 @@ const OrderDetailPage = () => {
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Tổng:</span>
-                  <span className="itemValue">{total.toLocaleString("vi-VN") + "đ"}</span>
+                  <span className="itemValue">
+                    {total.toLocaleString("vi-VN") + "đ"}
+                  </span>
                 </div>
               </div>
               <div className="right">
@@ -570,9 +571,13 @@ const OrderDetailPage = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {!order?.note ?
-                      <span><em>Không có ghi chú.</em></span> :
-                      order?.note}
+                    {!order?.note ? (
+                      <span>
+                        <em>Không có ghi chú.</em>
+                      </span>
+                    ) : (
+                      order?.note
+                    )}
                   </span>
                 </div>
               </div>
@@ -611,14 +616,16 @@ const OrderDetailPage = () => {
               <AccordionDetails
                 sx={{
                   backgroundColor: "#f8f9f9",
-                  padding: "8px 4px 16px"
+                  padding: "8px 4px 16px",
                 }}
               >
-                <button className="link"
+                <button
+                  className="link"
                   onClick={() => {
                     setFilteredDetail(null);
                     setSelectedDay(null);
-                  }}>
+                  }}
+                >
                   <RefreshIcon />
                 </button>
                 <div className="info-container">
@@ -626,10 +633,12 @@ const OrderDetailPage = () => {
                     <div className="calendar">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <p>Lịch phục vụ</p>
-                        {!selectedDay &&
+                        {!selectedDay && (
                           <DateCalendar
                             value={
-                              highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
+                              highlightedDays[0]
+                                ? dayjs(highlightedDays[0])
+                                : dayjs()
                             }
                             slots={{
                               day: ServerDay,
@@ -642,91 +651,29 @@ const OrderDetailPage = () => {
                             onChange={(date) => {
                               filterServceDate(date);
                             }}
-                          />}
-                        {selectedDay &&
+                          />
+                        )}
+                        {selectedDay && (
                           <DateCalendar
                             value={selectedDay}
                             onChange={(date) => {
                               filterServceDate(date);
                             }}
-                          />}
+                          />
+                        )}
                       </LocalizationProvider>
                     </div>
                   </div>
                   <div className="right">
-                    {/* <div className="header-info">
-                      <p>Ghi chú</p>
-                    </div>
-                    <div className="body-info">
-                      {!order?.note ? "Không có ghi chú" : order?.note}
-                    </div> */}
-                    {!filteredDetail &&
-                      <OrderDetailTable details={details} />
-                    }
-                    {filteredDetail &&
+                    {!filteredDetail && <OrderDetailTable details={details} />}
+                    {filteredDetail && (
                       <OrderDetailTable details={filteredDetail} />
-                    }
+                    )}
                   </div>
                 </div>
               </AccordionDetails>
             </Accordion>
           </div>
-          {/* <div className="bottom">
-            <Accordion sx={{ boxShadow: "none", width: 1400 }}>
-              <AccordionSummary
-                sx={{
-                  fontSize: 24,
-                  backgroundColor: "#2c3d50",
-                  color: "white",
-                  borderRadius: "10px",
-                  fontWeight: "600",
-                }}
-                expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                {(() => {
-                  switch (order?.period) {
-                    case "MORNING":
-                      return "Các ngày phục vụ (buổi sáng)";
-                    case "NOON":
-                      return "Các ngày phục vụ (buổi trưa)";
-                    case "AFTERNOON":
-                      return "Các ngày phục vụ (buổi chiều)";
-                    case "EVENING":
-                      return "Các ngày phục vụ (buổi tối)";
-                    default:
-                      return `Check-in vào ${order?.period}`;
-                  }
-                })()}
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  backgroundColor: "#f8f9f9",
-                }}
-              >
-                <div className="calendar">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <p>Lịch phục vụ</p>
-                    <DateCalendar
-                      value={
-                        highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
-                      }
-                      readOnly
-                      slots={{
-                        day: ServerDay,
-                      }}
-                      slotProps={{
-                        day: {
-                          highlightedDays,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </div> */}
         </div>
       </div>
       <Dialog
@@ -781,9 +728,11 @@ const OrderDetailPage = () => {
         open={open}
         setOpen={setOpen}
         setReason={setReason}
+        setMainReason={setMainReason}
         handleProviderCancelClose={handleProviderCancelClose}
         handleTravelerCancelClose={handleTravelerCancelClose}
-        sendCancelOtp={sendCancelOtp} />
+        sendCancelOtp={sendCancelOtp}
+      />
 
       <Dialog
         open={openTraces}
@@ -851,14 +800,18 @@ const OrderDetailPage = () => {
                   </StepContent>
                 </Step>
               ))}
-              <Step key={null}>
-                <StepLabel>
-                  <Typography>Đang chờ xử lý</Typography>
-                </StepLabel>
-                <StepContent>
-                  <p className="trace-date">N/A</p>
-                </StepContent>
-              </Step>
+              {(order?.status === "RESERVED" ||
+                order?.status === "SERVED" ||
+                order?.status === "PREPARED") && (
+                <Step key={null}>
+                  <StepLabel>
+                    <Typography>Đang chờ xử lý</Typography>
+                  </StepLabel>
+                  <StepContent>
+                    <p className="trace-date">N/A</p>
+                  </StepContent>
+                </Step>
+              )}
             </Stepper>
           </Box>
           {/* <TracesTable traces={traces} /> */}
