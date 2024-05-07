@@ -3,6 +3,7 @@ import "../../assets/scss/shared.scss";
 import { Link, useParams } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
 import OrderDetailTable from "../../components/tables/OrderDetailTable";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import BeenhereIcon from "@mui/icons-material/Beenhere";
 import PaidIcon from "@mui/icons-material/Paid";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -55,6 +56,7 @@ const OrderDetailPage = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [details, setDetails] = useState(null);
+  const [filteredDetail, setFilteredDetail] = useState(null);
   const [date, setDate] = useState("");
   const [open, setOpen] = useState(false);
   const [traces, setTraces] = useState([]);
@@ -64,6 +66,7 @@ const OrderDetailPage = () => {
   const [mainReason, setMainReason] = useState("Hết hàng");
   const [reasonCancelled, setReasonCancelled] = useState(null);
   const [highlightedDays, setHighlitedDays] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
   const [cancellable, setCancellable] = useState(false);
   const [servable, setServable] = useState(false);
   const [status, setStatus] = useState("");
@@ -156,9 +159,9 @@ const OrderDetailPage = () => {
       setCancellable(threeDaysLater >= today);
       setFinalCancellable(formattedDate);
 
-      console.log(formattedDate);
-      console.log(today);
-      console.log(threeDaysLater >= today);
+      // console.log(formattedDate);
+      // console.log(today);
+      // console.log(threeDaysLater >= today);
 
       if (data["orders"]["nodes"][0].traces.length > 1) {
         const reason = data["orders"]["nodes"][0].traces[1].description;
@@ -175,10 +178,9 @@ const OrderDetailPage = () => {
 
       //phone
       setPhone(data["orders"]["nodes"][0].account.phone);
-
+      //status
       setStatus(data["orders"]["nodes"][0]["currentStatus"]);
-      console.log(status);
-
+      //total
       setTotal(data["orders"]["nodes"][0]["total"]);
     }
   }, [data, loading, error]);
@@ -308,6 +310,16 @@ const OrderDetailPage = () => {
     }
 
     return formattedParts.join("");
+  }
+
+  const filterServceDate = (date) => {
+    setSelectedDay(date);
+    const selectedDate = details.filter((detail) => {
+      const detailDate = new Date(detail.date);
+      const selectDate = new Date(date);
+      return detailDate.toLocaleDateString() === selectDate.toLocaleDateString()
+    });
+    setFilteredDetail(selectedDate);
   }
 
   return (
@@ -480,6 +492,21 @@ const OrderDetailPage = () => {
                     </a>
                   </span>
                 </div>
+                <div className="detailItem">
+                  <span className="itemKey">Ghi chú:</span>
+                  <span
+                    className="itemValue"
+                    style={{
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {!order?.note ?
+                      <span><em>Không có ghi chú.</em></span> :
+                      order?.note}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -497,30 +524,86 @@ const OrderDetailPage = () => {
                 aria-controls="panel1-content"
                 id="panel1-header"
               >
-                Thông tin thêm
+                Chi tiết dịch vụ đơn hàng
+                {(() => {
+                  switch (order?.period) {
+                    case "MORNING":
+                      return " (phục vụ buổi sáng)";
+                    case "NOON":
+                      return " (phục vụ buổi trưa)";
+                    case "AFTERNOON":
+                      return " (phục vụ buổi chiều)";
+                    case "EVENING":
+                      return " (phục vụ buổi tối)";
+                    default:
+                      return ` (Check-in vào ${order?.period})`;
+                  }
+                })()}
               </AccordionSummary>
               <AccordionDetails
                 sx={{
                   backgroundColor: "#f8f9f9",
+                  padding: "8px 4px 16px"
                 }}
               >
+                <button className="link"
+                  onClick={() => {
+                    setFilteredDetail(null);
+                    setSelectedDay(null);
+                  }}>
+                  <RefreshIcon />
+                </button>
                 <div className="info-container">
                   <div className="left">
-                    <OrderDetailTable details={details} />
+                    <div className="calendar">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <p>Lịch phục vụ</p>
+                        {!selectedDay &&
+                          <DateCalendar
+                            value={
+                              highlightedDays[0] ? dayjs(highlightedDays[0]) : dayjs()
+                            }
+                            slots={{
+                              day: ServerDay,
+                            }}
+                            slotProps={{
+                              day: {
+                                highlightedDays,
+                              },
+                            }}
+                            onChange={(date) => {
+                              filterServceDate(date);
+                            }}
+                          />}
+                        {selectedDay &&
+                          <DateCalendar
+                            value={selectedDay}
+                            onChange={(date) => {
+                              filterServceDate(date);
+                            }}
+                          />}
+                      </LocalizationProvider>
+                    </div>
                   </div>
                   <div className="right">
-                    <div className="header-info">
+                    {/* <div className="header-info">
                       <p>Ghi chú</p>
                     </div>
                     <div className="body-info">
                       {!order?.note ? "Không có ghi chú" : order?.note}
-                    </div>
+                    </div> */}
+                    {!filteredDetail &&
+                      <OrderDetailTable details={details} />
+                    }
+                    {filteredDetail &&
+                      <OrderDetailTable details={filteredDetail} />
+                    }
                   </div>
                 </div>
               </AccordionDetails>
             </Accordion>
           </div>
-          <div className="bottom">
+          {/* <div className="bottom">
             <Accordion sx={{ boxShadow: "none", width: 1400 }}>
               <AccordionSummary
                 sx={{
@@ -575,7 +658,7 @@ const OrderDetailPage = () => {
                 </div>
               </AccordionDetails>
             </Accordion>
-          </div>
+          </div> */}
         </div>
       </div>
       <Dialog
@@ -673,7 +756,7 @@ const OrderDetailPage = () => {
                 setReason(e.target.value);
               }}
             />
-            <button className="otp-btn" onClick={() => {}}>
+            <button className="otp-btn" onClick={() => { }}>
               Gửi OTP
             </button>
           </div>
