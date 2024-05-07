@@ -46,9 +46,11 @@ import {
   CANCEL_ORDER,
   LOAD_DETAIL_ORDER,
   PREPARE_ORDER,
+  SEND_CANCEL_OTP,
 } from "../../services/graphql/order";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import OrderCancelDialog from "../../components/others/OrderDetailCancelDialog";
 
 const OrderDetailPage = () => {
   const [vertical, setVertical] = useState("top");
@@ -76,6 +78,8 @@ const OrderDetailPage = () => {
   const [finalServable, setFinalServable] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
+  const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
+  const [successMsg, setSuccessMsg] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
   const handleConfirm = () => {
@@ -92,6 +96,10 @@ const OrderDetailPage = () => {
 
   const handleCloseSnack = () => {
     setSnackbarOpen(false);
+  };
+
+  const handleCloseSucessSnack = () => {
+    setSnackbarSuccessOpen(false);
   };
 
   const [prepare, { data: dataPrep, loading: loadingPrep, error: errorPrep }] =
@@ -197,7 +205,7 @@ const OrderDetailPage = () => {
     setOpenTraces(true);
   };
 
-  const handleClose = async () => {
+  const handleTravelerCancelClose = async (otp) => {
     let finalReason = "";
     if (reason !== "") {
       finalReason += reason.charAt(0).toUpperCase() + reason.slice(1);
@@ -212,11 +220,47 @@ const OrderDetailPage = () => {
       const { data } = await cancel({
         variables: {
           input: {
-            id: parseInt(orderId, 10),
+            orderId: parseInt(orderId, 10),
             reason: finalReason,
+            channel: "VONAGE",
+            otp: otp
           },
         },
       });
+      setSuccessMsg("Hủy đơn thành công!");
+      setSnackbarSuccessOpen(true);
+      refetch();
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+    }
+  }
+
+  const handleProviderCancelClose = async () => {
+    let finalReason = "";
+    if (reason !== "") {
+      finalReason += reason.charAt(0).toUpperCase() + reason.slice(1);
+      finalReason += `, ${mainReason}`;
+    } else {
+      finalReason = mainReason;
+    }
+
+    setOpen(false);
+
+    try {
+      const { data } = await cancel({
+        variables: {
+          input: {
+            orderId: parseInt(orderId, 10),
+            reason: finalReason
+          },
+        },
+      });
+      setSuccessMsg("Hủy đơn thành công!");
+      setSnackbarSuccessOpen(true);
       refetch();
     } catch (error) {
       console.log(error);
@@ -310,6 +354,30 @@ const OrderDetailPage = () => {
     }
 
     return formattedParts.join("");
+  }
+
+  const [sendOtp, { data: sendOtpData }] = useMutation(SEND_CANCEL_OTP);
+
+  const sendCancelOtp = () => {
+    try {
+      sendOtp({
+        variables: {
+          input: {
+            channel: "VONAGE",
+            orderId: parseInt(orderId, 10)
+          }
+        }
+      });
+      console.log(sendOtpData);
+      setSuccessMsg("Gửi OTP thành công!");
+      setSnackbarSuccessOpen(true);
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+    }
   }
 
   const filterServceDate = (date) => {
@@ -709,107 +777,13 @@ const OrderDetailPage = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog
+      <OrderCancelDialog
         open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-      >
-        <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>
-          Xác nhận hủy bỏ
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Gửi OTP cho phượt thủ để xác nhận việc hủy đơn:
-          </DialogContentText>
-          <div className="otp-field">
-            <TextField
-              autoFocus
-              margin="dense"
-              id="otp"
-              name="otp"
-              label="Nhập OTP"
-              type="text"
-              size="small"
-              sx={{
-                width: "80%",
-                margin: 0,
-                "& label.Mui-focused": {
-                  color: "black",
-                },
-                "& .MuiInput-underline:after": {
-                  borderBottomColor: "black",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "gainsboro",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "black",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "black",
-                  },
-                },
-              }}
-              onChange={(e) => {
-                setReason(e.target.value);
-              }}
-            />
-            <button className="otp-btn" onClick={() => { }}>
-              Gửi OTP
-            </button>
-          </div>
-
-          <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-            Để đảm bảo tính xác minh của yêu cầu hủy bỏ, nhà cung cấp có thể đưa
-            thêm lý do phù hợp.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="reason"
-            name="reason"
-            label="Lý do khác cho việc hủy bỏ"
-            type="text"
-            size="small"
-            fullWidth
-            sx={{
-              margin: 0,
-              "& label.Mui-focused": {
-                color: "black",
-              },
-              "& .MuiInput-underline:after": {
-                borderBottomColor: "black",
-              },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "gainsboro",
-                },
-                "&:hover fieldset": {
-                  borderColor: "black",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "black",
-                },
-              },
-            }}
-            onChange={(e) => {
-              setReason(e.target.value);
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            Hủy
-          </Button>
-          <Button onClick={handleClose}>Xác nhận</Button>
-        </DialogActions>
-      </Dialog>
+        setOpen={setOpen}
+        setReason={setReason}
+        handleProviderCancelClose={handleProviderCancelClose}
+        handleTravelerCancelClose={handleTravelerCancelClose}
+        sendCancelOtp={sendCancelOtp} />
 
       <Dialog
         open={openTraces}
@@ -907,6 +881,22 @@ const OrderDetailPage = () => {
           sx={{ width: "100%" }}
         >
           {errorMsg}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={snackbarSuccessOpen}
+        onClose={handleCloseSucessSnack}
+        autoHideDuration={2000}
+        key={vertical + horizontal + "success"}
+      >
+        <Alert
+          onClose={handleCloseSucessSnack}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {successMsg}
         </Alert>
       </Snackbar>
     </div>

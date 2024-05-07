@@ -283,6 +283,12 @@ export const LOAD_NUMBERS_SERVED = gql`
   }
 `;
 
+export const SEND_CANCEL_OTP = gql`
+  mutation SendCancelOTP($input: OrderCancelOTPInput!) {
+    orderCancelOTP(dto: $input)
+  }
+`
+
 export const CANCEL_ORDER = gql`
   mutation cancel($input: OrderCancelInput!) {
     cancelOrder(dto: $input) {
