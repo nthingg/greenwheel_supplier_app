@@ -8,3 +8,13 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const REFRESH_AUTH = gql`
+  mutation refresh($token: String!) {
+    refreshAuth(refreshToken: $token) {
+      accessToken
+      refreshToken
+      deviceToken
+    }
+  }
+`;

@@ -26,7 +26,7 @@ export const LOAD_NUMBER_TYPE = gql`
       totalCount
     }
   }
-`
+`;
 
 export const LOAD_NUMBERS_TOTAL = gql`
   query NumOfTotalProvider($searchTerm: String) {
@@ -34,7 +34,7 @@ export const LOAD_NUMBERS_TOTAL = gql`
       totalCount
     }
   }
-`
+`;
 
 export const LOAD_PROVIDERS_TOTAL_INIT = gql`
   query LoadInitTotalProviders($searchTerm: String) {
@@ -61,7 +61,7 @@ export const LOAD_PROVIDERS_TOTAL_INIT = gql`
       }
     }
   }
-`
+`;
 
 export const LOAD_PROVIDERS_TOTAL = gql`
   query LoadTotalProviders($searchTerm: String, $cursor: String) {
@@ -93,7 +93,7 @@ export const LOAD_PROVIDERS_TOTAL = gql`
       }
     }
   }
-`
+`;
 
 export const LOAD_SUPPLIERS_FILTER = gql`
   query LoadProviders($status: [ProviderType!], $searchTerm: String) {
@@ -146,6 +146,17 @@ export const LOAD_DETAIL_PROVIDER = gql`
   }
 `;
 
+export const LOAD_DETAIL_STAFF = gql`
+  query GetProviderById($id: Int!) {
+    accounts(where: { id: { eq: $id } }) {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
   query GetProductByProviderId(
     $id: Int!
@@ -179,7 +190,11 @@ export const GET_PRODUCT_BY_PROVIDER_FILTER = gql`
 
 export const LOAD_PROVIDERS_OPTIONS = gql`
   query ProviderOptions {
-    providers(first: 100, order: { id: DESC }, where: { orders: { any: true } }) {
+    providers(
+      first: 100
+      order: { id: DESC }
+      where: { orders: { any: true } }
+    ) {
       nodes {
         id
         name
@@ -188,7 +203,7 @@ export const LOAD_PROVIDERS_OPTIONS = gql`
       totalCount
     }
   }
-`
+`;
 
 export const ADD_PROVIDER = gql`
   mutation createProvider($dto: ProviderCreateInput!) {

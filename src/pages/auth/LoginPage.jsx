@@ -59,6 +59,8 @@ const LoginPage = () => {
 
       if (decoded.provider_id) {
         localStorage.setItem("providerId", decoded.provider_id);
+      } else {
+        localStorage.setItem("staffId", decoded.id);
       }
 
       if (
@@ -80,6 +82,10 @@ const LoginPage = () => {
       localStorage.setItem(
         "staffToken",
         data["staffRequestAuthorize"]["accessToken"]
+      );
+      localStorage.setItem(
+        "refreshToken",
+        data["staffRequestAuthorize"]["refreshToken"]
       );
       localStorage.setItem("checkIsUserCall", "no");
 
@@ -180,7 +186,7 @@ const LoginPage = () => {
                 setPassword(e.target.value);
               }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   login();
                 }
               }}
