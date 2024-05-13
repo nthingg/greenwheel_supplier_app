@@ -1,4 +1,4 @@
-export const ordersTotalColumns = [
+export const orderTotalColumns = [
   {
     field: "index",
     width: 80,
@@ -21,7 +21,7 @@ export const ordersTotalColumns = [
   },
   {
     field: "createdAt",
-    width: 220,
+    width: 150,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => {
@@ -40,6 +40,24 @@ export const ordersTotalColumns = [
       );
     },
     renderHeader: () => <span>NGÀY ĐẶT</span>,
+  },
+  {
+    field: "status",
+    width: 140,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => {
+      const orderStatus = {
+        "RESERVED" : "Đã đặt",
+        "SERVED" : "Đã phục vụ",
+        "PREPARED" : "Đã chuẩn bị",
+        "FINISHED" : "Đã hoàn thành",
+        "COMPLAINED" : "Bị khiếu nại",
+        "CANCELLED" : "Đã hủy",
+      }
+      return <div>{orderStatus[params.row.node.currentStatus]}</div>
+    },
+    renderHeader: () => <span>Trạng thái</span>,
   },
   {
     field: "name",
@@ -63,26 +81,6 @@ export const ordersTotalColumns = [
       );
     },
     renderHeader: () => <span>KHÁCH HÀNG</span>,
-  },
-  {
-    field: "status",
-    width: 140,
-    align: "center",
-    headerAlign: "center",
-    renderCell: (params) => {
-      switch (params.row.node.currentStatus) {
-        case "RESERVED":
-          return <div className={`cellWithStatus confirmed`}>Đã chấp nhận</div>;
-        case "CANCELLED":
-          return <div className={`cellWithStatus cancelled`}>Đã hủy</div>;
-        case "TEMPORARY":
-          return <div className={`cellWithStatus temporary`}>Đang xử lý</div>;
-        default:
-          // Handle default case or unknown status
-          break;
-      }
-    },
-    renderHeader: () => <span>Trạng thái</span>,
   },
   {
     field: "phone",
@@ -133,14 +131,6 @@ export const ordersTotalColumns = [
     },
     renderHeader: () => <span>SĐT</span>,
   },
-  // {
-  //   field: "supplierName",
-  //   width: 240,
-  //   renderCell: (params) => {
-  //     return <div>{params.row.node.supplier.name}</div>;
-  //   },
-  //   renderHeader: () => <span>Nhà cung cấp</span>,
-  // },
   {
     field: "total",
     width: 150,

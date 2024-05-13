@@ -7,10 +7,11 @@ import React, { useState } from "react";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { VisibilityOff } from "@mui/icons-material";
+import { orderTotalColumns } from "../../assets/configs/orders/orderTotal";
 
-const OrderTable = ({ orders }) => {
+const OrderTable = ({ orders, orderTotal }) => {
   const providerId = localStorage.getItem("providerId");
-  const tempOrderColumns = [...ordersColumns];
+  const tempOrderColumns = orders ? [...ordersColumns] : [...orderTotalColumns];
   tempOrderColumns.pop();
 
   const actionColumn = [
@@ -55,34 +56,70 @@ const OrderTable = ({ orders }) => {
   }];
 
   return (
-    <div className="transactionTable">
-      <DataGrid
-        rows={orders}
-        columns={providerId ? ordersColumns.concat(actionColumn) : tempOrderColumns.concat(providerColumn).concat(ordersColumns[ordersColumns.length - 1]).concat(actionColumn)}
-        rowSelection={false}
-        pagination
-        autoPageSize
-        showColumnVerticalBorder={true}
-        getRowId={(row) => row.node.id}
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#2c3d50",
-            color: "white",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-columnHeader--withRightBorder": {
-            borderRightStyle: "none",
-          },
-        }}
-        localeText={{
-          MuiTablePagination: {
-            labelDisplayedRows: ({ from, to, count }) =>
-              `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
-              }`,
-          },
-          noRowsLabel: "Không có dữ liệu",
-        }}
-      />
+    <div>
+      {orders && (
+        <div className="transactionTable">
+          <DataGrid
+            rows={orders}
+            columns={providerId ? orderTotalColumns.concat(actionColumn) : tempOrderColumns.concat(providerColumn).concat(orderTotalColumns[orderTotalColumns.length - 1]).concat(actionColumn)}
+            rowSelection={false}
+            pagination
+            autoPageSize
+            showColumnVerticalBorder={true}
+            getRowId={(row) => row.node.id}
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2c3d50",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightStyle: "none",
+              },
+            }}
+            localeText={{
+              MuiTablePagination: {
+                labelDisplayedRows: ({ from, to, count }) =>
+                  `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
+                  }`,
+              },
+              noRowsLabel: "Không có dữ liệu",
+            }}
+          />
+        </div>
+        )}
+      {
+        orderTotal && (
+<div className="transactionTable">
+          <DataGrid
+            rows={orderTotal}
+            columns={providerId ? ordersColumns.concat(actionColumn) : tempOrderColumns.concat(providerColumn).concat(ordersColumns[ordersColumns.length - 1]).concat(actionColumn)}
+            rowSelection={false}
+            pagination
+            autoPageSize
+            showColumnVerticalBorder={true}
+            getRowId={(row) => row.node.id}
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#2c3d50",
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-columnHeader--withRightBorder": {
+                borderRightStyle: "none",
+              },
+            }}
+            localeText={{
+              MuiTablePagination: {
+                labelDisplayedRows: ({ from, to, count }) =>
+                  `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
+                  }`,
+              },
+              noRowsLabel: "Không có dữ liệu",
+            }}
+          />
+        </div>
+        )}
     </div>
   );
 };

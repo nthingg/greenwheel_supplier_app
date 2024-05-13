@@ -194,7 +194,7 @@ const HomePage = () => {
                     <div
                       className="left"
                       onClick={() => {
-                        navigate("/orders");
+                        navigate("/orders/status/1");
                       }}
                     >
                       <p>{reserved}</p>
@@ -203,7 +203,7 @@ const HomePage = () => {
                       <div
                         className="btn info"
                         onClick={() => {
-                          navigate("/orders");
+                          navigate("/orders/status/1");
                         }}
                       >
                         <DescriptionIcon sx={{ color: "white" }} />
@@ -219,7 +219,7 @@ const HomePage = () => {
                     <div
                       className="left"
                       onClick={() => {
-                        navigate("/orders/status/1");
+                        navigate("/orders/status/2");
                       }}
                     >
                       <p>{prep}</p>
@@ -228,7 +228,7 @@ const HomePage = () => {
                       <div
                         className="btn temp"
                         onClick={() => {
-                          navigate("/orders/status/1");
+                          navigate("/orders/status/2");
                         }}
                       >
                         <MicrowaveIcon sx={{ color: "white" }} />
@@ -244,7 +244,7 @@ const HomePage = () => {
                     <div
                       className="left"
                       onClick={() => {
-                        navigate("/orders/status/2");
+                        navigate("/orders/status/3");
                       }}
                     >
                       <p>{temp}</p>
@@ -253,7 +253,7 @@ const HomePage = () => {
                       <div
                         className="btn success"
                         onClick={() => {
-                          navigate("/orders/status/2");
+                          navigate("/orders/status/3");
                         }}
                       >
                         <CheckCircleIcon sx={{ color: "white" }} />
@@ -269,7 +269,7 @@ const HomePage = () => {
                     <div
                       className="left"
                       onClick={() => {
-                        navigate("/orders/status/5");
+                        navigate("/orders/status/6");
                       }}
                     >
                       <p>{cancelled}</p>
@@ -278,7 +278,7 @@ const HomePage = () => {
                       <div
                         className="btn cancel"
                         onClick={() => {
-                          navigate("/orders/status/5");
+                          navigate("/orders/status/6");
                         }}
                       >
                         <CancelIcon sx={{ color: "white" }} />
@@ -294,7 +294,7 @@ const HomePage = () => {
                     <div
                       className="left"
                       onClick={() => {
-                        navigate("/orders/status/4");
+                        navigate("/orders/status/5");
                       }}
                     >
                       <p>{complained}</p>
@@ -303,7 +303,7 @@ const HomePage = () => {
                       <div
                         className="btn info"
                         onClick={() => {
-                          navigate("/orders/status/4");
+                          navigate("/orders/status/5");
                         }}
                       >
                         <FeedbackIcon sx={{ color: "white" }} />
@@ -318,7 +318,7 @@ const HomePage = () => {
                   <div
                     className="item-body"
                     onClick={() => {
-                      navigate("/orders/status/3");
+                      navigate("/orders/status/4");
                     }}
                   >
                     <div className="left">
@@ -328,7 +328,7 @@ const HomePage = () => {
                       <div
                         className="btn success"
                         onClick={() => {
-                          navigate("/orders/status/3");
+                          navigate("/orders/status/4");
                         }}
                       >
                         <PaidIcon sx={{ color: "white" }} />

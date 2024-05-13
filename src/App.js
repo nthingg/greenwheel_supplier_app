@@ -1,5 +1,5 @@
 import "./index.css";
-import { useParams, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import SideBar from "./components/widgets/SideBar";
 import HomePage from "./pages/home/HomePage";
@@ -25,13 +25,14 @@ import {
   DialogTitle,
   Fab,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProviderUpdatePage from "./pages/provider/ProviderUpdatePage";
 import ProviderProfilePage from "./pages/profile/ProviderProfilePage";
 import ProviderProfileUpdatePage from "./pages/profile/ProviderProfileUpdatePage";
 import ProductUpdatePage from "./pages/product/ProductUpdatePage";
 
 const App = () => {
+  const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("staffToken");
   const [open, setOpen] = useState(false);
@@ -43,6 +44,20 @@ const App = () => {
   const handleClose = async () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (token) {
+      const decode = JSON.parse(atob(token.split('.')[1]));
+      if (decode.exp * 1000 < new Date().getTime()) {
+        localStorage.removeItem("staffToken");
+        localStorage.removeItem("providerId");
+        localStorage.removeItem("staffId");
+        localStorage.removeItem("refreshToken");
+        navigate("/");
+        navigate(0);
+      }
+    }
+  }, [])
 
   return (
     <ApolloProvider client={client}>

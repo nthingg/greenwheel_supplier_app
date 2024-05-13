@@ -24,6 +24,7 @@ import Slider from "react-slick";
 import { useParams } from "react-router-dom";
 import FilterModal from "../../components/others/OrderFilterModal";
 import client from "../../services/apollo/config";
+import { FormatListBulleted } from "@mui/icons-material";
 
 const OrderPage = () => {
   const { sbs } = useParams();
@@ -37,13 +38,14 @@ const OrderPage = () => {
   ];
   const [selectedDiv, setSelectedDiv] = useState(sbs ? parseInt(sbs, 10) : 0);
   const [selectStatus, setSelectedStatus] = useState(
-    orderStatus[sbs ? parseInt(sbs, 10) : 0]
+    sbs ?  orderStatus[parseInt(sbs, 10) - 1] : orderStatus
   );
   const [searchTerm, setSearchTerm] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const [providerId, setProviderId] = useState(null);
   //status count
+  const [total, setTotal] = useState(0);
   const [reserved, setReserved] = useState(0);
   const [cancelled, setCancelled] = useState(0);
   const [prep, setPrep] = useState(0);
@@ -53,7 +55,7 @@ const OrderPage = () => {
 
   useEffect(() => {
     fetchOrderStatus();
-    fetchOrder(orderStatus[sbs ? parseInt(sbs, 10) : 0]);
+    fetchOrder(sbs ? orderStatus[parseInt(sbs, 10) - 1] : `[${orderStatus}]`);
   }, []);
 
   const handleClick = (index) => {
@@ -61,26 +63,30 @@ const OrderPage = () => {
     setIsLoading(true);
     switch (index) {
       case 0:
+        setSelectedStatus(orderStatus);
+        fetchOrder(`[${orderStatus}]`, searchTerm, providerId);
+        break;
+      case 1:
         setSelectedStatus([orderStatus[0]]);
         fetchOrder([orderStatus[0]], searchTerm, providerId);
         break;
-      case 1:
+      case 2:
         setSelectedStatus([orderStatus[1]]);
         fetchOrder([orderStatus[1]], searchTerm, providerId);
         break;
-      case 2:
+      case 3:
         setSelectedStatus([orderStatus[2]]);
         fetchOrder([orderStatus[2]], searchTerm, providerId);
         break;
-      case 3:
+      case 4:
         setSelectedStatus([orderStatus[3]]);
         fetchOrder([orderStatus[3]], searchTerm, providerId);
         break;
-      case 4:
+      case 5:
         setSelectedStatus([orderStatus[4]]);
         fetchOrder([orderStatus[4]], searchTerm, providerId);
         break;
-      case 5:
+      case 6:
         setSelectedStatus([orderStatus[5]]);
         fetchOrder([orderStatus[5]], searchTerm, providerId);
         break;
@@ -90,6 +96,46 @@ const OrderPage = () => {
   };
 
   const queryOrderInit = async (statusQuery, searchQuery, providerQuery) => {
+    console.log(`
+    query LoadOrdersInit {
+      orders(
+        first: 100
+        order: { id: DESC }
+        where: { 
+          ${statusQuery}
+          ${searchQuery}
+          ${providerQuery}
+        }
+      ) {
+        edges {
+          node {
+            id
+            total
+            currentStatus
+            createdAt
+            traces {
+              status
+              modifiedAt
+            }
+            provider {
+              name
+              account {
+                id
+              }
+            }
+            account {
+              name
+              phone
+              avatarPath
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }`)
     const query = gql`
       query LoadOrdersInit {
         orders(
@@ -250,6 +296,7 @@ const OrderPage = () => {
       searchQuery = `id: { eq: ${searchId} }`;
     }
     if (providerId) {
+      console.log(providerId);
       providerQuery = `providerId: { eq: ${providerId} }`
     }
     const data = await queryOrderInit(statusQuery, searchQuery, providerQuery);
@@ -288,6 +335,8 @@ const OrderPage = () => {
     if (providerId) {
       providerQuery = `providerId: { eq: ${providerId} }`
     }
+    const data = await countOrder(`[${orderStatus}]`, searchQuery, providerQuery);
+    setTotal(data.orders.totalCount);
     orderStatus.forEach(async (status, index) => {
       const data = await countOrder(status, searchQuery, providerQuery);
       const totalCount = data.orders.totalCount;
@@ -453,10 +502,10 @@ const OrderPage = () => {
     if (!isNaN(searchTerm)) {
       const searchTermInt = parseInt(searchTerm, 10);
       setSearchTerm(searchTermInt);
-      fetchOrder(selectStatus, searchTermInt, providerId);
+      fetchOrder(`[${selectStatus}]`, searchTermInt, providerId);
       fetchOrderStatus(searchTermInt, providerId);
     } else {
-      fetchOrder(selectStatus, "", providerId);
+      fetchOrder(`[${selectStatus}]`, "", providerId);
       fetchOrderStatus("", providerId);
     }
   };
@@ -512,8 +561,9 @@ const OrderPage = () => {
       setIsLoading(false);
       return;
     }
+    console.log(providerId)
     fetchOrderStatus(searchTerm, providerId)
-    fetchOrder(selectStatus, searchTerm, providerId);
+    fetchOrder(`[${selectStatus}]`, searchTerm, providerId);
   }
 
   return (
@@ -560,7 +610,7 @@ const OrderPage = () => {
               document.getElementById("floatingValue").value = "";
               setProviderId(null);
               fetchOrderStatus();
-              fetchOrder(selectStatus);
+              fetchOrder(`[${selectStatus}]`);
             }}
           >
             <RefreshIcon />
@@ -570,7 +620,7 @@ const OrderPage = () => {
       <div className="transactionContainer">
         <div className="icon-row">
           <Slider {...settings}>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {[0, 1, 2, 3, 4, 5, 6].map((index) => (
               <div
                 key={index}
                 className={`icon-item ${selectedDiv === index ? "selected" : ""
@@ -580,19 +630,23 @@ const OrderPage = () => {
                 }}
               >
                 {/* Replace with appropriate icons */}
-                {index === 0 && <DescriptionIcon sx={{ color: "#3498DB" }} />}
-                {index === 1 && <MicrowaveIcon sx={{ color: "#F1C40F" }} />}
-                {index === 2 && <CheckCircleIcon sx={{ color: "#28b463" }} />}
-                {index === 3 && <PaidIcon sx={{ color: "#28b463" }} />}
-                {index === 4 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
-                {index === 5 && <CancelIcon sx={{ color: "#e74c3c" }} />}
+                {index === 0 && (
+                  <FormatListBulleted sx={{ color: "#3498DB" }} />
+                )}
+                {index === 1 && <DescriptionIcon sx={{ color: "#3498DB" }} />}
+                {index === 2 && <MicrowaveIcon sx={{ color: "#F1C40F" }} />}
+                {index === 3 && <CheckCircleIcon sx={{ color: "#28b463" }} />}
+                {index === 4 && <PaidIcon sx={{ color: "#28b463" }} />}
+                {index === 5 && <FeedbackIcon sx={{ color: "#3498DB" }} />}
+                {index === 6 && <CancelIcon sx={{ color: "#e74c3c" }} />}
                 <span>
-                  {index === 0 && `Đã đặt (${reserved})`}
-                  {index === 1 && `Chuẩn bị (${prep})`}
-                  {index === 2 && `Phục vụ (${temp})`}
-                  {index === 3 && `Hoàn tất (${fin})`}
-                  {index === 4 && `Bị phản ánh (${complained})`}
-                  {index === 5 && `Bị hủy (${cancelled})`}
+                  {index === 0 && `Tất cả (${total})`}
+                  {index === 1 && `Đã đặt (${reserved})`}
+                  {index === 2 && `Chuẩn bị (${prep})`}
+                  {index === 3 && `Phục vụ (${temp})`}
+                  {index === 4 && `Hoàn tất (${fin})`}
+                  {index === 5 && `Bị phản ánh (${complained})`}
+                  {index === 6 && `Bị hủy (${cancelled})`}
                 </span>
               </div>
             ))}
@@ -608,7 +662,8 @@ const OrderPage = () => {
             />
           </div>
         )}
-        {!isLoading && <OrderTable orders={orders} />}
+        {!isLoading && selectedDiv === 0 && <OrderTable orderTotal={orders} />}
+        {!isLoading && selectedDiv !== 0 && <OrderTable orders={orders} />}
       </div>
     </div>
   );
