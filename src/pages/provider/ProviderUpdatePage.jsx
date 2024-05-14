@@ -54,6 +54,7 @@ const ProviderUpdatePage = () => {
   ];
 
   const standardOptions = [
+    { value: 1, label: "Một sao" },
     { value: 2, label: "Hai sao" },
     { value: 3, label: "Ba sao" },
     { value: 4, label: "Bốn sao" },
@@ -84,7 +85,6 @@ const ProviderUpdatePage = () => {
   const [addressFinErr, setAddressFinErr] = useState(false);
   const [phoneFinErr, setPhoneFinErr] = useState(false);
   const [standardFinErr, setStandardFinErr] = useState(false);
-  const [typeFinErr, setTypeFinErr] = useState(false);
   const [imgError, setImgError] = useState(false);
   //redirect
 
@@ -196,7 +196,6 @@ const ProviderUpdatePage = () => {
       imageUrl: imagePath,
       name: name,
       standard: finStandart,
-      type: type.value,
       providerId: parseInt(providerId, 10),
     };
 
@@ -537,30 +536,11 @@ const ProviderUpdatePage = () => {
                     placeholder={"Chọn loại hình nhà cung cấp"}
                     className="basic-single"
                     classNamePrefix="select"
-                    isDisabled={false}
+                    isDisabled={true}
                     isClearable={true}
                     name="type"
                     options={typeOptions}
                     value={type}
-                    onChange={(e) => {
-                      if (e === null) {
-                        setType("");
-                        setStandardVisible(false);
-                        setStandardFinErr(false);
-                        setTypeFinErr(true);
-                        return;
-                      }
-                      if (e.value === "HOTEL" || e.value === "RESTAURANT") {
-                        setStandardVisible(true);
-                        setStandardFinErr(true);
-                      } else {
-                        setStandardVisible(false);
-                        setStandardFinErr(false);
-                      }
-                      setType(e);
-                      setStandard(null);
-                      setTypeFinErr(false);
-                    }}
                     theme={(theme) => ({
                       ...theme,
                       colors: {
@@ -614,7 +594,6 @@ const ProviderUpdatePage = () => {
             !imgError &&
             !addressFinErr &&
             !phoneFinErr &&
-            !typeFinErr &&
             !standardFinErr && (
               <button
                 className="link confirm"
@@ -631,7 +610,6 @@ const ProviderUpdatePage = () => {
             imgError ||
             addressFinErr ||
             phoneFinErr ||
-            typeFinErr ||
             standardFinErr) && (
             <button className="link deny">
               <ThumbUpAltIcon />

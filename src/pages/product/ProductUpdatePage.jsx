@@ -66,7 +66,6 @@ const ProductUpdatePage = () => {
   const [descriptionError, setDescriptionError] = useState(false);
   const [descriptionHelperText, setDescriptionHelperText] = useState("");
   const [descriptionFinErr, setDescriptionFinErr] = useState(false);
-  const [typeError, setTypeError] = useState(false);
   const [periodsError, setPeriodsError] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [priceError, setPriceError] = useState(false);
@@ -198,7 +197,6 @@ const ProductUpdatePage = () => {
       imageUrl: imagePath,
       name: name,
       productId: parseInt(productId, 10),
-      type: type.value,
       price: parseInt(price, 10),
     };
 
@@ -364,39 +362,11 @@ const ProductUpdatePage = () => {
                     placeholder={"Chọn loại dịch vụ"}
                     className="basic-single"
                     classNamePrefix="select"
-                    isDisabled={false}
+                    isDisabled={true}
                     isClearable={true}
                     name="type"
                     options={typeOptions}
                     value={type}
-                    onChange={(e) => {
-                      if (e === null) {
-                        setType("");
-                        setPeriodVisible(false);
-                        setPeriodsError(false);
-                        setTypeError(true);
-                        return;
-                      }
-                      if (e.value === "FOOD" || e.value === "BEVERAGE") {
-                        setPeriodVisible(true);
-                        setPeriodsError(true);
-                      } else {
-                        setPeriodVisible(false);
-                        setPeriodsError(false);
-                      }
-                      setType(e);
-
-                      if (
-                        e.value === "ROOM" ||
-                        e.value === "CAMP" ||
-                        e.value === "VEHICLE"
-                      ) {
-                        setPeriods(periodsOptions);
-                      } else {
-                        setPeriods([]);
-                      }
-                      setTypeError(false);
-                    }}
                     theme={(theme) => ({
                       ...theme,
                       colors: {
@@ -589,7 +559,6 @@ const ProductUpdatePage = () => {
           {!nameFinErr &&
             !imgError &&
             !priceFinErr &&
-            !typeError &&
             !periodsError &&
             !partyFinErr &&
             !descriptionFinErr && (
@@ -607,7 +576,6 @@ const ProductUpdatePage = () => {
           {(priceFinErr ||
             imgError ||
             nameFinErr ||
-            typeError ||
             periodsError ||
             partyFinErr ||
             descriptionFinErr) && (
@@ -675,7 +643,7 @@ const ProductUpdatePage = () => {
         </DialogTitle>
         <DialogContent style={{ width: 400, height: 180 }}>
           <p className="alert-price-change">
-            Sự thay đổi giá dịch vụ sẽ được áp dụng vào: {time}
+            Sự thay đổi giá dịch vụ sẽ được áp dụng vào: {appliedTime}
           </p>
 
           <div className="btns-group-dialog">
