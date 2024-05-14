@@ -49,6 +49,7 @@ import {
   CHANGE_PROVIDER_STATUS,
 } from "../../services/graphql/provider";
 import client from "../../services/apollo/config";
+import { Cancel, CheckCircle } from "@mui/icons-material";
 
 const ProviderDetailPage = () => {
   const navigate = useNavigate();
@@ -513,7 +514,8 @@ const ProviderDetailPage = () => {
                   {provider?.type !== "REPAIR" &&
                     provider?.type !== "TAXI" &&
                     provider?.type !== "EMERGENCY" &&
-                    provider?.type !== "GROCERY" && (
+                    provider?.type !== "GROCERY" &&
+                    !provider?.account && (
                       <div className="detailItem">
                         <span className="itemKey">Số dư:</span>
                         <span className="itemValue">
@@ -548,6 +550,22 @@ const ProviderDetailPage = () => {
                             return "Khác";
                         }
                       })()}
+                    </span>
+                  </div>
+                  {provider?.type === "HOTEL" && (
+                    <div className="detailItem">
+                      <span className="itemKey">Đạt chuẩn: </span>
+                      <span className="itemValue">
+                        {provider?.standard + " sao"}
+                      </span>
+                    </div>
+                  )}
+                  <div className="detailItem">
+                    <span className="itemKey">Quyền truy cập: </span>
+                    <span className="itemValue">
+                      {provider?.account ? (
+                        <CheckCircle color="success"/>) :
+                        <Cancel color="error"/>}
                     </span>
                   </div>
                 </div>
