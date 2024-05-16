@@ -33,6 +33,7 @@ import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
 import TwoWheelerIcon from '@mui/icons-material/TwoWheeler';
 import NightShelterIcon from '@mui/icons-material/NightShelter';
 import { type } from "@testing-library/user-event/dist/type";
+import ProviderImportExcel from "../../components/excels/ProvidersImportExcel";
 
 const ProviderPage = () => {
   const suppType = [
@@ -276,9 +277,7 @@ const ProviderPage = () => {
             <AddCircleIcon />
             <span>Thêm nhà cung cấp</span>
           </Link>
-          {/* <button className="link">
-            <FilterAltIcon />
-          </button> */}
+          <ProviderImportExcel refetch={refetch} fetchProviderType={fetchProviderType} fetchTotalProvider={fetchTotalProvider} />
           <button
             className="link"
             onClick={() => {

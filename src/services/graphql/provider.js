@@ -229,3 +229,12 @@ export const CHANGE_PROVIDER_STATUS = gql`
     }
   }
 `
+
+export const IMPORT_PROVIDERS_EXCEL = gql`
+  mutation ImportProviders($dto: [ProviderCreateInput!]!) {
+    createMultiProviders(dto: $dto) {
+      id
+      name
+    }
+  }
+`;

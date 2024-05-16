@@ -96,46 +96,6 @@ const OrderPage = () => {
   };
 
   const queryOrderInit = async (statusQuery, searchQuery, providerQuery) => {
-    console.log(`
-    query LoadOrdersInit {
-      orders(
-        first: 100
-        order: { id: DESC }
-        where: { 
-          ${statusQuery}
-          ${searchQuery}
-          ${providerQuery}
-        }
-      ) {
-        edges {
-          node {
-            id
-            total
-            currentStatus
-            createdAt
-            traces {
-              status
-              modifiedAt
-            }
-            provider {
-              name
-              account {
-                id
-              }
-            }
-            account {
-              name
-              phone
-              avatarPath
-            }
-          }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }`)
     const query = gql`
       query LoadOrdersInit {
         orders(
@@ -296,7 +256,6 @@ const OrderPage = () => {
       searchQuery = `id: { eq: ${searchId} }`;
     }
     if (providerId) {
-      console.log(providerId);
       providerQuery = `providerId: { eq: ${providerId} }`
     }
     const data = await queryOrderInit(statusQuery, searchQuery, providerQuery);
@@ -561,7 +520,6 @@ const OrderPage = () => {
       setIsLoading(false);
       return;
     }
-    console.log(providerId)
     fetchOrderStatus(searchTerm, providerId)
     fetchOrder(`[${selectStatus}]`, searchTerm, providerId);
   }
