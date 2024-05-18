@@ -3,16 +3,16 @@ import { useState } from "react";
 import { Snackbar, Alert, Typography } from "@mui/material";
 import * as XLSX from "xlsx";
 import { useMutation } from "@apollo/client";
-import { IMPORT_PROVIDERS_EXCEL } from "../../services/graphql/provider";
+import { IMPORT_PRODUCTS_EXCEL } from "../../services/graphql/product";
 
-export default function ProviderImportExcel({ refetch, fetchProviderType, fetchTotalProvider }) {
+export default function ProductImportExcel({ providerId, fetchProdCount, refetchProducts, setIsLoading }) {
     const [vertical] = useState("top");
     const [horizontal] = useState("right");
     const [errorMsg, setErrMsg] = useState(false);
     const [successMsg, setSucessMsg] = useState(false);
     const [snackBarErrorOpen, setsnackBarErrorOpen] = useState(false);
     const [snackBarSuccessOpen, setsnackBarSucessOpen] = useState(false);
-    const [add] = useMutation(IMPORT_PROVIDERS_EXCEL);
+    const [add] = useMutation(IMPORT_PRODUCTS_EXCEL);
 
     const openErrorSnackBar = () => {
         setsnackBarErrorOpen(true);
@@ -28,57 +28,69 @@ export default function ProviderImportExcel({ refetch, fetchProviderType, fetchT
     };
 
     const validateImportData = (data, index) => {
-        const minNameLength = 6;
-        const maxNameLength = 40;
-        const minStandard = 1;
-        const maxStandard = 5;
-        const phoneFormat = new RegExp("^84[0-9]{9}$");
-        const addressMinLength = 20;
-        const addressMaxLength = 120;
-        const type = ["EMERGENCY", "FOOD_STALL", "GROCERY", "HOTEL", "MOTEL", "REPAIR", "RESTAURANT", "VEHICLE_RENTAL"];
-        const requireStandardType = ["RESTAURANT", "HOTEL"];
-        const validImageSource = "https://d38ozmgi8b70tu.cloudfront.net";
+        const minNameLength = 3;
+        const maxNameLength = 30;
+        const minPrice = 10000;
+        const maxPrice = 10000000;
+        const minPartySize = 1;
+        const maxPartySize = 10;
+        const minDescLength = 3;
+        const maxDescLength = 100;
+        const imageValidSource = "https://d38ozmgi8b70tu.cloudfront.net";
+        const types = ["BEVERAGE", "CAMP", "FOOD", "ROOM", "VEHICLE"];
+        const periods = ["MORNING", "NOON", "AFTERNOON", "EVENING"];
         let errorMsg = "Lỗi tại dòng " + (index + 1) + ":\n";
         let result = true;
-
-        if (!data.name ||
+        
+        if (
+            !data.name ||
             data.name.length < minNameLength ||
-            data.name.length > maxNameLength) {
-            errorMsg += `Tên không hợp lệ! Tên không được để trống và độ dài cho phép từ ${minNameLength} tới ${maxNameLength}!\n`;
-        }
-
-        if (!data.phone ||
-            !phoneFormat.test(data.phone)) {
-            errorMsg += `Số điện thoại không hợp lệ! Số điện thoại phải có định dạng 84xxxxxxxxx!\n`;
-        }
-
-        if (!data.address ||
-            data.address.length < addressMinLength ||
-            data.address.length > addressMaxLength) {
-            errorMsg += `Địa chỉ không hợp lệ! Địa chỉ không được để trống và độ dài cho phép từ ${addressMinLength} tới ${addressMaxLength}!\n`;
-        }
-
-        if (!data.type ||
-            !type.some((t) => t.includes(data.type))) {
-            errorMsg += `Loại dịch vụ không hợp lệ!\n`;
-        } else if (requireStandardType.some((t) => t.includes(data.type))) {
-            if (!data.standard ||
-                data.standard < minStandard ||
-                data.standard > maxStandard) {
-                errorMsg += `Tiêu chuẩn không không hợp lệ! Loại dịch vụ này yêu cầu phải có tiêu chuẩn và chỉ cho phép từ ${minStandard} tới ${maxStandard}!\n`;
+            data.name.length > maxNameLength
+          ) {
+            errorMsg +=
+              `Tên không hợp lệ! Tên không được để trống và độ dài cho phép từ ${minNameLength} tới ${maxNameLength}!\n`;
+          }
+      
+          if (
+            !data.description ||
+            data.description.length < minDescLength ||
+            data.description.length > maxDescLength
+          ) {
+            errorMsg +=
+              `Mô tả không hợp lệ! Mô tả không được để trống và độ dài cho phép từ ${minDescLength} tới ${maxDescLength}!\n`;
+          }
+      
+          if (!data.imageUrl || !data.imageUrl.startsWith(imageValidSource)) {
+              errorMsg += "Đường dẫn ảnh không được để trống và phải tới từ nguồn hợp lệ!\n";
             }
-        } else {
-            if (data.standard) {
-                errorMsg += `Loại dịch vụ này không được phép có tiêu chuẩn!\n`;
-            }
-        }
+      
+          if (
+            !data.partySize ||
+            data.partySize < minPartySize ||
+            data.partySize > maxPartySize
+          ) {
+            errorMsg +=
+              `Số người phù hợp không hợp lệ! Số người phù hợp không được để trống và cho phép từ ${minPartySize} tới ${maxPartySize}!\n`;
+          }
 
-        if (!data.imageUrl ||
-            !data.imageUrl.startsWith(validImageSource)) {
-            errorMsg += `Đường dẫn ảnh không hợp lệ! Đường dẫn ảnh không được để trống và phải từ nguồn hợp lệ!\n`;
-        }
-
-        if (errorMsg !== "Lỗi tại dòng " + (index + 1) + ":\n") {
+          if (
+            !data.price ||
+            data.price < minPrice ||
+            data.price > maxPrice
+          ) {
+            errorMsg +=
+              `Giá tiền không hợp lệ! Giá tiền không được để trống và cho phép giá trị từ ${new Intl.NumberFormat("vi-VN").format(minPrice)} tới ${new Intl.NumberFormat("vi-VN").format(maxPrice)}!\n`;
+          }
+      
+          if (!data.type || !types.some((t) => t.includes(data.type))) {
+            errorMsg += "Loại sản phẩm không hợp lệ!\n";
+          }
+      
+          if (!data.periods || !data.periods.every((p) => periods.includes(p))) {
+            errorMsg += "Khung thời gian phục vụ không hợp lệ!\n";
+          }
+      
+          if (errorMsg !== "Lỗi tại dòng " + (index + 1) + ":\n") {
             setErrMsg(errorMsg);
             setsnackBarErrorOpen(true);
             result = false;
@@ -98,16 +110,22 @@ export default function ProviderImportExcel({ refetch, fetchProviderType, fetchT
                 const sheet = workbook.Sheets[sheetName];
                 const parsedData = XLSX.utils.sheet_to_json(sheet);
 
+                console.log(parsedData);
+
                 const importData = [];
                 parsedData.forEach((value) => {
                     importData.push({
-                        address: value.Address,
-                        coordinate: [value.Longitude, value.Latitude],
+                        description: value.Description,
                         imageUrl: value.ImageUrl,
                         name: value.Name,
-                        phone: value.Phone.toString(),
-                        standard: value.Standard,
-                        type: value.Type,
+                        partySize: value.PartySize,
+                        periods: value.Periods.substring(
+                            1,
+                            value.Periods.length - 1
+                          ).split(","),
+                        price: value.Price,
+                        providerId: parseInt(providerId.toString(), 10),
+                        type: value.Type
                     });
                 });
 
@@ -129,9 +147,9 @@ export default function ProviderImportExcel({ refetch, fetchProviderType, fetchT
 
                     setSucessMsg("Thêm thành công!");
                     openSuccessSnackBar();
-                    refetch();
-                    fetchProviderType(null);
-                    fetchTotalProvider(null);
+                    setIsLoading(true);
+                    fetchProdCount("");
+                    refetchProducts();
                 }
 
                 document.getElementById("upload-excel").value = "";

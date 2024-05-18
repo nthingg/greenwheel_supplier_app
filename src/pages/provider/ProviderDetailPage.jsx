@@ -50,6 +50,7 @@ import {
 } from "../../services/graphql/provider";
 import client from "../../services/apollo/config";
 import { Cancel, CheckCircle } from "@mui/icons-material";
+import ProductImportExcel from "../../components/excels/ProductImportExcel";
 
 const ProviderDetailPage = () => {
   const navigate = useNavigate();
@@ -564,8 +565,8 @@ const ProviderDetailPage = () => {
                     <span className="itemKey">Quyền truy cập: </span>
                     <span className="itemValue">
                       {provider?.account ? (
-                        <CheckCircle color="success"/>) :
-                        <Cancel color="error"/>}
+                        <CheckCircle color="success" />) :
+                        <Cancel color="error" />}
                     </span>
                   </div>
                 </div>
@@ -638,13 +639,23 @@ const ProviderDetailPage = () => {
                             </button>
                           </div>
                           <div className="right">
-                            <Link
-                              to={`/providers/${providerId}/add-product`}
-                              className="link"
-                            >
-                              <AddCircleIcon />
-                              <span>Thêm dịch vụ</span>
-                            </Link>
+                            {!provider?.account && (
+                              <Link
+                                to={`/providers/${providerId}/add-product`}
+                                className="link"
+                              >
+                                <AddCircleIcon />
+                                <span>Thêm dịch vụ</span>
+                              </Link>
+                            )}
+                            {!provider?.account && (
+                              <ProductImportExcel
+                                providerId={providerId}
+                                fetchProdCount={fetchProdCount}
+                                refetchProducts={refetchProducts}
+                                setIsLoading={setIsLoading} />
+                            )}
+
                             {/* <button className="link">
                               <CloudDownloadIcon />
                             </button>

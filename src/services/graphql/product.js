@@ -68,3 +68,12 @@ export const UDPATE_PRODUCT = gql`
     updateProduct(dto: $dto)
   }
 `;
+
+export const IMPORT_PRODUCTS_EXCEL = gql`
+  mutation ImportProductExcel($dto: [ProductCreateInput!]!) {
+    createMultiProducts(dto: $dto) {
+      id
+      name
+    }
+  }
+`
