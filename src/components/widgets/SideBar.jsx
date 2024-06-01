@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../assets/scss/sidebar.scss";
+import "../../assets/scss/announce-table.scss";
 import Dashboard from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
 import StoreIcon from "@mui/icons-material/Store";
@@ -10,6 +11,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MapIcon from "@mui/icons-material/Map";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   LOAD_DETAIL_PROVIDER,
@@ -17,17 +20,46 @@ import {
 } from "../../services/graphql/provider";
 import { Fastfood } from "@mui/icons-material";
 import { REFRESH_AUTH } from "../../services/graphql/auth";
+import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  Tooltip,
+} from "@mui/material";
+import {
+  LOAD_ANNOUNCEMENT,
+  MARK_ALL_ANNOUNCE,
+  MARK_SINGLE_ANNOUNCE,
+} from "../../services/graphql/announcement";
 
 const SideBar = () => {
   const navigate = useNavigate();
 
   const role = localStorage.getItem("role");
   const providerId = localStorage.getItem("providerId");
+  const [now, setNow] = useState(new Date());
   const [provider, setProvider] = useState(null);
   const [staff, setStaff] = useState(null);
+  const [announcement, setAnnouncement] = useState([]);
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = async () => {
+    setOpen(false);
+  };
 
   const [getProvider, { error, loading, data }] =
     useLazyQuery(LOAD_DETAIL_PROVIDER);
+
+  const [getAnnouncements, {}] = useLazyQuery(LOAD_ANNOUNCEMENT, {
+    fetchPolicy: "no-cache",
+  });
 
   const [
     getStaff,
@@ -38,6 +70,35 @@ const SideBar = () => {
 
   const [refresh, { data: dataRf, loading: loadingRf, error: errorRf }] =
     useMutation(REFRESH_AUTH);
+
+  const [markAll, { data: dataAll, loading: loadingAll, error: errorAll }] =
+    useMutation(MARK_ALL_ANNOUNCE);
+
+  const [
+    markSingle,
+    { data: dataSingle, loading: loadingSingle, error: errorSingle },
+  ] = useMutation(MARK_SINGLE_ANNOUNCE);
+
+  const markSingleRead = async (id) => {
+    try {
+      const { data } = await markSingle({
+        variables: {
+          id: id,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const markAllRead = async () => {
+    try {
+      const { data } = await markAll();
+      fetchAnnouncements();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const refreshAuth = async (e) => {
     try {
@@ -79,10 +140,20 @@ const SideBar = () => {
     }
   };
 
+  const fetchAnnouncements = async () => {
+    try {
+      const { data } = await getAnnouncements();
+      setAnnouncement(data["announcements"]["nodes"]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     if (refreshToken) {
       refreshAuth();
+      fetchAnnouncements();
     }
   }, []);
 
@@ -186,6 +257,70 @@ const SideBar = () => {
           </div>
         </div>
       </div>
+      <Fab
+        onClick={() => {
+          if (open) {
+            setOpen(false);
+          } else {
+            setOpen(true);
+          }
+        }}
+        sx={{ color: "#2c3d50" }}
+        style={{ right: 10, bottom: 10, position: "fixed", zIndex: 1600 }}
+      >
+        <NotificationsActiveIcon />
+      </Fab>
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        PaperProps={{
+          sx: { position: "fixed", bottom: -20, right: 50, width: 500 },
+        }}
+      >
+        <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>
+          <div className="mark">
+            <div className="left">
+              <p>Thông báo đơn hàng</p>
+            </div>
+            <div className="right">
+              <Tooltip title="Đã đọc tất cả">
+                <button
+                  onClick={() => {
+                    markAllRead();
+                  }}
+                >
+                  <FactCheckIcon />
+                </button>
+              </Tooltip>
+            </div>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <div className="announce-table">
+            <div className="body">
+              {announcement.map((message, index) => (
+                <div
+                  key={index}
+                  className="response-item"
+                  onClick={() => {
+                    markSingleRead(message.id);
+                  }}
+                >
+                  <p className="response-msg">
+                    {message.title}{" "}
+                    {message.isRead === false && (
+                      <span style={{ color: "red", fontSize: 18 }}>!</span>
+                    )}
+                  </p>
+                  <p className="response-detail">{message.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

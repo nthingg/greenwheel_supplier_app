@@ -97,13 +97,13 @@ function OrderCancelDialog({
                 border: "none",
               }}
             >
-              <Tab label="Phượt thủ hủy đơn" {...a11yProps(0)} />
+              <Tab label="Khách hủy đơn" {...a11yProps(0)} />
               <Tab label="Nhà cung cấp hủy đơn" {...a11yProps(1)} />
             </Tabs>
           </AppBar>
           <TabPanel value={tabValue} index={0} dir={theme.direction}>
             <DialogContentText style={{ padding: "20px 0 10px 0" }}>
-              Gửi OTP cho phượt thủ để xác nhận việc hủy đơn:
+              Gửi OTP cho khách để xác nhận việc hủy đơn:
             </DialogContentText>
             <div className="otp-field">
               <TextField
