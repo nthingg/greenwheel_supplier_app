@@ -14,6 +14,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import {
   LOAD_DETAIL_PROVIDER,
   LOAD_DETAIL_STAFF,
@@ -222,7 +223,12 @@ const SideBar = () => {
                   alt="Profile"
                 ></img>
                 <div className="user_info">
-                  <span className="name">Staff</span>
+                  <div className="pwd_block">
+                    <span className="name">Staff</span>
+                    <Tooltip title="Đổi mật khẩu">
+                      <LockResetIcon />
+                    </Tooltip>
+                  </div>
                   <span className="role">{staff?.name}</span>
                 </div>
               </div>
@@ -235,7 +241,12 @@ const SideBar = () => {
                   alt="Profile"
                 ></img>
                 <div className="user_info">
-                  <span className="name">Provider</span>
+                  <div className="pwd_block">
+                    <span className="name">Provider</span>
+                    <Tooltip title="Đổi mật khẩu">
+                      <LockResetIcon />
+                    </Tooltip>
+                  </div>
                   <span className="role">{provider?.name}</span>
                 </div>
               </div>

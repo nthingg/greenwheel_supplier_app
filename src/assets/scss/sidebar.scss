@@ -133,6 +133,11 @@
             flex-direction: column;
             text-align: center;
 
+            .pwd_block {
+                display: flex;
+                justify-content: center;
+            }
+
             .role {
                 font-size: 14px;
                 font-style: italic;
@@ -140,6 +145,7 @@
 
             .name {
                 font-weight: bold;
+                margin-right: 6px;
             }
         }
 
