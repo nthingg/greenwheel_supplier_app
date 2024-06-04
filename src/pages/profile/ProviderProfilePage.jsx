@@ -210,7 +210,7 @@ const ProviderProfilePage = () => {
         variables: {
           id: parseInt(providerId, 10),
           type: status,
-          searchTerm: searchTerm
+          searchTerm: searchTerm,
         },
       });
       let res = dataProducts.products.nodes.map((node, index) => {
@@ -314,7 +314,7 @@ const ProviderProfilePage = () => {
     setSearchTerm(search);
     fetchProdCount(search);
     fetchData(selectStatus, search);
-  }
+  };
 
   return (
     <div>
@@ -386,7 +386,7 @@ const ProviderProfilePage = () => {
                       </IconButton>
                     </span>
                   </div>
-                  {provider?.type !== "REPAIR" &&
+                  {/* {provider?.type !== "REPAIR" &&
                     provider?.type !== "TAXI" &&
                     provider?.type !== "EMERGENCY" &&
                     provider?.type !== "GROCERY" && (
@@ -396,7 +396,7 @@ const ProviderProfilePage = () => {
                           {provider?.balance.toLocaleString("vi-VN") + "đ"}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   <div className="detailItem">
                     <span className="itemKey">Danh mục:</span>
                     <span className="itemValue">
@@ -490,7 +490,8 @@ const ProviderProfilePage = () => {
                             />
                             <button
                               className="link"
-                              onClick={handleSearchSubmit}>
+                              onClick={handleSearchSubmit}
+                            >
                               <SearchIcon />
                             </button>
                           </div>
@@ -525,8 +526,9 @@ const ProviderProfilePage = () => {
                             {filter.map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${selectedDiv === index ? "selected" : ""
-                                  }`}
+                                className={`icon-item ${
+                                  selectedDiv === index ? "selected" : ""
+                                }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}

@@ -174,7 +174,7 @@ const ProviderDetailPage = () => {
     setOpenConfirm(false);
   };
 
-  const [change, { }] = useMutation(CHANGE_PROVIDER_STATUS);
+  const [change, {}] = useMutation(CHANGE_PROVIDER_STATUS);
 
   const handleChangeStatus = async (id) => {
     try {
@@ -196,7 +196,7 @@ const ProviderDetailPage = () => {
       handleClickError();
       localStorage.removeItem("errorMsg");
     }
-  }
+  };
 
   const handleSearchSubmit = () => {
     setIsLoading(true);
@@ -237,7 +237,7 @@ const ProviderDetailPage = () => {
       setPhoneHide(
         formatPhoneNumberCen(data["providers"]["nodes"][0]["phone"])
       );
-      setStatus(data["providers"]["nodes"][0].isActive)
+      setStatus(data["providers"]["nodes"][0].isActive);
     }
   }, [data, loading, error]);
 
@@ -428,7 +428,10 @@ const ProviderDetailPage = () => {
                   )}
                 </div> */}
                 <div className="provider-status">
-                  <a className="status active" title={status ? "Đang hoạt động" : "Ngưng hoạt động"}>
+                  <a
+                    className="status active"
+                    title={status ? "Đang hoạt động" : "Ngưng hoạt động"}
+                  >
                     <Switch
                       checked={status}
                       color={status ? "success" : "error"}
@@ -447,7 +450,8 @@ const ProviderDetailPage = () => {
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Bạn có xác nhận muốn đổi trạng thái hiển thị của nhà cung cấp này không?
+                        Bạn có xác nhận muốn đổi trạng thái hiển thị của nhà
+                        cung cấp này không?
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -463,11 +467,13 @@ const ProviderDetailPage = () => {
                           borderRadius: "5px",
                           cursor: "pointer",
                           border: "1px solid",
-                          transition: "0.4s"
-                        }}>
+                          transition: "0.4s",
+                        }}
+                      >
                         Hủy bỏ
                       </button>
-                      <button className="btn-change-status-confirm"
+                      <button
+                        className="btn-change-status-confirm"
                         onClick={handleChangeStatus}
                         autoFocus
                         style={{
@@ -479,8 +485,9 @@ const ProviderDetailPage = () => {
                           borderRadius: "5px",
                           cursor: "pointer",
                           border: "none",
-                          transition: "0.4s"
-                        }}>
+                          transition: "0.4s",
+                        }}
+                      >
                         Đồng ý
                       </button>
                     </DialogActions>
@@ -512,7 +519,7 @@ const ProviderDetailPage = () => {
                       </IconButton>
                     </span>
                   </div>
-                  {provider?.type !== "REPAIR" &&
+                  {/* {provider?.type !== "REPAIR" &&
                     provider?.type !== "TAXI" &&
                     provider?.type !== "EMERGENCY" &&
                     provider?.type !== "GROCERY" &&
@@ -523,7 +530,7 @@ const ProviderDetailPage = () => {
                           {provider?.balance.toLocaleString("vi-VN") + "đ"}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   <div className="detailItem">
                     <span className="itemKey">Danh mục:</span>
                     <span className="itemValue">
@@ -565,8 +572,10 @@ const ProviderDetailPage = () => {
                     <span className="itemKey">Quyền truy cập: </span>
                     <span className="itemValue">
                       {provider?.account ? (
-                        <CheckCircle color="success" />) :
-                        <Cancel color="error" />}
+                        <CheckCircle color="success" />
+                      ) : (
+                        <Cancel color="error" />
+                      )}
                     </span>
                   </div>
                 </div>
@@ -653,7 +662,8 @@ const ProviderDetailPage = () => {
                                 providerId={providerId}
                                 fetchProdCount={fetchProdCount}
                                 refetchProducts={refetchProducts}
-                                setIsLoading={setIsLoading} />
+                                setIsLoading={setIsLoading}
+                              />
                             )}
 
                             {/* <button className="link">
@@ -682,8 +692,9 @@ const ProviderDetailPage = () => {
                             {filter.map((index) => (
                               <div
                                 key={index}
-                                className={`icon-item ${selectedDiv === index ? "selected" : ""
-                                  }`}
+                                className={`icon-item ${
+                                  selectedDiv === index ? "selected" : ""
+                                }`}
                                 onClick={() => {
                                   handleClick(index);
                                 }}
