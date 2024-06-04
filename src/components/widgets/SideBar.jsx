@@ -87,6 +87,7 @@ const SideBar = () => {
           id: id,
         },
       });
+      fetchAnnouncements();
     } catch (error) {
       console.log(error);
     }
