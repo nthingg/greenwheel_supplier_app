@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const LOAD_ANNOUNCEMENT = gql`
   {
-    announcements(first: 100, order: { id: DESC }) {
+    announcements(first: 40, order: { id: DESC }) {
       nodes {
         id
         body
