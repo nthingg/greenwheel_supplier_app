@@ -170,7 +170,7 @@ const SideBar = () => {
           ></img>
         </div>
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">BTSS</span>
+          <span className="logo label">BTSS</span>
         </Link>
       </div>
       <div className="center">
@@ -178,7 +178,7 @@ const SideBar = () => {
           <NavLink to="/" style={{ textDecoration: "none" }}>
             <li>
               <Dashboard className="icon" />
-              <span>Trang chủ</span>
+              <span className="label">Trang chủ</span>
             </li>
           </NavLink>
           {(role === "STAFF" || role === "PROVIDER") && ( // Conditional rendering for STAFF role
@@ -186,7 +186,7 @@ const SideBar = () => {
               <NavLink to="/orders" style={{ textDecoration: "none" }}>
                 <li>
                   <CreditCardIcon className="icon" />
-                  <span>Quản lý đơn hàng</span>
+                  <span className="label">Quản lý đơn hàng</span>
                 </li>
               </NavLink>
             </>
@@ -196,7 +196,7 @@ const SideBar = () => {
               <NavLink to="/providers" style={{ textDecoration: "none" }}>
                 <li>
                   <StoreIcon className="icon" />
-                  <span>Quản lý nhà cung cấp</span>
+                  <span className="label">Quản lý nhà cung cấp</span>
                 </li>
               </NavLink>
             </>
@@ -206,7 +206,7 @@ const SideBar = () => {
               <NavLink to="/profile" style={{ textDecoration: "none" }}>
                 <li>
                   <StoreIcon className="icon" />
-                  <span>Hồ sơ nhà cung cấp</span>
+                  <span className="label">Hồ sơ nhà cung cấp</span>
                 </li>
               </NavLink>
             </>
@@ -225,12 +225,12 @@ const SideBar = () => {
                 ></img>
                 <div className="user_info">
                   <div className="pwd_block">
-                    <span className="name">Staff</span>
+                    <span className="name label">Staff</span>
                     <Tooltip title="Đổi mật khẩu">
                       <LockResetIcon />
                     </Tooltip>
                   </div>
-                  <span className="role">{staff?.name}</span>
+                  <span className="role label">{staff?.name}</span>
                 </div>
               </div>
             )}
@@ -243,12 +243,12 @@ const SideBar = () => {
                 ></img>
                 <div className="user_info">
                   <div className="pwd_block">
-                    <span className="name">Provider</span>
+                    <span className="name label">Provider</span>
                     <Tooltip title="Đổi mật khẩu">
                       <LockResetIcon />
                     </Tooltip>
                   </div>
-                  <span className="role">{provider?.name}</span>
+                  <span className="role label">{provider?.name}</span>
                 </div>
               </div>
             )}

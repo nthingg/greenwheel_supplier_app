@@ -69,7 +69,7 @@
             }
 
             li {
-                padding: 14px 0 14px 20px;
+                padding: 14px 0 14px 0;
                 margin: 14px 0 14px 0;
                 border-radius: 0 8px 8px 0;
                 transition: 0.4s;
@@ -170,5 +170,30 @@
             color: white;
             background-color: #273746;
         }
+    }
+}
+
+.icon {
+    margin-left: 20px;
+}
+
+@media only screen and (max-width: 1300px) {
+    li {
+        padding: 14px 0 14px 0;
+        margin: 14px 0 14px 0;
+        border-radius: 0 8px 8px 0;
+        transition: 0.4s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .label {
+        display: none;
+    }
+
+    .icon {
+        margin-left: 0;
     }
 }
