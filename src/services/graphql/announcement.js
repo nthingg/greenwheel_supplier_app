@@ -11,6 +11,9 @@ export const LOAD_ANNOUNCEMENT = gql`
           name
         }
         isRead
+        order {
+          id
+        }
       }
     }
   }

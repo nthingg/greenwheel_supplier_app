@@ -18,3 +18,9 @@ export const REFRESH_AUTH = gql`
     }
   }
 `;
+
+export const CHANGE_PWD = gql`
+  mutation changePwd($dto: StaffChangePasswordInput!) {
+    changePassword(dto: $dto)
+  }
+`;

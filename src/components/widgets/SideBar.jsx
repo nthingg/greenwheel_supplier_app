@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../assets/scss/sidebar.scss";
+import "../../assets/scss/pwd-dialog.scss";
 import "../../assets/scss/announce-table.scss";
 import Dashboard from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
 import StoreIcon from "@mui/icons-material/Store";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MapIcon from "@mui/icons-material/Map";
@@ -20,13 +22,16 @@ import {
   LOAD_DETAIL_STAFF,
 } from "../../services/graphql/provider";
 import { Fastfood } from "@mui/icons-material";
-import { REFRESH_AUTH } from "../../services/graphql/auth";
+import { CHANGE_PWD, REFRESH_AUTH } from "../../services/graphql/auth";
 import {
+  Alert,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Fab,
+  Snackbar,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import {
@@ -37,6 +42,8 @@ import {
 
 const SideBar = () => {
   const navigate = useNavigate();
+  const [vertical, setVertical] = useState("top");
+  const [horizontal, setHorizontal] = useState("right");
 
   const role = localStorage.getItem("role");
   const providerId = localStorage.getItem("providerId");
@@ -44,8 +51,45 @@ const SideBar = () => {
   const [provider, setProvider] = useState(null);
   const [staff, setStaff] = useState(null);
   const [announcement, setAnnouncement] = useState([]);
-
   const [open, setOpen] = useState(false);
+  const [openPwd, setOpenPwd] = useState(false);
+  const [oldPwd, setOldPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
+  const [successMsg, setSuccessMsg] = useState(false);
+  const [errorMsg, setErrMsg] = useState(false);
+  //error
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [pwdError, setPwdError] = useState(false);
+  const [pwdHelperText, setPwdHelperText] = useState("");
+  const [newError, setNewError] = useState(false);
+  const [newHelperText, setNewHelperText] = useState("");
+  const [confirmError, setConfirmError] = useState(false);
+  const [confirmHelperText, setConfirmHelperText] = useState("");
+  const [pwdFinErr, setPwdFinErr] = useState(true);
+  const [newFinErr, setNewFinErr] = useState(true);
+  const [confirmFinErr, setConfirmFinErr] = useState(true);
+
+  const handleCloseSucessSnack = () => {
+    setSnackbarSuccessOpen(false);
+  };
+
+  const handleClick = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnack = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleClickOpenPwd = () => {
+    setOpenPwd(true);
+  };
+
+  const handleClosePwd = async () => {
+    setOpenPwd(false);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -159,6 +203,33 @@ const SideBar = () => {
     }
   }, []);
 
+  const [changePwd, { data: dataPwd, error: errorPwd }] =
+    useMutation(CHANGE_PWD);
+
+  const handleConfirmClick = async () => {
+    const dataPwd = {
+      oldPassword: oldPwd,
+      newPassword: confirmPwd,
+    };
+
+    try {
+      const { data } = await changePwd({
+        variables: {
+          dto: dataPwd,
+        },
+      });
+      setSuccessMsg("Đổi mật khẩu thành công!");
+      setSnackbarSuccessOpen(true);
+      handleClosePwd();
+    } catch (error) {
+      console.log(error);
+      const msg = localStorage.getItem("errorMsg");
+      setErrMsg(msg);
+      handleClick();
+      localStorage.removeItem("errorMsg");
+    }
+  };
+
   return (
     <div className="sidebar">
       <div className="top">
@@ -227,7 +298,11 @@ const SideBar = () => {
                   <div className="pwd_block">
                     <span className="name label">Staff</span>
                     <Tooltip title="Đổi mật khẩu">
-                      <LockResetIcon />
+                      <LockResetIcon
+                        onClick={() => {
+                          handleClickOpenPwd();
+                        }}
+                      />
                     </Tooltip>
                   </div>
                   <span className="role label">{staff?.name}</span>
@@ -245,7 +320,11 @@ const SideBar = () => {
                   <div className="pwd_block">
                     <span className="name label">Provider</span>
                     <Tooltip title="Đổi mật khẩu">
-                      <LockResetIcon />
+                      <LockResetIcon
+                        onClick={() => {
+                          handleClickOpenPwd();
+                        }}
+                      />
                     </Tooltip>
                   </div>
                   <span className="role label">{provider?.name}</span>
@@ -318,6 +397,7 @@ const SideBar = () => {
                   className="response-item"
                   onClick={() => {
                     markSingleRead(message.id);
+                    navigate(`/orders/${message.order.id}`);
                   }}
                 >
                   <p className="response-msg">
@@ -333,6 +413,174 @@ const SideBar = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog
+        open={openPwd}
+        onClose={() => {
+          setOpenPwd(false);
+        }}
+      >
+        <DialogTitle backgroundColor={"#2c3d50"} color={"white"}>
+          <div className="mark">
+            <div className="left">
+              <p>Thay đổi mật khẩu</p>
+            </div>
+            <div className="right"></div>
+          </div>
+        </DialogTitle>
+        <DialogContent style={{ width: 400 }}>
+          <div className="password-cont">
+            <div className="body">
+              <div className="detailItem">
+                <span className="itemKey">Mật khẩu cũ:</span>
+                <TextField
+                  id="outlined-disabled"
+                  className="basic-single"
+                  type="password"
+                  placeholder="Nhập mật khẩu cũ"
+                  size="small"
+                  name="oldPwd"
+                  error={pwdError}
+                  helperText={pwdHelperText}
+                  sx={{
+                    width: "15%",
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value.length < 8) {
+                      setPwdError(true);
+                      setPwdHelperText("Độ dài mật khẩu ít nhất 8 kí tự");
+                      setPwdFinErr(true);
+                    } else if (e.target.value.length > 20) {
+                      setPwdError(true);
+                      setPwdHelperText("Độ dài mật khẩu nhiều nhất 20 kí tự");
+                      setPwdFinErr(true);
+                    } else {
+                      setPwdError(false);
+                      setPwdHelperText("");
+                      setPwdFinErr(false);
+                      setOldPwd(e.target.value);
+                    }
+                  }}
+                />
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Mật khẩu mới:</span>
+                <TextField
+                  id="outlined-disabled"
+                  className="basic-single"
+                  type="password"
+                  placeholder="Nhập mật khẩu mới"
+                  size="small"
+                  name="newPwd"
+                  error={newError}
+                  helperText={newHelperText}
+                  sx={{
+                    width: "15%",
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value.length < 8) {
+                      setNewError(true);
+                      setNewHelperText("Độ dài mật khẩu ít nhất 8 kí tự");
+                      setNewFinErr(true);
+                    } else if (e.target.value.length > 20) {
+                      setNewError(true);
+                      setNewHelperText("Độ dài mật khẩu nhiều nhất 20 kí tự");
+                      setNewFinErr(true);
+                    } else {
+                      setNewError(false);
+                      setNewHelperText("");
+                      setNewFinErr(false);
+                      setNewPwd(e.target.value);
+                    }
+                  }}
+                />
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Xác nhận mật khẩu:</span>
+                <TextField
+                  id="outlined-disabled"
+                  className="basic-single"
+                  type="password"
+                  placeholder="Xác nhận lại mật khẩu"
+                  size="small"
+                  name="confirmPwd"
+                  error={confirmError}
+                  helperText={confirmHelperText}
+                  sx={{
+                    width: "15%",
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value !== newPwd) {
+                      setConfirmError(true);
+                      setConfirmHelperText("Mật khẩu xác nhận không đúng");
+                      setConfirmFinErr(true);
+                    } else {
+                      setConfirmError(false);
+                      setConfirmHelperText("");
+                      setConfirmFinErr(false);
+                      setConfirmPwd(e.target.value);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div className="confirm-btn">
+              {/* <button className="btn-modal-filter" onClick={() => {}}>
+                Xác nhận
+              </button> */}
+              {!pwdFinErr && !newFinErr && !confirmFinErr && (
+                <button
+                  className="btn-modal-filter"
+                  onClick={async () => {
+                    handleConfirmClick();
+                  }}
+                >
+                  <ThumbUpAltIcon />
+                  <span>Xác nhận</span>
+                </button>
+              )}
+
+              {(pwdFinErr || newFinErr || confirmFinErr) && (
+                <button className="btn-modal-filter bg-gray">
+                  <ThumbUpAltIcon />
+                  <span>Xác nhận</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={snackbarOpen}
+        onClose={handleCloseSnack}
+        autoHideDuration={2000}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleCloseSnack}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {errorMsg}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={snackbarSuccessOpen}
+        onClose={handleCloseSucessSnack}
+        autoHideDuration={2000}
+        key={vertical + horizontal + "success"}
+      >
+        <Alert
+          onClose={handleCloseSucessSnack}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {successMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
