@@ -375,17 +375,7 @@ const SideBar = () => {
             <div className="left">
               <p>Thông báo đơn hàng</p>
             </div>
-            <div className="right">
-              <Tooltip title="Đã đọc tất cả">
-                <button
-                  onClick={() => {
-                    markAllRead();
-                  }}
-                >
-                  <FactCheckIcon />
-                </button>
-              </Tooltip>
-            </div>
+            <div className="right"></div>
           </div>
         </DialogTitle>
         <DialogContent>
