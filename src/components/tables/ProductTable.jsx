@@ -16,16 +16,6 @@ const ProductTable = ({ products, productTotal, profile }) => {
   const options = ["Xem", "Chỉnh sửa"];
   const ITEM_HEIGHT = 48;
 
-  const handleEditClick = () => {
-    // Logic for "Xác nhận" option
-    if (providerId) {      
-      navigate(`/profile/product/${anchorId}/update`);      
-    } else {
-      navigate(`/product/${anchorId}/update`);
-    }
-    // Add your specific code here
-  };
-
   const actionColumn = [
     {
       field: "action",
@@ -48,6 +38,16 @@ const ProductTable = ({ products, productTotal, profile }) => {
           } else {
             navigate(
               `/providers/${params.row.provider.id}/product/${anchorId}`
+            );
+          }
+        };
+
+        const handleEditClick = () => {
+          if (profile) {
+            navigate(`/profile/product/${anchorId}/update`);
+          } else {
+            navigate(
+              `/providers/${params.row.provider.id}/product/${anchorId}/update`
             );
           }
         };
@@ -113,7 +113,11 @@ const ProductTable = ({ products, productTotal, profile }) => {
       {products && (
         <DataGrid
           rows={products}
-          columns={(products[0]?.provider.account && !providerId) ? productsColumns : productsColumns.concat(actionColumn)}
+          columns={
+            products[0]?.provider.account && !providerId
+              ? productsColumns
+              : productsColumns.concat(actionColumn)
+          }
           rowSelection={false}
           pagination
           autoPageSize
@@ -132,7 +136,8 @@ const ProductTable = ({ products, productTotal, profile }) => {
           localeText={{
             MuiTablePagination: {
               labelDisplayedRows: ({ from, to, count }) =>
-                `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
+                `${from} - ${to} trong ${
+                  count === -1 ? `nhiều hơn ${to}` : count
                 }`,
             },
             noRowsLabel: "Không có dữ liệu",
@@ -142,7 +147,11 @@ const ProductTable = ({ products, productTotal, profile }) => {
       {productTotal && (
         <DataGrid
           rows={productTotal}
-          columns={(productTotal[0]?.provider.account && !providerId) ? productTotalColumns : productTotalColumns.concat(actionColumn)}
+          columns={
+            productTotal[0]?.provider.account && !providerId
+              ? productTotalColumns
+              : productTotalColumns.concat(actionColumn)
+          }
           rowSelection={false}
           pagination
           autoPageSize
@@ -161,7 +170,8 @@ const ProductTable = ({ products, productTotal, profile }) => {
           localeText={{
             MuiTablePagination: {
               labelDisplayedRows: ({ from, to, count }) =>
-                `${from} - ${to} trong ${count === -1 ? `nhiều hơn ${to}` : count
+                `${from} - ${to} trong ${
+                  count === -1 ? `nhiều hơn ${to}` : count
                 }`,
             },
             noRowsLabel: "Không có dữ liệu",

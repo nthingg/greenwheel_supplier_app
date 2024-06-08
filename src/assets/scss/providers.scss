@@ -16,8 +16,8 @@
         min-height: 450px;
         background-color: white;
         /* Optional: Add a max-width to limit the width of the container */
-        max-width: 91%; /* Adjust as needed */
-        margin: 0 auto;
+        margin: 0 30px 0 30px;
+        overflow: auto;
         box-shadow:
             0 4px 8px 0 rgba(0, 0, 0, 0.1),
             0 6px 20px 0 rgba(0, 0, 0, 0.1);
@@ -207,8 +207,8 @@
         padding: 40px 40px 40px 40px;
         background-color: white;
         /* Optional: Add a max-width to limit the width of the container */
-        max-width: 91%; /* Adjust as needed */
-        margin: 0 auto;
+        margin: 0 30px 0 30px;
+        overflow: auto;
         box-shadow:
             0 4px 8px 0 rgba(0, 0, 0, 0.1),
             0 6px 20px 0 rgba(0, 0, 0, 0.1);
@@ -298,6 +298,7 @@
 
     .detailContainer {
         background-color: white;
+        overflow: auto;
         box-shadow:
             0 4px 8px 0 rgba(0, 0, 0, 0.1),
             0 6px 20px 0 rgba(0, 0, 0, 0.1);
@@ -420,10 +421,11 @@
                 height: 30px;
 
                 .itemKey {
-                    width: 200px;
                     font-weight: 600;
                     margin-right: 5px;
                     font-size: 18px;
+                    display: inline-block;
+                    width: 190px;
                     color: #2c3d50;
                 }
 
@@ -431,6 +433,7 @@
                     font-weight: 300;
                     font-size: 18px;
                     color: #2c3d50;
+                    white-space: nowrap;
 
                     a {
                         color: #2c3d50;

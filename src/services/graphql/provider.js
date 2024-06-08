@@ -215,9 +215,7 @@ export const ADD_PROVIDER = gql`
 
 export const UPDATE_PROVIDER = gql`
   mutation updateProvider($dto: ProviderUpdateInput!) {
-    updateProvider(dto: $dto) {
-      id
-    }
+    updateProvider(dto: $dto)
   }
 `;
 
@@ -228,7 +226,7 @@ export const CHANGE_PROVIDER_STATUS = gql`
       name
     }
   }
-`
+`;
 
 export const IMPORT_PROVIDERS_EXCEL = gql`
   mutation ImportProviders($dto: [ProviderCreateInput!]!) {

@@ -38,6 +38,7 @@ import * as turf from "@turf/turf";
 import { regionData } from "../../services/location/region";
 
 const ProviderProfileUpdatePage = () => {
+  const providerLogId = localStorage.getItem("providerId");
   const { providerId } = useParams();
   const navigate = useNavigate();
 
@@ -66,13 +67,14 @@ const ProviderProfileUpdatePage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [standard, setStandard] = useState(null);
-  const [type, setType] = useState("");
   const [open, setOpen] = useState(false);
   const [errorMsg, setErrMsg] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [standardVisible, setStandardVisible] = useState(false);
   const [addressDetail, setAddressDetail] = useState("");
   const [provider, setProvider] = useState(null);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [appliedTime, setAppliedTime] = useState("");
   //error
   const [nameError, setNameError] = useState(false);
   const [nameHelperText, setNameHelperText] = useState("");
@@ -84,9 +86,16 @@ const ProviderProfileUpdatePage = () => {
   const [addressFinErr, setAddressFinErr] = useState(false);
   const [phoneFinErr, setPhoneFinErr] = useState(false);
   const [standardFinErr, setStandardFinErr] = useState(false);
-  const [typeFinErr, setTypeFinErr] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [openRedirect, setOpenRedirect] = useState(false);
   //redirect
+  const handleClickOpenConfirm = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
 
   const handleClick = () => {
     setSnackbarOpen(true);
@@ -147,15 +156,6 @@ const ProviderProfileUpdatePage = () => {
         url: `https://d38ozmgi8b70tu.cloudfront.net${dataProvider["providers"]["nodes"][0].imagePath}`,
       });
 
-      const type = dataProvider["providers"]["nodes"][0].type;
-      let typeInit = null;
-      for (let j = 0; j < typeOptions.length; j++) {
-        if (typeOptions[j].value === type) {
-          typeInit = typeOptions[j];
-        }
-      }
-      setType(typeInit);
-
       const standard = dataProvider["providers"]["nodes"][0].standard;
       let standardInit = null;
       for (let j = 0; j < standardOptions.length; j++) {
@@ -167,6 +167,18 @@ const ProviderProfileUpdatePage = () => {
       if (standardInit !== null) {
         setStandardVisible(true);
       }
+
+      let d = new Date();
+      d.setMonth(d.getMonth() + 1, 1);
+      d.setHours(7, 0, 0, 0);
+
+      setAppliedTime(
+        d.toLocaleTimeString("vi-VN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      );
     }
   }, [dataProvider, loadingProvider, errProvider]);
 
@@ -196,7 +208,6 @@ const ProviderProfileUpdatePage = () => {
       imageUrl: imagePath,
       name: name,
       standard: finStandart,
-      type: type.value,
       providerId: parseInt(providerId, 10),
     };
 
@@ -531,45 +542,6 @@ const ProviderProfileUpdatePage = () => {
                     </DialogActions>
                   </Dialog>
                 </div>
-                <div className="detailItem">
-                  <span className="itemKey">Loại hình:</span>
-                  <Select
-                    placeholder={"Chọn loại hình nhà cung cấp"}
-                    className="basic-single"
-                    classNamePrefix="select"
-                    isDisabled={false}
-                    isClearable={true}
-                    name="type"
-                    options={typeOptions}
-                    value={type}
-                    onChange={(e) => {
-                      if (e === null) {
-                        setType("");
-                        setStandardVisible(false);
-                        setStandardFinErr(false);
-                        setTypeFinErr(true);
-                        return;
-                      }
-                      if (e.value === "HOTEL" || e.value === "RESTAURANT") {
-                        setStandardVisible(true);
-                        setStandardFinErr(true);
-                      } else {
-                        setStandardVisible(false);
-                        setStandardFinErr(false);
-                      }
-                      setType(e);
-                      setStandard(null);
-                      setTypeFinErr(false);
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#2c3d50",
-                      },
-                    })}
-                  />
-                </div>
                 {standardVisible && (
                   <div className="detailItem">
                     <span className="itemKey">Tiêu chuẩn:</span>
@@ -614,12 +586,11 @@ const ProviderProfileUpdatePage = () => {
             !imgError &&
             !addressFinErr &&
             !phoneFinErr &&
-            !typeFinErr &&
             !standardFinErr && (
               <button
                 className="link confirm"
                 onClick={async () => {
-                  handleConfirmClick();
+                  handleClickOpenConfirm();
                 }}
               >
                 <ThumbUpAltIcon />
@@ -631,7 +602,6 @@ const ProviderProfileUpdatePage = () => {
             imgError ||
             addressFinErr ||
             phoneFinErr ||
-            typeFinErr ||
             standardFinErr) && (
             <button className="link deny">
               <ThumbUpAltIcon />
@@ -640,6 +610,82 @@ const ProviderProfileUpdatePage = () => {
           )}
         </div>
       </div>
+      <Dialog
+        open={openConfirm}
+        onClose={() => {
+          setOpenConfirm(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle
+          backgroundColor={"#2c3d50"}
+          color={"white"}
+          fontWeight={600}
+        >
+          Xác nhận cập nhật {provider?.name}
+        </DialogTitle>
+        <DialogContent style={{ width: 620, height: 180 }}>
+          <p className="alert-price-change">
+            Bạn có chắc muốn chỉnh sửa nhà cung cấp? Các thay đổi sẽ được áp
+            dụng vào: {appliedTime}
+          </p>
+
+          <div className="btns-group-dialog">
+            <button
+              className="link deny"
+              onClick={() => {
+                setOpenConfirm(false);
+              }}
+            >
+              <span>Hủy</span>
+            </button>
+            <button
+              className="link confirm"
+              onClick={() => {
+                setOpenConfirm(false);
+                handleConfirmClick();
+              }}
+            >
+              <span>Xác nhận</span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openRedirect}
+        onClose={() => {
+          setOpenRedirect(false);
+        }}
+        maxWidth={false}
+      >
+        <DialogTitle
+          backgroundColor={"#2c3d50"}
+          color={"white"}
+          fontWeight={600}
+        >
+          Cập nhật thành công
+        </DialogTitle>
+        <DialogContent style={{ width: 400, height: 180 }}>
+          <p className="alert-price-change">
+            Các thay đổi về nhà cung cấp sẽ được áp dụng vào: {appliedTime}
+          </p>
+
+          <div className="btns-group-dialog">
+            <button
+              className="link confirm"
+              onClick={() => {
+                if (providerLogId) {
+                  navigate(`/profile`);
+                } else {
+                  navigate(`/providers/${providerId}`);
+                }
+              }}
+            >
+              <span>Xác nhận</span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={snackbarOpen}

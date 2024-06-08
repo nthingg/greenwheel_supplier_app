@@ -12,7 +12,8 @@
     .productContainer {
         /* Optional: Add a max-width to limit the width of the container */
         max-width: fit-content; /* Adjust as needed */
-        margin: 0 auto;
+        margin: 0 30px 0 30px;
+        overflow: auto;
         background-color: white !important;
         border-radius: 8px;
         box-shadow:
