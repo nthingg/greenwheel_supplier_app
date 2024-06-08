@@ -386,7 +386,7 @@ const ProviderProfilePage = () => {
                       </IconButton>
                     </span>
                   </div>
-                  {/* {provider?.type !== "REPAIR" &&
+                  {provider?.type !== "REPAIR" &&
                     provider?.type !== "TAXI" &&
                     provider?.type !== "EMERGENCY" &&
                     provider?.type !== "GROCERY" && (
@@ -396,7 +396,7 @@ const ProviderProfilePage = () => {
                           {provider?.balance.toLocaleString("vi-VN") + "đ"}
                         </span>
                       </div>
-                    )} */}
+                    )}
                   <div className="detailItem">
                     <span className="itemKey">Danh mục:</span>
                     <span className="itemValue">
